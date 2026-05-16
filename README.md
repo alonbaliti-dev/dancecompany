@@ -35,6 +35,10 @@ npm run build
 
 Use `develop` for Vercel Preview deployments and keep Production deployments on `main`. See `VERCEL-DEPLOYMENT.md` for the branch setup, required environment variables, verification checklist and rollback procedure.
 
+## Post-Deploy Verification
+
+Before promoting or accepting a deployment, run the production readiness and Vercel smoke-test checklist in `DEPLOYMENT-QA.md`.
+
 ## Environment
 
 Copy `.env.example` to `.env.local` and fill only the values needed for your environment.
@@ -69,6 +73,7 @@ Never expose service role keys or AI provider keys with a `NEXT_PUBLIC_` prefix.
 
 - `ARCHITECTURE.md`
 - `AI-SAFETY.md`
+- `DEPLOYMENT-QA.md`
 - `ENVIRONMENT.md`
 - `VERCEL-DEPLOYMENT.md`
 - `CONTRIBUTING.md`
