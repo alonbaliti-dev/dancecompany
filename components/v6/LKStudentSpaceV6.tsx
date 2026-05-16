@@ -40,7 +40,6 @@ import {
   AISuggestionStack,
   AppShellFrame,
   BottomNavDock,
-  BottomSheet as V6BottomSheet,
   Button as V6Button,
   FeedRow as V6FeedRow,
   FormField,
@@ -784,11 +783,11 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
         <FormField label="חיפוש" value={query} onChange={setQuery} placeholder="חיפוש לפי שם או טלפון" />
         <SegmentedControl value={filterOptions.find((item) => item.id === filter)?.label ?? "כולם"} options={filterOptions.map((item) => item.label)} onChange={(value) => setFilter(filterOptions.find((item) => item.label === value)?.id ?? "all")} />
       </Surface>
+      {sheetOpen ? <Surface tone="management" className="space-y-3 p-3.5 lg:hidden"><div className="flex items-center justify-between gap-3"><V6Button variant="ghost" onClick={() => setSheetOpen(false)}>סגירה</V6Button><h2 className="truncate text-right text-xl font-semibold tracking-[-0.03em]">{selected?.name ?? "משתמש חדש"}</h2></div>{editor}</Surface> : null}
       <div className="grid gap-3 lg:grid-cols-[1fr_1fr]">
         <div className="space-y-2.5">{filteredUsers.map((user) => <button key={user.id} onClick={() => load(user)} className="w-full"><UserCard user={user} active={selected?.id === user.id} /></button>)}</div>
         <Surface tone="management" className="hidden space-y-3 lg:block">{editor}</Surface>
       </div>
-      {sheetOpen ? <V6BottomSheet title={selected?.name ?? "משתמש חדש"} onClose={() => setSheetOpen(false)}>{editor}</V6BottomSheet> : null}
     </div>
   );
 }
