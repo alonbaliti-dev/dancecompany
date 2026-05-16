@@ -10,6 +10,22 @@ Use this checklist before promoting a Vercel deployment. `develop` is for Previe
 4. Complete the checklist sections below on mobile and desktop viewport sizes.
 5. Record the deployment URL, commit SHA, reviewer, and any exceptions before release approval.
 
+## Deployment Preparation Checklist
+
+- [ ] `npm run lint` passes locally or in CI.
+- [ ] `npm run typecheck` passes locally or in CI.
+- [ ] `npm run build` passes locally or in CI.
+- [ ] No app code depends on hardcoded `localhost` URLs for production behavior.
+- [ ] No mock secrets, real API keys, service role keys, private tokens, or credentials are committed.
+- [ ] No server-side provider keys are exposed with a `NEXT_PUBLIC_` prefix.
+- [ ] Mobile shell remains stable on iPhone Safari-sized viewports.
+- [ ] Bottom navigation safe-area spacing keeps all lower actions reachable.
+- [ ] Critical flows are reachable: login, Home, Lessons, Messages, Shop, More, User Management, Private Lessons, Media, and Super Admin tools.
+- [ ] Login works with the intended test account for the target environment.
+- [ ] Role guards keep students, parents, teachers, management, and Super Admin inside their intended scope.
+- [ ] AI suggestions remain approval-first and never auto-send or auto-publish.
+- [ ] Export/import controls are available only for permitted roles and verified in a non-production test flow.
+
 ## Vercel Environment Variables
 
 - [ ] Production Branch is set to `main` in Vercel Project Settings.
