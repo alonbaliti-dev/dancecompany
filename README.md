@@ -31,6 +31,10 @@ Build verification:
 npm run build
 ```
 
+## Deployment
+
+Use `develop` for Vercel Preview deployments and keep Production deployments on `main`. See `VERCEL-DEPLOYMENT.md` for the branch setup, required environment variables, verification checklist and rollback procedure.
+
 ## Environment
 
 Copy `.env.example` to `.env.local` and fill only the values needed for your environment.
@@ -44,6 +48,8 @@ Required or planned variables include:
 - `ANTHROPIC_API_KEY` server-only
 - `AI_DEFAULT_PROVIDER`
 - `AI_DEFAULT_MODEL`
+- `NEXT_PUBLIC_APP_ENV`
+- `NEXT_PUBLIC_ENABLE_DB_SYNC`
 
 Never expose service role keys or AI provider keys with a `NEXT_PUBLIC_` prefix.
 
@@ -64,6 +70,7 @@ Never expose service role keys or AI provider keys with a `NEXT_PUBLIC_` prefix.
 - `ARCHITECTURE.md`
 - `AI-SAFETY.md`
 - `ENVIRONMENT.md`
+- `VERCEL-DEPLOYMENT.md`
 - `CONTRIBUTING.md`
 - `PRODUCT_BRIEF.md`
 - `RUN_AND_DEPLOY.md`
