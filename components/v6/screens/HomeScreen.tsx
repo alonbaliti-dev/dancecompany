@@ -44,7 +44,7 @@ function Metric({ icon: Icon, tone, value, label, trend }: { icon: ElementType; 
         <span className="truncate text-[1.05rem] font-black tracking-[-0.04em] text-white">{value}</span>
       </div>
       <p className="mt-2 truncate text-[11px] font-bold text-white/58">{label}</p>
-      <p className="mt-0.5 truncate text-[10px] text-white/36">{trend}</p>
+      <p className="mt-0.5 line-clamp-2 text-[10px] leading-tight text-white/36">{trend}</p>
     </div>
   );
 }
