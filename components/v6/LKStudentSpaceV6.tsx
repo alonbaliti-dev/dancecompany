@@ -718,7 +718,7 @@ function More({ user, openScreen, openTab }: { user: V6User; openScreen: (screen
       {sections.map((section) => (
         <section key={section.title} className="space-y-2.5">
           <div className="flex items-center justify-end gap-2"><span className="h-px flex-1 bg-white/[0.04]" /><p className="text-right text-[13px] font-black text-white/48">{section.title}</p></div>
-          <div className={section.title === "מערכת" ? "grid grid-cols-2 gap-2" : "space-y-2.5"}>
+          <div className={section.title === "מערכת" ? "grid gap-2 sm:grid-cols-2" : "space-y-2.5"}>
             {section.items.map((item) => <ActionCard key={item.title} icon={item.icon} title={item.title} subtitle={item.subtitle} tone={item.tone} onClick={() => "tab" in item ? openTab(item.tab) : openScreen(item.screen)} />)}
           </div>
         </section>
