@@ -625,11 +625,17 @@ function Messages({ user, show }: { user: V6User; show: (message: string) => voi
   );
 }
 
-function ProductCard({ product, user, show }: { product: V6Product; user: V6User; show: (message: string) => void }) {
+function ProductCard({ product, user, show, onPrivateLesson }: { product: V6Product; user: V6User; show: (message: string) => void; onPrivateLesson: () => void }) {
   const { dispatch } = useV6();
   const privateLesson = product.category.includes("שיעורים");
   const ticket = product.category.includes("כרטיסים");
   const tone: V6Tone = privateLesson ? "studio" : ticket ? "repertoire" : "shop";
+  const action = privateLesson
+    ? () => onPrivateLesson()
+    : () => {
+        dispatch({ type: "shop_order", actor: user, productId: product.id });
+        show("הפעולה נשמרה ונשלחה התראה");
+      };
   return (
     <Surface tone={tone} className="p-0">
       <div className={v6Cx("relative grid h-36 place-items-center bg-gradient-to-br", v6Tone[tone].grad)}>
@@ -648,7 +654,7 @@ function ProductCard({ product, user, show }: { product: V6Product; user: V6User
         </div>
         <div className="mt-4 flex items-center justify-between gap-2">
           <span className="truncate rounded-full bg-white/[0.06] px-3 py-1 text-xs font-black text-white/52">{product.active ? "זמין עכשיו" : "לא פעיל"}</span>
-          <V6Button disabled={!product.active} onClick={() => { dispatch({ type: "shop_order", actor: user, productId: product.id }); show("הפעולה נשמרה ונשלחה התראה"); }}>{privateLesson ? "זמינות" : "רכישה"}</V6Button>
+          <V6Button disabled={!product.active} onClick={action}>{privateLesson ? "זמינות" : "רכישה"}</V6Button>
         </div>
       </div>
     </Surface>
@@ -683,7 +689,7 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
         </button>
       </div>
       <div className="grid gap-3 md:grid-cols-2">
-        {filtered.map((product) => <ProductCard key={product.id} product={product} user={user} show={show} />)}
+        {filtered.map((product) => <ProductCard key={product.id} product={product} user={user} show={show} onPrivateLesson={() => openScreen("private_lessons")} />)}
       </div>
       {(user.permissions.manageShop || user.role === "super_admin") ? <ActionCard icon={Plus} title="הוספת מוצר" subtitle="ניהול מוצר ותמונות" tone="shop" onClick={() => openScreen("media")} /> : null}
       <Surface tone="shop" className="space-y-3">
