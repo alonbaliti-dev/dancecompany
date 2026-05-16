@@ -833,7 +833,7 @@ function PrivateLessons({ user, show, back }: { user: V6User; show: (message: st
         {!canRequest ? <p className="text-right text-xs text-amber-100/70">אין מספיק נתונים לשליחת בקשה. צריך תלמיד/ה ומורה פעילים.</p> : null}
       </Surface>
       <div className="space-y-3">
-        {privateLessons.map((item) => (
+        {privateLessons.length ? privateLessons.map((item) => (
           <Surface key={item.id} tone="shop">
             <div className="flex items-start justify-between gap-3 text-right">
               <V6StatusBadge tone={item.status === "paid" ? "success" : item.status === "requested" ? "urgent" : "shop"}>{item.status}</V6StatusBadge>
@@ -842,13 +842,13 @@ function PrivateLessons({ user, show, back }: { user: V6User; show: (message: st
                 <p className="mt-1 text-sm text-white/55">₪{item.price} · {item.selectedSlot ?? item.suggestedSlots[0] ?? "מועד טרם נקבע"}</p>
               </div>
             </div>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 grid gap-2 sm:grid-cols-3 [&>button]:w-full">
               <V6Button variant="ghost" onClick={() => { dispatch({ type: "suggest_private_lesson", actor: user, requestId: item.id, slot: "יום שני 17:00" }); show("מועד הוצע"); }}>הצע מועד</V6Button>
               <V6Button variant="ghost" onClick={() => { dispatch({ type: "select_private_lesson", actor: user, requestId: item.id, slot: "יום שני 17:00" }); show("מועד נבחר"); }}>בחר מועד</V6Button>
               <V6Button onClick={() => { dispatch({ type: "mark_private_lesson_paid", actor: user, requestId: item.id }); show("שולם"); }}>שולם</V6Button>
             </div>
           </Surface>
-        ))}
+        )) : <Surface tone="shop"><p className="text-center text-sm text-white/50">אין בקשות שיעור פרטי פתוחות כרגע.</p></Surface>}
       </div>
     </div>
   );
