@@ -201,27 +201,27 @@ function Login() {
   const { message, show } = useToast();
   const studio = db.studios[0];
   return (
-    <main suppressHydrationWarning className="grid min-h-dynamic place-items-center overflow-hidden px-5 py-safe text-white" dir="rtl">
+    <main suppressHydrationWarning className="grid min-h-dynamic place-items-center overflow-x-hidden px-4 py-safe text-white sm:px-5" dir="rtl">
       <V6Toast message={message} />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_80%_46%_at_50%_-10%,rgba(52,211,153,0.18),transparent_55%),radial-gradient(ellipse_50%_42%_at_12%_82%,rgba(217,70,239,0.12),transparent_55%),#040405]" />
-      <div className="relative w-full max-w-[430px]">
-        <div className="mb-8 text-center">
-          <div className="mx-auto grid h-[72px] w-[72px] place-items-center rounded-[30px] bg-white/[0.075] shadow-[0_20px_58px_rgba(52,211,153,0.18),inset_0_1px_0_rgba(255,255,255,0.08)]"><MoonStar className="text-emerald-200" size={32} /></div>
-          <h1 suppressHydrationWarning className="mt-6 text-[2.7rem] font-semibold leading-none tracking-[-0.07em]">{db.editableTexts.loginTitle ?? studio?.branding.name}</h1>
+      <div className="relative mx-auto w-full max-w-[430px]">
+        <div className="mb-7 text-center">
+          <div className="mx-auto grid h-[68px] w-[68px] place-items-center rounded-[28px] bg-white/[0.075] shadow-[0_20px_58px_rgba(52,211,153,0.18),inset_0_1px_0_rgba(255,255,255,0.08)]"><MoonStar className="text-emerald-200" size={30} /></div>
+          <h1 suppressHydrationWarning className="mx-auto mt-5 max-w-[20rem] text-[clamp(2.15rem,11vw,2.7rem)] font-semibold leading-[0.98] tracking-[-0.07em]">{db.editableTexts.loginTitle ?? studio?.branding.name}</h1>
           <p className="mx-auto mt-4 max-w-xs text-[15px] leading-relaxed text-white/62">{db.editableTexts.loginSubtitle ?? studio?.branding.tagline}</p>
         </div>
         <form
-          className="space-y-5 rounded-[34px] border border-white/[0.055] bg-[linear-gradient(155deg,rgba(255,255,255,0.09),rgba(255,255,255,0.035)_58%,rgba(0,0,0,0.18))] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.54),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-2xl"
+          className="mx-auto w-full max-w-full space-y-5 rounded-[34px] border border-white/[0.055] bg-[linear-gradient(155deg,rgba(255,255,255,0.09),rgba(255,255,255,0.035)_58%,rgba(0,0,0,0.18))] p-5 shadow-[0_30px_90px_rgba(0,0,0,0.54),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-2xl sm:p-6"
           onSubmit={(e) => {
             e.preventDefault();
             const result = login(phone, password);
             if (result.ok === false) show(result.reason);
           }}
         >
-          <div className="flex items-center justify-between rounded-[20px] bg-black/18 px-4 py-3 text-[13px] text-white/56"><span>כניסה מאובטחת לפי מסד הנתונים</span><Lock size={16} /></div>
+          <div className="flex min-h-11 items-center justify-between gap-3 rounded-[20px] bg-black/18 px-4 py-3 text-right text-[13px] text-white/56 shadow-[inset_0_1px_0_rgba(255,255,255,0.045)]"><span className="min-w-0 leading-snug">כניסה מאובטחת לפי מסד הנתונים</span><Lock className="shrink-0" size={16} /></div>
           <FormField label="טלפון" value={phone} onChange={setPhone} />
           <FormField label="סיסמה" value={password} onChange={setPassword} type="password" />
-          <V6Button type="submit">כניסה</V6Button>
+          <div className="[&>button]:w-full"><V6Button type="submit">כניסה</V6Button></div>
         </form>
       </div>
     </main>
