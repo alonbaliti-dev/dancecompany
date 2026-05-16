@@ -1,0 +1,18 @@
+[
+  {
+    "id": "task_hiphop_foundation",
+    "studioId": "studio_lk",
+    "groupId": "g_hiphop",
+    "title": "חזרה קצרה על הקומבינציה",
+    "dueText": "לפני השיעור הבא",
+    "createdByUserId": "u_simor"
+  },
+  {
+    "id": "task_classic_posture",
+    "studioId": "studio_lk",
+    "groupId": "g_classic",
+    "title": "תרגול יציבה ובר",
+    "dueText": "השבוע",
+    "createdByUserId": "u_lena"
+  }
+]

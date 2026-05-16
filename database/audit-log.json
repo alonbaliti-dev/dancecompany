@@ -1,0 +1,45 @@
+[
+  {
+    "id": "aud_1",
+    "studioId": "studio_lk",
+    "actorUserId": "u_liata",
+    "actorName": "ליאת קפלינסקי",
+    "action": "שינוי הרשאות משתמש",
+    "targetType": "user",
+    "targetId": "u_t_yakir",
+    "timestamp": "2026-05-14T10:00:00.000Z",
+    "severity": "info"
+  },
+  {
+    "id": "aud_2",
+    "studioId": "studio_lk",
+    "actorUserId": "u_t_yakir",
+    "actorName": "יקיר גבאי",
+    "action": "נשלחה התראה לקבוצה",
+    "targetType": "notification",
+    "targetId": "n_demo",
+    "timestamp": "2026-05-14T09:30:00.000Z",
+    "severity": "info"
+  },
+  {
+    "id": "aud_3",
+    "studioId": "studio_lk",
+    "actorUserId": "u_creator",
+    "actorName": "אלון בליטי",
+    "action": "עודכנה תכונת מאמן AI",
+    "targetType": "feature_flag",
+    "timestamp": "2026-05-13T18:00:00.000Z",
+    "severity": "warning"
+  },
+  {
+    "id": "aud_4",
+    "studioId": "studio_demo",
+    "actorUserId": "u_creator",
+    "actorName": "אלון בליטי",
+    "action": "נוסף פריט לגלריה",
+    "targetType": "gallery",
+    "targetId": "gal_demo",
+    "timestamp": "2026-05-12T14:00:00.000Z",
+    "severity": "info"
+  }
+]

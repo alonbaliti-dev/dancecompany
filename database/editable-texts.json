@@ -1,0 +1,222 @@
+[
+  {
+    "id": "copy_nav_dashboard",
+    "key": "nav.dashboard",
+    "scope": "global",
+    "module": "navigation",
+    "label": "טאב דשבורד",
+    "he": "דשבורד",
+    "en": "Dashboard",
+    "defaultHe": "דשבורד",
+    "defaultEn": "Dashboard"
+  },
+  {
+    "id": "copy_nav_lessons",
+    "key": "nav.lessons",
+    "scope": "global",
+    "module": "navigation",
+    "label": "טאב שיעורים",
+    "he": "שיעורים",
+    "en": "Lessons",
+    "defaultHe": "שיעורים",
+    "defaultEn": "Lessons"
+  },
+  {
+    "id": "copy_nav_messages",
+    "key": "nav.messages",
+    "scope": "global",
+    "module": "navigation",
+    "label": "טאב הודעות",
+    "he": "הודעות",
+    "en": "Messages",
+    "defaultHe": "הודעות",
+    "defaultEn": "Messages"
+  },
+  {
+    "id": "copy_nav_shop",
+    "key": "nav.shop",
+    "scope": "global",
+    "module": "navigation",
+    "label": "טאב חנות",
+    "he": "חנות",
+    "en": "Shop",
+    "defaultHe": "חנות",
+    "defaultEn": "Shop"
+  },
+  {
+    "id": "copy_nav_more",
+    "key": "nav.more",
+    "scope": "global",
+    "module": "navigation",
+    "label": "טאב עוד",
+    "he": "עוד",
+    "en": "More",
+    "defaultHe": "עוד",
+    "defaultEn": "More"
+  },
+  {
+    "id": "copy_nav_tasks_hub",
+    "key": "nav.tasks_hub",
+    "scope": "global",
+    "module": "navigation",
+    "label": "משימות (תפריט)",
+    "he": "משימות",
+    "en": "Tasks",
+    "defaultHe": "משימות",
+    "defaultEn": "Tasks"
+  },
+  {
+    "id": "copy_today_shop_title",
+    "key": "today.shop.title",
+    "scope": "global",
+    "module": "today",
+    "label": "כרטיס חנות — כותרת",
+    "he": "חנות הסטודיו",
+    "en": "Studio Shop",
+    "defaultHe": "חנות הסטודיו",
+    "defaultEn": "Studio Shop"
+  },
+  {
+    "id": "copy_today_shop_subtitle",
+    "key": "today.shop.subtitle",
+    "scope": "global",
+    "module": "today",
+    "label": "כרטיס חנות — תת־כותרת",
+    "he": "בגדים · כרטיסים · שיעורים פרטיים",
+    "en": "Wear · tickets · private lessons",
+    "defaultHe": "בגדים · כרטיסים · שיעורים פרטיים",
+    "defaultEn": "Wear · tickets · private lessons"
+  },
+  {
+    "id": "copy_today_shop_private",
+    "key": "today.shop.private",
+    "scope": "global",
+    "module": "today",
+    "label": "כפתור שיעורים פרטיים",
+    "he": "שיעורים פרטיים",
+    "en": "Private lessons",
+    "defaultHe": "שיעורים פרטיים",
+    "defaultEn": "Private lessons"
+  },
+  {
+    "id": "copy_today_shop_tickets",
+    "key": "today.shop.tickets",
+    "scope": "global",
+    "module": "today",
+    "label": "כפתור כרטיסים",
+    "he": "כרטיסים למופעים",
+    "en": "Event tickets",
+    "defaultHe": "כרטיסים למופעים",
+    "defaultEn": "Event tickets"
+  },
+  {
+    "id": "copy_today_shop_wear",
+    "key": "today.shop.wear",
+    "scope": "global",
+    "module": "today",
+    "label": "כפתור ביגוד",
+    "he": "ביגוד וציוד",
+    "en": "Wear & gear",
+    "defaultHe": "ביגוד וציוד",
+    "defaultEn": "Wear & gear"
+  },
+  {
+    "id": "copy_shop_boutique_title",
+    "key": "shop.boutique.title",
+    "scope": "global",
+    "module": "shop",
+    "label": "כותרת בוטיק",
+    "he": "בוטיק הסטודיו",
+    "en": "Studio Boutique",
+    "defaultHe": "בוטיק הסטודיו",
+    "defaultEn": "Studio Boutique"
+  },
+  {
+    "id": "copy_shop_boutique_subtitle",
+    "key": "shop.boutique.subtitle",
+    "scope": "global",
+    "module": "shop",
+    "label": "תת־כותרת בוטיק",
+    "he": "קולקציה אוצרת — בגדים, ציוד ובמה",
+    "en": "Curated collection",
+    "defaultHe": "קולקציה אוצרת — בגדים, ציוד ובמה",
+    "defaultEn": "Curated collection"
+  },
+  {
+    "id": "copy_event_buy_tickets",
+    "key": "event.buy_tickets",
+    "scope": "global",
+    "module": "events",
+    "label": "רכישת כרטיסים",
+    "he": "רכישת כרטיסים",
+    "en": "Buy tickets",
+    "defaultHe": "רכישת כרטיסים",
+    "defaultEn": "Buy tickets"
+  },
+  {
+    "id": "copy_event_buy_tickets_hint",
+    "key": "event.buy_tickets_hint",
+    "scope": "global",
+    "module": "events",
+    "label": "רמז כרטיסים",
+    "he": "כרטיסים למופע סוף השנה ובמה חיה",
+    "en": "End-of-year & live show",
+    "defaultHe": "כרטיסים למופע סוף השנה ובמה חיה",
+    "defaultEn": "End-of-year & live show"
+  },
+  {
+    "id": "copy_faculty_book_private",
+    "key": "faculty.book_private",
+    "scope": "global",
+    "module": "faculty",
+    "label": "הזמנת שיעור פרטי",
+    "he": "הזמנת שיעור פרטי",
+    "en": "Book a private lesson",
+    "defaultHe": "הזמנת שיעור פרטי",
+    "defaultEn": "Book a private lesson"
+  },
+  {
+    "id": "copy_floating_shop",
+    "key": "floating.shop",
+    "scope": "global",
+    "module": "navigation",
+    "label": "כפתור צף חנות",
+    "he": "חנות",
+    "en": "Shop",
+    "defaultHe": "חנות",
+    "defaultEn": "Shop"
+  },
+  {
+    "id": "copy_more_tasks",
+    "key": "more.tasks",
+    "scope": "global",
+    "module": "more",
+    "label": "משימות בתפריט עוד",
+    "he": "משימות ותרגול ביתי",
+    "en": "Tasks & home practice",
+    "defaultHe": "משימות ותרגול ביתי",
+    "defaultEn": "Tasks & home practice"
+  },
+  {
+    "id": "copy_payment_secure_title",
+    "key": "payment.secure_title",
+    "scope": "global",
+    "module": "shop",
+    "label": "כותרת תשלום",
+    "he": "תשלום מאובטח",
+    "en": "Secure payment",
+    "defaultHe": "תשלום מאובטח",
+    "defaultEn": "Secure payment"
+  },
+  {
+    "id": "copy_onboarding_welcome",
+    "key": "onboarding.welcome",
+    "scope": "global",
+    "module": "onboarding",
+    "label": "ברוכים הבאים",
+    "he": "ברוכים הבאים ל־LK Student Space",
+    "en": "Welcome to LK Student Space",
+    "defaultHe": "ברוכים הבאים ל־LK Student Space",
+    "defaultEn": "Welcome to LK Student Space"
+  }
+]

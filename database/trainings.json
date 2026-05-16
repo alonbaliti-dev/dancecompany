@@ -1,0 +1,58 @@
+{
+  "categories": [
+    "הכל",
+    "חימום",
+    "גמישות",
+    "כוח",
+    "פריסטייל",
+    "טכניקה"
+  ],
+  "items": [
+    {
+      "id": "t1",
+      "title": "חימום דינמי לפני שיעור",
+      "category": "חימום",
+      "duration": "5 דק׳",
+      "xp": 20,
+      "done": true,
+      "difficulty": "קל",
+      "featured": true
+    },
+    {
+      "id": "t2",
+      "title": "שפגט — בסיס יומי",
+      "category": "גמישות",
+      "duration": "8 דק׳",
+      "xp": 35,
+      "done": false,
+      "difficulty": "בינוני"
+    },
+    {
+      "id": "t3",
+      "title": "כוח לרקדנים",
+      "category": "כוח",
+      "duration": "10 דק׳",
+      "xp": 45,
+      "done": false,
+      "difficulty": "בינוני"
+    },
+    {
+      "id": "t4",
+      "title": "Freestyle Challenge",
+      "category": "פריסטייל",
+      "duration": "6 דק׳",
+      "xp": 30,
+      "done": true,
+      "difficulty": "מתקדם"
+    },
+    {
+      "id": "t5",
+      "title": "בידוד גוף עליון",
+      "category": "טכניקה",
+      "duration": "7 דק׳",
+      "xp": 28,
+      "done": false,
+      "difficulty": "קל"
+    }
+  ]
+}

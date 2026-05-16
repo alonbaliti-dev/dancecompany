@@ -1,0 +1,103 @@
+[
+  {
+    "id": "notif_maya_fb",
+    "studioId": "studio_lk",
+    "title": "פידבק על סרטון תרגול",
+    "body": "יקיר גבאי השאירה הערה בצ׳אט LK Hip Hop Crew",
+    "createdByUserId": "u_t_yakir",
+    "createdByName": "יקיר גבאי",
+    "targetType": "student",
+    "targetUserIds": [
+      "u_maya"
+    ],
+    "priority": "important",
+    "relatedType": "chat",
+    "relatedId": "chat_hh_sel",
+    "readByUserIds": [],
+    "createdAt": "2026-05-14T14:05:00"
+  },
+  {
+    "id": "notif_sel_urgent",
+    "studioId": "studio_lk",
+    "title": "חזרה בחמישי — שינוי זמן",
+    "body": "עדכון דחוף מהסטודיו — קראי בלחיצה",
+    "createdByUserId": "u_liata",
+    "createdByName": "ליאת קפלינסקי",
+    "targetType": "dance_group",
+    "targetGroupIds": [
+      "grp_hh_sel"
+    ],
+    "priority": "urgent",
+    "relatedType": "update",
+    "relatedId": "up_studio_urgent",
+    "readByUserIds": [],
+    "createdAt": "2026-05-14T08:05:00"
+  },
+  {
+    "id": "notif_maya_task",
+    "studioId": "studio_lk",
+    "title": "תזכורת משימה",
+    "body": "העלאת סרטון קומבינציה — מופע סוף שנה · LK Hip Hop Crew",
+    "createdByUserId": "u_t_yakir",
+    "createdByName": "יקיר גבאי",
+    "targetType": "student",
+    "targetUserIds": [
+      "u_maya"
+    ],
+    "priority": "normal",
+    "relatedType": "task",
+    "relatedId": "st_group_sel_video",
+    "readByUserIds": [
+      "u_maya"
+    ],
+    "createdAt": "2026-05-11T12:00:00"
+  },
+  {
+    "id": "notif_noa_video",
+    "studioId": "studio_lk",
+    "title": "סרטון חדש לבדיקה",
+    "body": "מאיה כהן העלתה תרגול לצ׳אט נבחרת",
+    "createdByUserId": "u_maya",
+    "createdByName": "מאיה כהן",
+    "targetType": "teacher",
+    "targetUserIds": [
+      "u_t_yakir"
+    ],
+    "priority": "important",
+    "relatedType": "chat",
+    "relatedId": "chat_hh_sel",
+    "readByUserIds": [],
+    "createdAt": "2026-05-14T11:35:00"
+  },
+  {
+    "id": "notif_liata_att",
+    "studioId": "studio_lk",
+    "title": "נוכחות ממתינה",
+    "body": "שיעור Modern — סימון לא הושלם",
+    "createdByUserId": "u_liata",
+    "createdByName": "ליאת קפלינסקי",
+    "targetType": "staff",
+    "priority": "important",
+    "relatedType": "attendance",
+    "relatedId": "att_sess_2",
+    "readByUserIds": [],
+    "createdAt": "2026-05-14T07:00:00"
+  },
+  {
+    "id": "notif_gallery_sel",
+    "studioId": "studio_lk",
+    "title": "חומר חדש בגלריה",
+    "body": "קומבינציה — שבירה וכניסה זמינה לצפייה",
+    "createdByUserId": "u_t_yakir",
+    "createdByName": "יקיר גבאי",
+    "targetType": "dance_group",
+    "targetGroupIds": [
+      "grp_hh_sel"
+    ],
+    "priority": "normal",
+    "relatedType": "gallery",
+    "relatedId": "gal_sel_combo",
+    "readByUserIds": [],
+    "createdAt": "2026-05-12T10:30:00"
+  }
+]

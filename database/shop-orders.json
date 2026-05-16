@@ -1,0 +1,40 @@
+[
+  {
+    "id": "ord_1001",
+    "studioId": "studio_lk",
+    "userId": "u_maya",
+    "userName": "מאיה כהן",
+    "items": [
+      {
+        "productId": "shop_end_year_ticket",
+        "quantity": 2
+      }
+    ],
+    "totalPrice": 150,
+    "currency": "ILS",
+    "paymentStatus": "paid",
+    "fulfillmentStatus": "ready_for_pickup",
+    "paymentMethod": "bit",
+    "createdAt": "2026-05-10T14:22:00.000Z"
+  },
+  {
+    "id": "ord_1002",
+    "studioId": "studio_lk",
+    "userId": "u_yuval",
+    "userName": "יובל אברהם",
+    "items": [
+      {
+        "productId": "shop_lk_tee",
+        "quantity": 1,
+        "size": "M",
+        "color": "שחור"
+      }
+    ],
+    "totalPrice": 89,
+    "currency": "ILS",
+    "paymentStatus": "pending",
+    "fulfillmentStatus": "new",
+    "paymentMethod": "credit_card",
+    "createdAt": "2026-05-14T09:05:00.000Z"
+  }
+]

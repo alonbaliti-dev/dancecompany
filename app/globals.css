@@ -1,0 +1,523 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+
+  --bg-canvas: #030304;
+  --bg-card: #0c0c0f;
+  --bg-elevated: #141418;
+  --bg-glass: rgba(12, 12, 15, 0.82);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-accent: rgba(52, 211, 153, 0.28);
+
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-muted: rgba(255, 255, 255, 0.38);
+
+  --color-accent: #3ee8a8;
+  --color-accent-dim: rgba(62, 232, 168, 0.14);
+  --color-flamenco: #f472b6;
+  --color-hiphop: #60a5fa;
+  --color-ballet: #c4b5fd;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-danger: #fb7185;
+  --color-info: #38bdf8;
+  --color-achievement: #fcd34d;
+
+  --lk-card-radius: 1.25rem;
+  --lk-nav-height: 3.95rem;
+
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --radius-card: 1.375rem;
+  --radius-nav: 1.5rem;
+  --shadow-card-inset: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-nav: 0 -16px 56px rgba(0, 0, 0, 0.5);
+
+  /* Safe areas — iPhone notch, Dynamic Island, home indicator, iPad */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* Stable viewport height (Safari address bar / PWA) */
+  --app-height: 100dvh;
+  --app-min-height: 100svh;
+  --app-height-px: 100dvh;
+  --viewport-offset-top: 0px;
+  --keyboard-inset: 0px;
+  --nav-bar-height: var(--lk-nav-height);
+  --nav-offset: calc(var(--nav-bar-height) + var(--safe-bottom));
+  --composer-bottom: calc(var(--nav-offset) + 0.35rem);
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --app-height: 100dvh;
+  }
+}
+
+@supports (height: 100svh) {
+  :root {
+    --app-min-height: 100svh;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  width: 100%;
+  direction: rtl;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  min-height: var(--app-height);
+  min-height: var(--app-height-px, var(--app-height));
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  max-width: 100vw;
+  overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  touch-action: manipulation;
+}
+
+html,
+body {
+  max-width: 100%;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+/* iOS Safari fill-available fallback */
+@supports (-webkit-touch-callout: none) {
+  html {
+    height: -webkit-fill-available;
+  }
+
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
+
+body[data-standalone="true"] {
+  /* PWA / Add to Home Screen — extra bottom breathing room handled via --safe-bottom */
+}
+
+button,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  scroll-margin-top: 1rem;
+  scroll-margin-bottom: calc(var(--nav-offset) + 2.5rem);
+}
+
+a,
+input,
+select,
+textarea {
+  scroll-margin-top: 1rem;
+  scroll-margin-bottom: calc(var(--nav-offset) + 2.5rem);
+}
+
+::selection {
+  background: rgba(52, 211, 153, 0.28);
+  color: #fff;
+}
+
+/* --- Viewport utilities --- */
+.min-h-app {
+  min-height: 100svh;
+  min-height: var(--app-min-height);
+}
+
+.min-h-dynamic {
+  min-height: var(--app-height);
+}
+
+.h-app {
+  height: var(--app-height);
+  height: var(--app-height-px, var(--app-height));
+}
+
+.pt-safe {
+  padding-top: max(0.85rem, var(--safe-top));
+}
+
+.pb-nav-safe {
+  padding-bottom: var(--nav-offset);
+}
+
+.pb-safe {
+  padding-bottom: max(0.55rem, var(--safe-bottom));
+}
+
+.px-safe {
+  padding-right: max(0px, var(--safe-right));
+  padding-left: max(0px, var(--safe-left));
+}
+
+.lk-mobile-container {
+  width: 100%;
+  max-width: 430px;
+  margin-inline: auto;
+  padding-inline: 16px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .lk-mobile-container {
+    max-width: 72rem;
+    padding-inline: 1.25rem;
+  }
+}
+
+/* Scroll containers — momentum + contain overscroll (Safari) */
+.scroll-touch {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+}
+
+.lk-app-shell {
+  position: fixed;
+  inset: 0;
+  height: 100dvh;
+  height: var(--app-height);
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lk-shell-frame {
+  height: 100%;
+  min-height: 0;
+  padding-top: max(0.55rem, var(--safe-top));
+  padding-bottom: max(0.45rem, var(--safe-bottom));
+}
+
+.max-h-sheet {
+  max-height: min(78vh, 32rem);
+}
+
+@supports (max-height: 78dvh) {
+  .max-h-sheet {
+    max-height: min(78dvh, 32rem);
+  }
+}
+
+/* Fixed chrome — compositor layer for Safari z-index / sticky bugs */
+.nav-fixed-layer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  isolation: isolate;
+}
+
+.header-sticky-layer {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* --- Glass surfaces with opaque fallbacks --- */
+.surface-chrome {
+  background-color: rgba(8, 8, 10, 0.94);
+}
+
+.surface-header {
+  background-color: rgba(6, 6, 8, 0.92);
+}
+
+.surface-card {
+  background-color: rgba(16, 16, 20, 0.88);
+}
+
+.overlay-dim {
+  background-color: rgba(0, 0, 0, 0.72);
+}
+
+@supports (
+  (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))
+) {
+  .surface-chrome {
+    background-color: rgba(8, 8, 10, 0.88);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
+  }
+
+  .surface-header {
+    background-color: rgba(6, 6, 8, 0.55);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
+  }
+
+  .surface-card {
+    background-color: rgba(16, 16, 20, 0.72);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+  }
+
+  .overlay-blur {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .overlay-blur-md {
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+}
+
+/* Safari: reduce expensive blur when user prefers less motion */
+@media (prefers-reduced-motion: reduce) {
+  .surface-chrome,
+  .surface-header,
+  .surface-card {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .surface-chrome {
+    background-color: rgba(8, 8, 10, 0.97);
+  }
+
+  .surface-header {
+    background-color: rgba(6, 6, 8, 0.96);
+  }
+}
+
+/* Premium ambient canvas — Apple Fitness–inspired depth */
+.app-canvas-glow {
+  background:
+    radial-gradient(ellipse 95% 55% at 50% -18%, rgba(62, 232, 168, 0.14), transparent 52%),
+    radial-gradient(ellipse 50% 42% at 92% 12%, rgba(244, 114, 182, 0.09), transparent 48%),
+    radial-gradient(ellipse 48% 38% at 4% 52%, rgba(96, 165, 250, 0.07), transparent 50%),
+    radial-gradient(ellipse 40% 30% at 70% 88%, rgba(196, 181, 253, 0.05), transparent 45%),
+    var(--bg-canvas);
+}
+
+.lk-card {
+  border-radius: var(--lk-card-radius);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 48%, rgba(0, 0, 0, 0.12) 100%);
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.lk-card-press {
+  transition: transform 0.18s ease, border-color 0.18s ease;
+  touch-action: manipulation;
+}
+
+.lk-card-press:active {
+  transform: scale(0.985);
+}
+
+.lk-login-panel {
+  border-radius: 1.625rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(12, 12, 16, 0.92) 100%);
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.lk-shop-hero {
+  border-radius: 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background:
+    radial-gradient(ellipse 80% 90% at 100% 0%, rgba(252, 211, 77, 0.12), transparent 55%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.09) 0%, rgba(8, 8, 12, 0.85) 100%);
+  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.45);
+}
+
+.lk-permissions-strip {
+  border-radius: 1.125rem;
+  border: 1px solid rgba(62, 232, 168, 0.22);
+  background: linear-gradient(90deg, rgba(62, 232, 168, 0.1) 0%, rgba(62, 232, 168, 0.02) 100%);
+}
+
+.premium-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.625rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.35rem 1.25rem;
+  text-align: right;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.premium-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 70% at 85% 0%, rgba(255, 255, 255, 0.12), transparent 58%);
+  pointer-events: none;
+}
+
+.premium-tile {
+  display: flex;
+  min-height: 4.5rem;
+  touch-action: manipulation;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.35rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+  padding: 0.9rem 1rem;
+  text-align: right;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.premium-tile:active {
+  transform: scale(0.98);
+}
+
+.premium-section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.premium-nav-pill {
+  background: linear-gradient(180deg, rgba(22, 22, 28, 0.96) 0%, rgba(10, 10, 12, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow:
+    0 -20px 60px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.app-root {
+  position: relative;
+  min-height: var(--app-min-height);
+  height: var(--app-height);
+  overflow-x: hidden;
+}
+
+.lk-scroll-page {
+  min-width: 0;
+  min-height: 0;
+  padding-bottom: calc(var(--nav-offset) + 1.15rem);
+}
+
+.lk-text-balance {
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* iOS: prevent focus zoom on inputs (requires ≥16px) */
+input,
+select,
+textarea {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+input,
+select,
+textarea {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: inherit;
+}
+
+/* Touch targets */
+.touch-icon-btn {
+  display: inline-flex;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  touch-action: manipulation;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Chat / composer bars — above bottom nav + keyboard inset */
+.composer-fixed {
+  bottom: calc(var(--composer-bottom) + var(--keyboard-inset, 0px));
+  padding-bottom: max(0.25rem, var(--safe-bottom));
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Sheets above nav chrome */
+.sheet-layer {
+  z-index: 70;
+}
+
+/* Sync badge — visible but never intercepts taps */
+.sync-status-badge {
+  bottom: calc(var(--nav-offset) + 0.35rem);
+  z-index: 45;
+  pointer-events: none;
+}
+
+/* Coarse pointers: don't leave buttons in a stuck hover state */
+@media (hover: none), (pointer: coarse) {
+  body[data-touch="true"] button:hover,
+  body[data-touch="true"] a:hover {
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "records": [
+    {
+      "id": "consent_maya_photo",
+      "studioId": "studio_lk",
+      "studentUserId": "u_maya",
+      "parentUserId": "u_parent_demo",
+      "consentType": "photography",
+      "status": "approved",
+      "approvedAt": "2025-09-15T10:00:00.000Z",
+      "expiresAt": "2026-09-15T10:00:00.000Z",
+      "updatedAt": "2025-09-15T10:00:00.000Z"
+    },
+    {
+      "id": "consent_maya_video",
+      "studioId": "studio_lk",
+      "studentUserId": "u_maya",
+      "parentUserId": "u_parent_demo",
+      "consentType": "video_upload",
+      "status": "pending",
+      "updatedAt": "2026-05-01T10:00:00.000Z"
+    },
+    {
+      "id": "consent_maya_terms",
+      "studioId": "studio_lk",
+      "studentUserId": "u_maya",
+      "parentUserId": "u_parent_demo",
+      "consentType": "app_terms",
+      "status": "approved",
+      "approvedAt": "2025-09-01T08:00:00.000Z",
+      "updatedAt": "2025-09-01T08:00:00.000Z"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "grp_hh_sel",
+    "studioId": "studio_lk",
+    "name": "LK Hip Hop Crew",
+    "levelLabel": "נבחרת"
+  },
+  {
+    "id": "grp_hh_teen",
+    "studioId": "studio_lk",
+    "name": "היפ הופ — מתבגרים",
+    "levelLabel": "רמה 2"
+  },
+  {
+    "id": "grp_hh_new",
+    "studioId": "studio_lk",
+    "name": "היפ הופ — בסיס",
+    "levelLabel": "יסוד"
+  },
+  {
+    "id": "grp_mod_adv",
+    "studioId": "studio_lk",
+    "name": "Modern Ensemble",
+    "levelLabel": "רמה 4"
+  },
+  {
+    "id": "grp_mod_mid",
+    "studioId": "studio_lk",
+    "name": "מודרן — ביניים",
+    "levelLabel": "ביניים"
+  },
+  {
+    "id": "grp_ballet_kids",
+    "studioId": "studio_lk",
+    "name": "Classical Foundations",
+    "levelLabel": "טרום בלט · יסוד"
+  },
+  {
+    "id": "grp_ballet_sel",
+    "studioId": "studio_lk",
+    "name": "בלט קלאסי — נבחרת",
+    "levelLabel": "רמה 4"
+  },
+  {
+    "id": "grp_flamenco",
+    "studioId": "studio_lk",
+    "name": "Junior Flamenco",
+    "levelLabel": "פלמנקו"
+  },
+  {
+    "id": "grp_acro",
+    "studioId": "studio_lk",
+    "name": "Acro Team",
+    "levelLabel": "נבחרת"
+  },
+  {
+    "id": "grp_rep",
+    "studioId": "studio_lk",
+    "name": "נבחרות — חזרות",
+    "levelLabel": "כל הרמות"
+  },
+  {
+    "id": "grp_tech",
+    "studioId": "studio_lk",
+    "name": "חימום וטכניקה",
+    "levelLabel": "פתוח"
+  }
+]

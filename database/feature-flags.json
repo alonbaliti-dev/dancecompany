@@ -1,0 +1,43 @@
+{
+  "global": {
+    "aiCoach": true,
+    "liveEventFeed": true,
+    "parentPeaceMode": true,
+    "videoUploads": true,
+    "staffChat": true,
+    "gallery": true,
+    "achievementsBoard": true,
+    "reports": true,
+    "payments": true,
+    "shop": true,
+    "studioIdentity": true
+  },
+  "byStudio": {
+    "studio_lk": {
+      "aiCoach": true,
+      "liveEventFeed": true,
+      "parentPeaceMode": true,
+      "videoUploads": true,
+      "staffChat": true,
+      "gallery": true,
+      "achievementsBoard": true,
+      "reports": true,
+      "payments": true,
+      "shop": true,
+      "studioIdentity": true
+    },
+    "studio_demo": {
+      "aiCoach": true,
+      "liveEventFeed": false,
+      "parentPeaceMode": true,
+      "videoUploads": true,
+      "staffChat": true,
+      "gallery": true,
+      "achievementsBoard": true,
+      "reports": true,
+      "payments": false,
+      "shop": true,
+      "studioIdentity": true
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "releaseNotes": [
+    {
+      "id": "rn_1",
+      "version": "0.9.1",
+      "title": "חוויית שימוש משודרגת",
+      "body": "שיפור מרכזי ב״היום״, מסלול מקצועי וממשק ניהול מעודכן.",
+      "publishedAt": "2026-05-14",
+      "type": "release"
+    },
+    {
+      "id": "rn_2",
+      "version": "0.9.0",
+      "title": "גרסת בסיס יציבה",
+      "body": "תרגול, התקדמות, צ׳אט קבוצות ולוח אירועים.",
+      "publishedAt": "2026-05-01",
+      "type": "release"
+    },
+    {
+      "id": "rn_3",
+      "version": "0.10.0",
+      "title": "חיבור Supabase",
+      "body": "סנכרון ענן, גיבויים אוטומטיים וניהול רב-סטודיו מלא.",
+      "publishedAt": "2026-06-01",
+      "type": "upcoming"
+    },
+    {
+      "id": "rn_4",
+      "version": "0.9.0",
+      "title": "תחזוקה מתוכננת",
+      "body": "יום ראשון 02:00–04:00 — עדכון שרתים ללא השבתה מלאה.",
+      "publishedAt": "2026-05-18",
+      "type": "maintenance"
+    }
+  ],
+  "platformBilling": {
+    "plan": "Platform Pro",
+    "monthlyPriceNis": 890,
+    "paymentStatus": "paid",
+    "activeStudents": 152,
+    "storageGb": 48
+  },
+  "studioBillingByStudio": {
+    "studio_lk": {
+      "plan": "Pro",
+      "monthlyPriceNis": 590,
+      "paymentStatus": "paid",
+      "activeStudents": 104,
+      "storageGb": 36
+    },
+    "studio_demo": {
+      "plan": "Starter",
+      "monthlyPriceNis": 290,
+      "paymentStatus": "trial",
+      "activeStudents": 24,
+      "storageGb": 6
+    }
+  },
+  "performanceCountdown": {
+    "label": "מופע סוף שנה",
+    "daysRemaining": 12,
+    "eventTitle": "מופע סוף השנה — פרטים יפורסמו"
+  }
+}

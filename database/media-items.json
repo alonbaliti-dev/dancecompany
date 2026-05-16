@@ -1,0 +1,20 @@
+[
+  {
+    "id": "media_seed_lk",
+    "studioId": "studio_lk",
+    "uploadedByUserId": "u_liat",
+    "uploadedByName": "ליאת קפלינסקי",
+    "mediaType": "image",
+    "title": "סטודיו LK",
+    "description": "תמונת אווירה ראשונה למערכת המדיה.",
+    "fileName": "lk-studio-placeholder.webp",
+    "mimeType": "image/webp",
+    "fileSize": 0,
+    "localPreviewUrl": "",
+    "visibility": "management_only",
+    "tags": ["סטודיו"],
+    "uploadStatus": "ready",
+    "createdAt": "2026-05-16T00:00:00.000Z",
+    "updatedAt": "2026-05-16T00:00:00.000Z"
+  }
+]

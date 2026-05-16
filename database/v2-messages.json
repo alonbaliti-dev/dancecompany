@@ -1,0 +1,11 @@
+[
+  {
+    "id": "msg_welcome",
+    "studioId": "studio_lk",
+    "target": "all",
+    "title": "ברוכים הבאים ל־LK Space V2",
+    "body": "מרחב נקי, מהיר ומדויק לעדכונים, שיעורים, חנות ושיעורים פרטיים.",
+    "createdByUserId": "u_liat",
+    "createdAt": "2026-05-16T00:00:00.000Z"
+  }
+]

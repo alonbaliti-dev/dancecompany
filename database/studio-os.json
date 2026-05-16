@@ -1,0 +1,678 @@
+{
+  "levelsByUser": {
+    "u_maya": {
+      "userId": "u_maya",
+      "currentLevel": "team",
+      "progressPct": 72,
+      "skills": [
+        {
+          "id": "sk_maya_0",
+          "label": "ביצוע קבוצתי חד",
+          "completed": true,
+          "teacherApproved": true
+        },
+        {
+          "id": "sk_maya_1",
+          "label": "נוכחות בחזרות",
+          "completed": true,
+          "teacherApproved": false
+        },
+        {
+          "id": "sk_maya_2",
+          "label": "משמעת מקצועית",
+          "completed": false,
+          "teacherApproved": false
+        }
+      ]
+    }
+  },
+  "heatmapDays": [
+    {
+      "date": "2026-02-15",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-02-16",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-02-17",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-02-18",
+      "minutes": 0,
+      "level": 0
+    },
+    {
+      "date": "2026-02-19",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-02-20",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-02-21",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-02-22",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-02-23",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-02-24",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-02-25",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-02-26",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-02-27",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-02-28",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-03-01",
+      "minutes": 0,
+      "level": 0
+    },
+    {
+      "date": "2026-03-02",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-03-03",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-03-04",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-03-05",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-03-06",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-03-07",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-03-08",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-03-09",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-03-10",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-03-11",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-03-12",
+      "minutes": 0,
+      "level": 0
+    },
+    {
+      "date": "2026-03-13",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-03-14",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-03-15",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-03-16",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-03-17",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-03-18",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-03-19",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-03-20",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-03-21",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-03-22",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-03-23",
+      "minutes": 0,
+      "level": 0
+    },
+    {
+      "date": "2026-03-24",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-03-25",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-03-26",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-03-27",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-03-28",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-03-29",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-03-30",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-03-31",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-04-01",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-04-02",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-04-03",
+      "minutes": 0,
+      "level": 0
+    },
+    {
+      "date": "2026-04-04",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-04-05",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-04-06",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-04-07",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-04-08",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-04-09",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-04-10",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-04-11",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-04-12",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-04-13",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-04-14",
+      "minutes": 0,
+      "level": 0
+    },
+    {
+      "date": "2026-04-15",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-04-16",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-04-17",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-04-18",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-04-19",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-04-20",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-04-21",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-04-22",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-04-23",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-04-24",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-04-25",
+      "minutes": 0,
+      "level": 0
+    },
+    {
+      "date": "2026-04-26",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-04-27",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-04-28",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-04-29",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-04-30",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-05-01",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-05-02",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-05-03",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-05-04",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-05-05",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-05-06",
+      "minutes": 0,
+      "level": 0
+    },
+    {
+      "date": "2026-05-07",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-05-08",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-05-09",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-05-10",
+      "minutes": 28,
+      "level": 2
+    },
+    {
+      "date": "2026-05-11",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-05-12",
+      "minutes": 12,
+      "level": 1
+    },
+    {
+      "date": "2026-05-13",
+      "minutes": 45,
+      "level": 4
+    },
+    {
+      "date": "2026-05-14",
+      "minutes": 60,
+      "level": 4
+    },
+    {
+      "date": "2026-05-15",
+      "minutes": 28,
+      "level": 2
+    }
+  ],
+  "feedback": [
+    {
+      "id": "fb_1",
+      "studentId": "u_maya",
+      "teacherId": "u_t_yakir",
+      "teacherName": "יקיר גבאי",
+      "category": "technique",
+      "score": 8,
+      "note": "שיפור ברור בשבירה — להמשיך בגובה ברך.",
+      "visibleToStudent": true,
+      "relatedVideoId": "vid_1",
+      "createdAt": "2026-05-10T14:00:00"
+    },
+    {
+      "id": "fb_2",
+      "studentId": "u_maya",
+      "teacherId": "u_t_yakir",
+      "teacherName": "יקיר גבאי",
+      "category": "energy",
+      "score": 9,
+      "note": "נוכחות במה טובה בהופעה האחרונה — מגמת שיפור.",
+      "visibleToStudent": true,
+      "relatedEventId": "evt_past_show",
+      "createdAt": "2026-04-25T10:00:00"
+    },
+    {
+      "id": "fb_3",
+      "studentId": "u_maya",
+      "teacherId": "u_liata",
+      "teacherName": "ליאת קפלינסקי",
+      "category": "teamwork",
+      "score": 7,
+      "note": "לעודד יותר תמיכה בזוגות בחזרה — פנימי לצוות.",
+      "visibleToStudent": false,
+      "createdAt": "2026-05-13T09:00:00"
+    }
+  ],
+  "rehearsals": [
+    {
+      "id": "reh_showcase",
+      "title": "חזרה גנרלית — ערב הצגה",
+      "groupId": "grp_hh_sel",
+      "eventId": "evt_current_showcase",
+      "date": "2026-05-15",
+      "musicLabel": "Showcase Mix v3.mp3",
+      "orderOfAppearance": [
+        "פתיחה קבוצתית",
+        "סולו מאיה",
+        "קומבינציה נבחרת",
+        "פינאלה"
+      ],
+      "equipmentChecklist": [
+        {
+          "item": "מיקרופונים במה",
+          "done": true
+        },
+        {
+          "item": "תאורה — בדיקה",
+          "done": false
+        },
+        {
+          "item": "רשימת נוכחות",
+          "done": true
+        }
+      ],
+      "attendance": [
+        {
+          "studentId": "u_maya",
+          "name": "מאיה כהן",
+          "present": true
+        },
+        {
+          "studentId": "u_tal",
+          "name": "טל מזרחי",
+          "present": null
+        }
+      ],
+      "notes": "להדגיש כניסה לשבירה אחרי הפסקה.",
+      "studentBrief": {
+        "arriveBy": "17:30",
+        "location": "תיאטרון העיר — כניסה אחורית",
+        "bring": [
+          "תלבושת במה",
+          "מים",
+          "נעלי ריקוד נקיות"
+        ],
+        "lineupPosition": 2
+      }
+    }
+  ],
+  "liveFeed": [
+    {
+      "id": "lf_1",
+      "eventId": "evt_current_showcase",
+      "status": "arrived",
+      "message": "הנבחרת הגיעה לאולם — התחלת חימום.",
+      "createdByUserId": "u_t_yakir",
+      "createdByName": "יקיר גבאי",
+      "createdAt": "2026-05-15T16:00:00",
+      "parentVisible": true
+    },
+    {
+      "id": "lf_2",
+      "eventId": "evt_current_showcase",
+      "status": "warming_up",
+      "message": "חימום קבוצתי בעיצומו.",
+      "createdByUserId": "u_liata",
+      "createdByName": "ליאת קפלינסקי",
+      "createdAt": "2026-05-15T16:45:00",
+      "parentVisible": true
+    }
+  ],
+  "riskAlerts": [
+    {
+      "id": "risk_1",
+      "severity": "high",
+      "title": "ירידה בנוכחות",
+      "detail": "היפ הופ — מתבגרים — 3 תלמידים חסרו בשבועיים האחרונים.",
+      "groupId": "grp_hh_teen",
+      "kind": "attendance"
+    },
+    {
+      "id": "risk_2",
+      "severity": "medium",
+      "title": "משימות פתוחות",
+      "detail": "Modern Ensemble — השלמה נמוכה מהממוצע.",
+      "groupId": "grp_mod_adv",
+      "kind": "tasks"
+    },
+    {
+      "id": "risk_3",
+      "severity": "low",
+      "title": "חוסר עדכון נוכחות",
+      "detail": "שיעור אתמול — סימון לא הושלם.",
+      "teacherId": "u_t_yakir",
+      "kind": "teacher_ops"
+    },
+    {
+      "id": "risk_4",
+      "severity": "medium",
+      "title": "תרגול ביתי דליל",
+      "detail": "מאיה כהן — לא הועלה תרגול בשבוע האחרון.",
+      "studentId": "u_maya",
+      "kind": "inactive"
+    }
+  ],
+  "calendarEntries": [
+    {
+      "id": "cal_reh",
+      "title": "חזרה גנרלית",
+      "type": "rehearsal",
+      "date": "2026-05-15",
+      "time": "18:00",
+      "groupId": "grp_hh_sel",
+      "groupName": "LK Hip Hop Crew",
+      "location": "תיאטרון העיר"
+    },
+    {
+      "id": "cal_comp",
+      "title": "תחרות ארצית",
+      "type": "competition",
+      "date": "2026-06-20",
+      "groupId": "grp_hh_sel",
+      "groupName": "LK Hip Hop Crew"
+    },
+    {
+      "id": "cal_bday",
+      "title": "יום הולדת — מאיה",
+      "type": "birthday",
+      "date": "2026-05-27",
+      "groupName": "LK Hip Hop Crew"
+    }
+  ],
+  "aiDailyByUser": {
+    "u_maya": {
+      "title": "שכפול קומבינציה לחזרה",
+      "why": "לפני חזרת הערב: לחזק נוכחות במה ואת הכניסה מפידבק נועה.",
+      "durationMinutes": 18,
+      "relatedTaskId": "st_group_sel_video",
+      "relatedVideoLabel": "סרטון LK Hip Hop Crew"
+    },
+    "u_yuval": {
+      "title": "חימום + קצב",
+      "why": "שמירה על רצף — טכניקה וביטוי יחד, בקצב של LK.",
+      "durationMinutes": 12
+    }
+  },
+  "studioHealth": {
+    "score": 78,
+    "alertsCount": 4,
+    "teacherActivityPct": 86,
+    "lowEngagementGroups": [
+      "היפ הופ — מתבגרים",
+      "Modern Ensemble"
+    ],
+    "urgentUpdates": 2
+  }
+}

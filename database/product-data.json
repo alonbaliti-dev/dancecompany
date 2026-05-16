@@ -1,0 +1,681 @@
+{
+  "goals": [
+    {
+      "id": "g_flex",
+      "studentId": "u_maya",
+      "category": "flexibility",
+      "title": "גמישות — שפגט יומי",
+      "description": "שמונה דקות בוקר, חמש פעמים בשבוע. צילום קצר בסוף השבוע.",
+      "monthlyProgressPct": 68,
+      "deadline": "2026-06-01",
+      "progressPercent": 72,
+      "teacherNotes": "שיפור ברור בירידת גב. לשמור על קצב נשימה באחיזות.",
+      "createdAt": "2026-05-01"
+    },
+    {
+      "id": "g_att",
+      "studentId": "u_maya",
+      "category": "attendance",
+      "title": "נוכחות לשיעורי נבחרת",
+      "description": "לפחות 90% נוכחות בחודש.",
+      "monthlyProgressPct": 82,
+      "deadline": "2026-05-31",
+      "progressPercent": 88,
+      "teacherNotes": "מצוין. רק לוודא הגעה בזמן לחזרות.",
+      "createdAt": "2026-05-01"
+    },
+    {
+      "id": "g_home",
+      "studentId": "u_maya",
+      "category": "home_practice",
+      "title": "תרגול ביתי — קומבינציה",
+      "description": "שלושה סשןים מלאים + סרטון אחד מסכם.",
+      "monthlyProgressPct": 54,
+      "deadline": "2026-05-22",
+      "progressPercent": 45,
+      "teacherNotes": "להקפיד על סיום רגליים ביציאה מהשבירה.",
+      "createdAt": "2026-05-03"
+    },
+    {
+      "id": "g_perf",
+      "studentId": "u_maya",
+      "category": "performance_prep",
+      "title": "הכנה להופעת סוף שנה",
+      "description": "זכרון מיקום במה, כניסות ויציאות אחידות.",
+      "monthlyProgressPct": 61,
+      "deadline": "2026-06-15",
+      "progressPercent": 58,
+      "createdAt": "2026-05-05"
+    },
+    {
+      "id": "g_flex",
+      "studentId": "u_yuval",
+      "category": "flexibility",
+      "title": "גמישות — שפגט יומי",
+      "description": "שמונה דקות בוקר, חמש פעמים בשבוע. צילום קצר בסוף השבוע.",
+      "monthlyProgressPct": 68,
+      "deadline": "2026-06-01",
+      "progressPercent": 72,
+      "teacherNotes": "שיפור ברור בירידת גב. לשמור על קצב נשימה באחיזות.",
+      "createdAt": "2026-05-01"
+    },
+    {
+      "id": "g_att",
+      "studentId": "u_yuval",
+      "category": "attendance",
+      "title": "נוכחות לשיעורי נבחרת",
+      "description": "לפחות 90% נוכחות בחודש.",
+      "monthlyProgressPct": 82,
+      "deadline": "2026-05-31",
+      "progressPercent": 88,
+      "teacherNotes": "מצוין. רק לוודא הגעה בזמן לחזרות.",
+      "createdAt": "2026-05-01"
+    },
+    {
+      "id": "g_home",
+      "studentId": "u_yuval",
+      "category": "home_practice",
+      "title": "תרגול ביתי — קומבינציה",
+      "description": "שלושה סשןים מלאים + סרטון אחד מסכם.",
+      "monthlyProgressPct": 54,
+      "deadline": "2026-05-22",
+      "progressPercent": 45,
+      "teacherNotes": "להקפיד על סיום רגליים ביציאה מהשבירה.",
+      "createdAt": "2026-05-03"
+    },
+    {
+      "id": "g_perf",
+      "studentId": "u_yuval",
+      "category": "performance_prep",
+      "title": "הכנה להופעת סוף שנה",
+      "description": "זכרון מיקום במה, כניסות ויציאות אחידות.",
+      "monthlyProgressPct": 61,
+      "deadline": "2026-06-15",
+      "progressPercent": 58,
+      "createdAt": "2026-05-05"
+    }
+  ],
+  "filesByStudentId": {
+    "u_maya": {
+      "studentId": "u_maya",
+      "strengths": [
+        "ביטחון במה",
+        "קצב מדויק",
+        "זכרון תנועה מהיר"
+      ],
+      "improvementAreas": [
+        "גמישות מפרקי ירך",
+        "סיום קו בזוגות"
+      ],
+      "teacherNotes": "מאיה מראה מנהיגות בקבוצה. כדאי לחזק עבודת רצפה בזוגות.",
+      "attendanceHistory": [
+        {
+          "date": "2026-05-12",
+          "status": "present",
+          "classTitle": "LK Hip Hop Crew"
+        },
+        {
+          "date": "2026-05-10",
+          "status": "late",
+          "classTitle": "LK Hip Hop Crew"
+        },
+        {
+          "date": "2026-05-07",
+          "status": "present",
+          "classTitle": "חזרה כללית"
+        },
+        {
+          "date": "2026-05-05",
+          "status": "absent",
+          "classTitle": "LK Hip Hop Crew"
+        }
+      ],
+      "taskHistorySummary": "12 משימות בחודש — 9 הושלמו. דגש על סרטוני תרגול בזמן.",
+      "practiceStreakDays": 5,
+      "uploadedVideoIds": [
+        "vid_1",
+        "vid_2"
+      ],
+      "timeline": [
+        {
+          "date": "2026-05-12",
+          "label": "פידבק וידאו",
+          "detail": "קומבינציה — אושר עם הערות טכניות"
+        },
+        {
+          "date": "2026-05-02",
+          "label": "יעד גמישות",
+          "detail": "עודכן התקדמות חודשית ל־68%"
+        },
+        {
+          "date": "2026-04-20",
+          "label": "נוכחות",
+          "detail": "חודש עם 92% נוכחות"
+        }
+      ]
+    },
+    "u_yuval": {
+      "studentId": "u_yuval",
+      "strengths": [
+        "פריסה במרחב",
+        "אנרגיה גבוהה"
+      ],
+      "improvementAreas": [
+        "עמידה בסיום תנועה",
+        "האזנה למוזיקה"
+      ],
+      "teacherNotes": "יובל מתקדם יפה ב־מודרן. לעודד שקט פנימי בתנועה.",
+      "attendanceHistory": [
+        {
+          "date": "2026-05-11",
+          "status": "present",
+          "classTitle": "Modern Ensemble"
+        },
+        {
+          "date": "2026-05-04",
+          "status": "present",
+          "classTitle": "Modern Ensemble"
+        }
+      ],
+      "taskHistorySummary": "7 משימות — 5 הושלמו.",
+      "practiceStreakDays": 3,
+      "uploadedVideoIds": [],
+      "timeline": [
+        {
+          "date": "2026-05-01",
+          "label": "הצטרפות",
+          "detail": "נפתח תיק דיגיטלי"
+        }
+      ]
+    }
+  },
+  "videos": [
+    {
+      "id": "vid_1",
+      "studentId": "u_maya",
+      "studentName": "מאיה כהן",
+      "title": "קומבינציה — סיבוב שבועי",
+      "note": "הייתי שמחה לפידבק על הכניסה לשבירה",
+      "mockUri": "mock://video/maya-combo-1.mp4",
+      "attachedGoalId": "g_home",
+      "status": "approved",
+      "teacherFeedback": "עבודה נקייה. בשבירה השנייה — יותר גובה בברך.",
+      "technicalNotes": "לשמור על מרכז גוף ביציאה.",
+      "submittedAt": "2026-05-11T18:00:00",
+      "reviewedAt": "2026-05-12T09:00:00"
+    },
+    {
+      "id": "vid_2",
+      "studentId": "u_maya",
+      "studentName": "מאיה כהן",
+      "title": "שפגט — יעד גמישות",
+      "note": "ניסיון יומי קצר",
+      "mockUri": "mock://video/maya-split.mp4",
+      "attachedGoalId": "g_flex",
+      "status": "pending_review",
+      "submittedAt": "2026-05-13T20:30:00"
+    }
+  ],
+  "performance": {
+    "id": "perf_main",
+    "title": "הופעת סוף שנה — נבחרות LK",
+    "daysRemaining": 12,
+    "venue": "תיאטרון העיר · אולם ראשי",
+    "rehearsalSchedule": [
+      {
+        "date": "2026-05-14",
+        "time": "19:30",
+        "note": "נבחרת — חזרת גמר (תלבושת שחורה)"
+      },
+      {
+        "date": "2026-05-15",
+        "time": "18:30",
+        "note": "נבחרת היפ הופ — חזרת עומק"
+      },
+      {
+        "date": "2026-05-17",
+        "time": "10:00",
+        "note": "כל הנבחרות — סדר כניסות"
+      },
+      {
+        "date": "2026-05-20",
+        "time": "19:00",
+        "note": "תלבושות מלאות"
+      }
+    ],
+    "costumeRequirements": [
+      "שחור מלא",
+      "סניקרס לבנות",
+      "שיער אסוף"
+    ],
+    "equipmentChecklist": [
+      {
+        "item": "מים אישיים",
+        "done": true
+      },
+      {
+        "item": "מגבת קטנה",
+        "done": false
+      },
+      {
+        "item": "עזרת האזנה (אם נדרש)",
+        "done": false
+      }
+    ],
+    "orderOfAppearance": [
+      "פתיחה — כל הסטודיו",
+      "מודרן",
+      "LK Hip Hop Crew",
+      "סיום משותף"
+    ],
+    "parentApprovalsPending": 4,
+    "musicFileLabel": "קובץ אודיו ראשי (מקום לאחסון בענן)"
+  },
+  "gamification": {
+    "xp": 1840,
+    "level": 4,
+    "levelLabel": "רקדן/ית פעיל/ה",
+    "streakDays": 5,
+    "badges": [
+      {
+        "id": "b1",
+        "title": "נוכחות זהובה",
+        "unlockedAt": "2026-04-01"
+      },
+      {
+        "id": "b2",
+        "title": "תרגול ביתי שבועי",
+        "unlockedAt": "2026-05-10"
+      }
+    ],
+    "weeklyChallengeTitle": "שלושה סרטוני תרגול קצרים",
+    "weeklyChallengeProgressPct": 66,
+    "groupChallengeTitle": "LK Hip Hop Crew — 90% השלמת משימות",
+    "groupChallengeProgressPct": 74
+  },
+  "reports": {
+    "teacherActivity": [
+      {
+        "name": "ליאת קפלינסקי",
+        "score": "גבוה",
+        "detail": "עדכונים שבועיים, נוכחות מסומנת בזמן"
+      },
+      {
+        "name": "יקיר גבאי",
+        "score": "בינוני",
+        "detail": "משימות פעילות — לשפר מעקב נוכחות"
+      },
+      {
+        "name": "שבי שלום אברמוביץ",
+        "score": "נמוך",
+        "detail": "עיכוב בסימון נוכחות בשלושה מחזורים"
+      }
+    ],
+    "attendanceCompletionPct": 87,
+    "taskCompletionPct": 74,
+    "homePracticeEngagementPct": 69,
+    "atRiskStudents": [
+      {
+        "name": "עומר כהן",
+        "reason": "שלושה חיסורים בשבועיים האחרונים"
+      },
+      {
+        "name": "שי לוי",
+        "reason": "משימות בית פתוחות ללא צפייה בסרטונים"
+      }
+    ],
+    "retentionRisk": [
+      {
+        "segment": "היפ הופ — מתבגרים",
+        "note": "ירידה קלה במעורבות לאחר חגים"
+      },
+      {
+        "segment": "גילאי 12–14",
+        "note": "דורש חיזוק מסרים אישיים מהמורים"
+      }
+    ],
+    "unreadImportantUpdates": 3,
+    "groupsNeedingAttention": [
+      {
+        "groupName": "היפ הופ — מתבגרים",
+        "reason": "השלמת תרגול ביתי מתחת ליעד"
+      },
+      {
+        "groupName": "כל הרמות",
+        "reason": "נוכחות ממוצעת ירדה ב־6%"
+      }
+    ],
+    "weeklyHebrewInsight": "השבוע ראינו יציבות טובה בנבחרות לצד פער קטן בתרגול ביתי בקבוצות טינס. מומלץ לשלוח עדכון קצר להורים בקבוצות עם פחות מ־65% השלמה, ולתאם חזרה נוספת לפני ההופעה. שיתוף פעולה בין מורים להנהלה ישמור על מומנטום חיובי עד סוף העונה."
+  },
+  "parentDashboardByParentId": {
+    "u_parent_demo": {
+      "parentId": "u_parent_demo",
+      "announcements": [
+        {
+          "id": "a1",
+          "title": "חזרה לקראת מופע סוף שנה",
+          "body": "ביום חמישי להגיע בזמן עם מים, שיער אסוף ובגד שחור מלא — אנרגיית חזרה.",
+          "tag": "נבחרת",
+          "date": "היום",
+          "important": true
+        },
+        {
+          "id": "a2",
+          "title": "צילומי סוף שנה",
+          "body": "הצילומים יתקיימו בשבוע הבא. נעדכן בזמנים המדויקים.",
+          "tag": "כל הסטודיו",
+          "date": "אתמול"
+        }
+      ],
+      "schedulePreview": [
+        {
+          "id": "c1",
+          "studioId": "studio_lk",
+          "section": "today",
+          "day": "היום",
+          "time": "18:30",
+          "title": "LK Hip Hop Crew",
+          "group": "LK Hip Hop Crew",
+          "teacher": "ליאת קפלינסקי",
+          "room": "סטודיו 1",
+          "style": "Hip Hop",
+          "status": "confirmed"
+        },
+        {
+          "id": "c2",
+          "studioId": "studio_lk",
+          "section": "today",
+          "day": "היום",
+          "time": "20:00",
+          "title": "סדנת פריסטייל",
+          "group": "פתוח לכולם",
+          "teacher": "יקיר גבאי",
+          "room": "סטודיו 2",
+          "style": "Freestyle",
+          "status": "optional"
+        },
+        {
+          "id": "c3",
+          "studioId": "studio_lk",
+          "section": "week",
+          "day": "שלישי",
+          "time": "17:45",
+          "title": "מודרן — קומבינציה",
+          "group": "Modern Ensemble",
+          "teacher": "יקיר גבאי",
+          "room": "סטודיו 2",
+          "style": "Modern",
+          "status": "confirmed"
+        },
+        {
+          "id": "c4",
+          "studioId": "studio_lk",
+          "section": "week",
+          "day": "חמישי",
+          "time": "16:30",
+          "title": "גמישות וטכניקה",
+          "group": "חימום וטכניקה",
+          "teacher": "שבי שלום אברמוביץ",
+          "room": "סטודיו 1",
+          "style": "Technique",
+          "status": "confirmed"
+        }
+      ],
+      "paymentStatusLabel": "תשלום עדכני",
+      "pendingApprovals": [
+        {
+          "id": "ap1",
+          "title": "אישור השתתפות בהופעה",
+          "dueDate": "2026-05-18"
+        },
+        {
+          "id": "ap2",
+          "title": "שחרור צילום",
+          "dueDate": "2026-05-20"
+        }
+      ],
+      "equipmentList": [
+        "נעלי ריקוד נקיות",
+        "בקבוק מים",
+        "חולצת סטודיו שחורה"
+      ],
+      "performanceSummary": "ההופעה מתקרבת — נדרשת אישור נוכחות בחזרה האחרונה.",
+      "generalProgressSummary": "מאיה מציגה מגמת שיפור בנוכחות, בביטחון במה ובחיבור הרגשי לתנועה — בהכנה להופעה."
+    }
+  },
+  "teacherDashboardMaster": {
+    "groups": [
+      {
+        "id": "g1",
+        "name": "Modern Ensemble",
+        "level": "רמה 4",
+        "students": 14,
+        "attendancePct": 88,
+        "practiceCompletionPct": 76,
+        "nextSession": "היום 17:45"
+      },
+      {
+        "id": "g2",
+        "name": "היפ הופ — מתבגרים",
+        "level": "רמה 2",
+        "students": 18,
+        "attendancePct": 91,
+        "practiceCompletionPct": 62,
+        "nextSession": "שלישי 16:00"
+      },
+      {
+        "id": "g3",
+        "name": "LK Hip Hop Crew",
+        "level": "רמה 3",
+        "students": 16,
+        "attendancePct": 94,
+        "practiceCompletionPct": 81,
+        "nextSession": "היום 18:30"
+      },
+      {
+        "id": "g4",
+        "name": "נבחרות — חזרות",
+        "level": "כל הרמות",
+        "students": 42,
+        "attendancePct": 89,
+        "practiceCompletionPct": 70,
+        "nextSession": "שבת 10:00"
+      },
+      {
+        "id": "g5",
+        "name": "חימום וטכניקה",
+        "level": "פתוח",
+        "students": 24,
+        "attendancePct": 85,
+        "practiceCompletionPct": 64,
+        "nextSession": "חמישי 16:30"
+      },
+      {
+        "id": "g6",
+        "name": "Classical Foundations",
+        "level": "ילדים",
+        "students": 12,
+        "attendancePct": 90,
+        "practiceCompletionPct": 79,
+        "nextSession": "ראשון 09:00"
+      },
+      {
+        "id": "g7",
+        "name": "מודרן — ביניים",
+        "level": "ביניים",
+        "students": 15,
+        "attendancePct": 87,
+        "practiceCompletionPct": 71,
+        "nextSession": "שני 19:15"
+      },
+      {
+        "id": "g8",
+        "name": "היפ הופ — בסיס",
+        "level": "בסיס",
+        "students": 20,
+        "attendancePct": 88,
+        "practiceCompletionPct": 69,
+        "nextSession": "שלישי 18:00"
+      }
+    ],
+    "todaysClasses": [
+      {
+        "id": "tc1",
+        "time": "17:45",
+        "title": "פלמנקו — קומפאס ועיגון",
+        "room": "סטודיו 2",
+        "groupName": "Junior Flamenco",
+        "expected": 12,
+        "marked": 10
+      },
+      {
+        "id": "tc1b",
+        "time": "16:00",
+        "title": "Modern Ensemble — קומבינציה",
+        "room": "סטודיו 3",
+        "groupName": "Modern Ensemble",
+        "expected": 14,
+        "marked": 11
+      },
+      {
+        "id": "tc2",
+        "time": "20:00",
+        "title": "סדנת פריסטייל",
+        "room": "סטודיו 2",
+        "groupName": "פתוח לכולם",
+        "expected": 22,
+        "marked": 0
+      },
+      {
+        "id": "tc3",
+        "time": "18:30",
+        "title": "LK Hip Hop Crew",
+        "room": "סטודיו 1",
+        "groupName": "LK Hip Hop Crew",
+        "expected": 16,
+        "marked": 14
+      },
+      {
+        "id": "tc4",
+        "time": "16:30",
+        "title": "גמישות וטכניקה",
+        "room": "סטודיו 1",
+        "groupName": "כל הרמות",
+        "expected": 24,
+        "marked": 20
+      }
+    ],
+    "homePracticeByGroup": [
+      {
+        "groupName": "Modern Ensemble",
+        "completionPct": 76
+      },
+      {
+        "groupName": "היפ הופ — מתבגרים",
+        "completionPct": 62
+      },
+      {
+        "groupName": "LK Hip Hop Crew",
+        "completionPct": 81
+      },
+      {
+        "groupName": "נבחרות — חזרות",
+        "completionPct": 70
+      },
+      {
+        "groupName": "כל הרמות",
+        "completionPct": 64
+      },
+      {
+        "groupName": "בלט קלאסי — ילדים",
+        "completionPct": 82
+      },
+      {
+        "groupName": "מודרן — ביניים",
+        "completionPct": 74
+      },
+      {
+        "groupName": "היפ הופ — בסיס",
+        "completionPct": 69
+      }
+    ],
+    "studentsAtRisk": [
+      {
+        "id": "r1",
+        "name": "עומר כהן",
+        "group": "Modern Ensemble",
+        "reason": "2 משימות באיחור"
+      },
+      {
+        "id": "r2",
+        "name": "שי לוי",
+        "group": "היפ הופ — מתבגרים",
+        "reason": "נוכחות נמוכה בשבועיים האחרונים"
+      },
+      {
+        "id": "r3",
+        "name": "נועה דוד",
+        "group": "LK Hip Hop Crew",
+        "reason": "לא הועלו סרטוני תרגול השבוע"
+      },
+      {
+        "id": "r4",
+        "name": "אורי בן-משה",
+        "group": "כל הרמות",
+        "reason": "לא סומנה נוכחות בשני שיעורים"
+      }
+    ],
+    "pendingReviews": [
+      {
+        "id": "p1",
+        "title": "סרטוני קומבינציה",
+        "group": "Modern Ensemble",
+        "count": 6
+      },
+      {
+        "id": "p2",
+        "title": "תרגיל גמישות",
+        "group": "היפ הופ — מתבגרים",
+        "count": 4
+      },
+      {
+        "id": "p3",
+        "title": "קומבינציית הופעה",
+        "group": "LK Hip Hop Crew",
+        "count": 9
+      },
+      {
+        "id": "p4",
+        "title": "סרטון טכניקה",
+        "group": "כל הרמות",
+        "count": 3
+      }
+    ],
+    "quickActions": [
+      {
+        "id": "qa1",
+        "label": "סימון נוכחות"
+      },
+      {
+        "id": "qa5",
+        "label": "מעקב נוכחות"
+      },
+      {
+        "id": "qa2",
+        "label": "הודעה לקבוצה"
+      },
+      {
+        "id": "qa3",
+        "label": "העלאת סרטון תרגול"
+      },
+      {
+        "id": "qa4",
+        "label": "הוספת משימה שבועית"
+      },
+      {
+        "id": "qa6",
+        "label": "שיעורים פרטיים"
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "notif_welcome",
+    "studioId": "studio_lk",
+    "userIds": ["u_alon"],
+    "title": "ברוך הבא ל־LK Space",
+    "body": "המערכת מוכנה לעבודה: משתמשים, חנות, שיעורים פרטיים ומסד נתונים.",
+    "priority": "normal",
+    "relatedType": "system",
+    "screen": "super_admin",
+    "readByUserIds": [],
+    "createdAt": "2026-05-16T00:00:00.000Z"
+  }
+]

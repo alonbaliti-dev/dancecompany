@@ -1,0 +1,8 @@
+[
+  { "id": "g_flamenco", "studioId": "studio_lk", "name": "פלמנקו", "style": "פלמנקו", "teacherIds": ["u_liat"] },
+  { "id": "g_hiphop", "studioId": "studio_lk", "name": "היפ הופ", "style": "היפ הופ", "teacherIds": ["u_simor", "u_yakir", "u_daniel_h"] },
+  { "id": "g_modern", "studioId": "studio_lk", "name": "מודרני", "style": "מודרני", "teacherIds": ["u_almog", "u_shevi"] },
+  { "id": "g_classic", "studioId": "studio_lk", "name": "קלאסי", "style": "קלאסי", "teacherIds": ["u_shevi", "u_lena", "u_michael", "u_yigal"] },
+  { "id": "g_repertoire", "studioId": "studio_lk", "name": "רפרטואר", "style": "רפרטואר", "teacherIds": ["u_kornelia"] },
+  { "id": "g_pointe", "studioId": "studio_lk", "name": "פוינט", "style": "פוינט", "teacherIds": ["u_lena"] }
+]

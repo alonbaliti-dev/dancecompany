@@ -1,0 +1,38 @@
+[
+  {
+    "id": "p_bottle",
+    "studioId": "studio_lk",
+    "type": "product",
+    "title": "בקבוק LK",
+    "description": "בקבוק אימון אלגנטי לשיעורים וחזרות.",
+    "price": 59,
+    "isActive": true
+  },
+  {
+    "id": "p_show_ticket",
+    "studioId": "studio_lk",
+    "type": "ticket",
+    "title": "כרטיס למופע סוף שנה",
+    "description": "כרטיס כניסה לאירוע המרכזי של הסטודיו.",
+    "price": 85,
+    "isActive": true
+  },
+  {
+    "id": "p_private_30",
+    "studioId": "studio_lk",
+    "type": "private_lesson",
+    "title": "שיעור פרטי 30 דקות",
+    "description": "בקשת זמינות מהמורה, בחירת מועד ואז תשלום.",
+    "price": 150,
+    "isActive": true
+  },
+  {
+    "id": "p_private_45",
+    "studioId": "studio_lk",
+    "type": "private_lesson",
+    "title": "שיעור פרטי 45 דקות",
+    "description": "בקשת זמינות מהמורה, בחירת מועד ואז תשלום.",
+    "price": 225,
+    "isActive": true
+  }
+]

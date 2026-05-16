@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Production/build output
+dist/
+build/
+coverage/
+
+# Environment and secrets
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.staging
+.env.*.local
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# macOS / editor junk
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+Icon?
+
+# Local uploads and temporary media
+public/uploads/
+uploads/
+tmp/
+temp/
+.tmp/
+
+# Local database exports/backups
+database/backups/
+database/exports/
+database/*.backup.json
+database/*.bak.json
+database/*-backup.json
+
+# Local caches
+.vercel/
+.firebase/
+.turbo/
+*.tsbuildinfo

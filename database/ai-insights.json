@@ -1,0 +1,42 @@
+[
+  {
+    "id": "ai_seed_student",
+    "studioId": "studio_lk",
+    "audience": "student",
+    "title": "תרגול מומלץ להיום",
+    "body": "הצעה בלבד: לחזור על קומבינציית מודרני 12 דקות ולסמן משימה אחת כהושלמה.",
+    "riskLevel": "low",
+    "requiresApproval": false,
+    "createdAt": "2026-05-16T09:00:00.000Z"
+  },
+  {
+    "id": "ai_seed_teacher",
+    "studioId": "studio_lk",
+    "audience": "teacher",
+    "title": "תלמידים לתשומת לב",
+    "body": "הצעה בלבד: לבדוק תלמידים עם משימה פתוחה ונוכחות חלקית לפני השיעור הבא.",
+    "riskLevel": "medium",
+    "requiresApproval": true,
+    "createdAt": "2026-05-16T09:00:00.000Z"
+  },
+  {
+    "id": "ai_seed_management",
+    "studioId": "studio_lk",
+    "audience": "management",
+    "title": "בריאות סטודיו",
+    "body": "הצעה בלבד: שיעורים פרטיים פתוחים ומדיה חדשה דורשים מעקב השבוע.",
+    "riskLevel": "medium",
+    "requiresApproval": true,
+    "createdAt": "2026-05-16T09:00:00.000Z"
+  },
+  {
+    "id": "ai_seed_admin",
+    "studioId": "studio_lk",
+    "audience": "super_admin",
+    "title": "בדיקת מערכת",
+    "body": "הצעה בלבד: לבדוק ייבוא/ייצוא, הרשאות מדיה ודגלי פיצ׳רים לפני פיילוט.",
+    "riskLevel": "low",
+    "requiresApproval": true,
+    "createdAt": "2026-05-16T09:00:00.000Z"
+  }
+]

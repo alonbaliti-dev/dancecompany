@@ -1,0 +1,227 @@
+{
+  "backups": [],
+  "restorePoints": [],
+  "activityFeed": [
+    {
+      "id": "act_demo_1",
+      "studioId": "studio_lk",
+      "kind": "task_completed",
+      "messageHe": "מאיה השלימה משימת גמישות",
+      "visibility": "group",
+      "targetGroupIds": [
+        "g_hiphop_teen"
+      ],
+      "actorUserId": "u_maya",
+      "actorName": "מאיה כהן",
+      "relatedType": "task",
+      "createdAt": "2026-05-14T18:00:00.000Z"
+    },
+    {
+      "id": "act_demo_2",
+      "studioId": "studio_lk",
+      "kind": "update_sent",
+      "messageHe": "נשלח עדכון לקבוצת היפ הופ",
+      "visibility": "studio",
+      "targetGroupIds": [
+        "g_hiphop_teen"
+      ],
+      "actorUserId": "u_teacher_demo",
+      "actorName": "דנה לוי",
+      "relatedType": "notification",
+      "createdAt": "2026-05-14T12:00:00.000Z"
+    },
+    {
+      "id": "act_demo_3",
+      "studioId": "studio_lk",
+      "kind": "gallery_upload",
+      "messageHe": "הועלה סרטון חדש לגלריית החומרים",
+      "visibility": "studio",
+      "actorUserId": "u_teacher_demo",
+      "actorName": "דנה לוי",
+      "relatedType": "gallery",
+      "createdAt": "2026-05-13T16:30:00.000Z"
+    }
+  ],
+  "syncQueue": [],
+  "moderationQueue": [],
+  "notificationPrefsByUserId": {},
+  "analyticsSnapshots": [],
+  "systemStatus": {
+    "appVersion": "1.0.0",
+    "databaseStatus": "ok",
+    "storageUsedMb": 128,
+    "storageLimitMb": 5120,
+    "failedUploads": 0,
+    "brokenMediaLinks": 0,
+    "paymentProviderStatus": "demo",
+    "notificationDeliveryStatus": "ok",
+    "syncQueuePending": 0,
+    "updatedAt": "2026-05-15T20:47:44.706Z"
+  },
+  "permissionPresets": [
+    {
+      "id": "teacher_basic",
+      "labelHe": "מורה בסיסי",
+      "labelEn": "Teacher Basic",
+      "permissions": {
+        "isStudent": false,
+        "isTeacher": true,
+        "isManagement": false,
+        "isSuperAdmin": false,
+        "canSendNotifications": true,
+        "canManageUsers": false,
+        "canManageGallery": true,
+        "canModerateChats": true,
+        "canManageEvents": true,
+        "canViewReports": false,
+        "canManageBilling": false,
+        "canManageFeatureFlags": false,
+        "canManageShop": false,
+        "canManageAttendance": true,
+        "canCreateTasks": true,
+        "canReviewVideos": true
+      }
+    },
+    {
+      "id": "teacher_senior",
+      "labelHe": "מורה בכיר",
+      "labelEn": "Teacher Senior",
+      "permissions": {
+        "isStudent": false,
+        "isTeacher": true,
+        "isManagement": false,
+        "isSuperAdmin": false,
+        "canSendNotifications": true,
+        "canManageUsers": false,
+        "canManageGallery": true,
+        "canModerateChats": true,
+        "canManageEvents": true,
+        "canViewReports": false,
+        "canManageBilling": false,
+        "canManageFeatureFlags": false,
+        "canManageShop": false,
+        "canManageAttendance": true,
+        "canCreateTasks": true,
+        "canReviewVideos": true
+      }
+    },
+    {
+      "id": "management_limited",
+      "labelHe": "הנהלה מוגבלת",
+      "labelEn": "Management Limited",
+      "permissions": {
+        "isStudent": false,
+        "isTeacher": true,
+        "isManagement": true,
+        "isSuperAdmin": false,
+        "canSendNotifications": true,
+        "canManageUsers": true,
+        "canManageGallery": true,
+        "canModerateChats": true,
+        "canManageEvents": true,
+        "canViewReports": true,
+        "canManageBilling": true,
+        "canManageFeatureFlags": false,
+        "canManageShop": true,
+        "canManageAttendance": true,
+        "canCreateTasks": true,
+        "canReviewVideos": true
+      }
+    },
+    {
+      "id": "management_full",
+      "labelHe": "הנהלה מלאה",
+      "labelEn": "Management Full",
+      "permissions": {
+        "isStudent": false,
+        "isTeacher": true,
+        "isManagement": true,
+        "isSuperAdmin": false,
+        "canSendNotifications": true,
+        "canManageUsers": true,
+        "canManageGallery": true,
+        "canModerateChats": true,
+        "canManageEvents": true,
+        "canViewReports": true,
+        "canManageBilling": true,
+        "canManageFeatureFlags": false,
+        "canManageShop": true,
+        "canManageAttendance": true,
+        "canCreateTasks": true,
+        "canReviewVideos": true
+      }
+    },
+    {
+      "id": "shop_manager",
+      "labelHe": "מנהל חנות",
+      "labelEn": "Shop Manager",
+      "permissions": {
+        "isStudent": false,
+        "isTeacher": true,
+        "isManagement": true,
+        "isSuperAdmin": false,
+        "canSendNotifications": true,
+        "canManageUsers": true,
+        "canManageGallery": true,
+        "canModerateChats": true,
+        "canManageEvents": true,
+        "canViewReports": true,
+        "canManageBilling": true,
+        "canManageFeatureFlags": false,
+        "canManageShop": true,
+        "canManageAttendance": true,
+        "canCreateTasks": true,
+        "canReviewVideos": true
+      }
+    },
+    {
+      "id": "event_manager",
+      "labelHe": "מנהל אירועים",
+      "labelEn": "Event Manager",
+      "permissions": {
+        "isStudent": false,
+        "isTeacher": true,
+        "isManagement": true,
+        "isSuperAdmin": false,
+        "canSendNotifications": true,
+        "canManageUsers": true,
+        "canManageGallery": true,
+        "canModerateChats": true,
+        "canManageEvents": true,
+        "canViewReports": true,
+        "canManageBilling": true,
+        "canManageFeatureFlags": false,
+        "canManageShop": true,
+        "canManageAttendance": true,
+        "canCreateTasks": true,
+        "canReviewVideos": true
+      }
+    },
+    {
+      "id": "super_admin",
+      "labelHe": "מנהל על",
+      "labelEn": "Super Admin",
+      "permissions": {
+        "isStudent": false,
+        "isTeacher": true,
+        "isManagement": true,
+        "isSuperAdmin": true,
+        "canSendNotifications": true,
+        "canManageUsers": true,
+        "canManageGallery": true,
+        "canModerateChats": true,
+        "canManageEvents": true,
+        "canViewReports": true,
+        "canManageBilling": true,
+        "canManageFeatureFlags": true,
+        "canManageShop": true,
+        "canManageAttendance": true,
+        "canCreateTasks": true,
+        "canReviewVideos": true
+      }
+    }
+  ],
+  "eventOperatingModes": {},
+  "onboardingByUserId": {},
+  "calendarSyncEntries": []
+}

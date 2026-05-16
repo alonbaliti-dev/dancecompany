@@ -1,0 +1,7 @@
+{
+  "appName": "LK Student Space",
+  "defaultLocale": "he",
+  "paymentsDemoMode": true,
+  "maintenanceMode": false,
+  "databaseSchemaVersion": 2
+}

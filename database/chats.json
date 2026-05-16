@@ -1,0 +1,76 @@
+[
+  {
+    "id": "chat_staff",
+    "studioId": "studio_lk",
+    "chatType": "staff",
+    "groupName": "צוות הסטודיו",
+    "teacherIds": [],
+    "studentIds": [],
+    "pinnedMessageIds": [
+      "msg_staff_pin"
+    ]
+  },
+  {
+    "id": "chat_hh_sel",
+    "studioId": "studio_lk",
+    "chatType": "dance_group",
+    "groupId": "grp_hh_sel",
+    "groupName": "LK Hip Hop Crew",
+    "teacherIds": [
+      "u_liata",
+      "u_t_yakir"
+    ],
+    "studentIds": [],
+    "pinnedMessageIds": [
+      "msg_pin_sel"
+    ]
+  },
+  {
+    "id": "chat_com_adv",
+    "studioId": "studio_lk",
+    "chatType": "dance_group",
+    "groupId": "grp_mod_adv",
+    "groupName": "Modern Ensemble",
+    "teacherIds": [
+      "u_t_yakir"
+    ],
+    "studentIds": [],
+    "pinnedMessageIds": []
+  },
+  {
+    "id": "chat_hh_teen",
+    "studioId": "studio_lk",
+    "chatType": "dance_group",
+    "groupId": "grp_hh_teen",
+    "groupName": "היפ הופ — מתבגרים",
+    "teacherIds": [
+      "u_t_yakir"
+    ],
+    "studentIds": [],
+    "pinnedMessageIds": []
+  },
+  {
+    "id": "chat_hh_new",
+    "studioId": "studio_lk",
+    "chatType": "dance_group",
+    "groupId": "grp_hh_new",
+    "groupName": "היפ הופ — בסיס",
+    "teacherIds": [
+      "u_t_yakir"
+    ],
+    "studentIds": [],
+    "pinnedMessageIds": []
+  },
+  {
+    "id": "chat_rep",
+    "studioId": "studio_lk",
+    "chatType": "dance_group",
+    "groupId": "grp_rep",
+    "groupName": "נבחרות — חזרות",
+    "teacherIds": [
+      "u_liata"
+    ],
+    "studentIds": [],
+    "pinnedMessageIds": []
+  }
+]

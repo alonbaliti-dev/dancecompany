@@ -1,0 +1,187 @@
+[
+  {
+    "id": "fac_liata",
+    "studioId": "studio_lk",
+    "userId": "u_liata",
+    "fullName": "ליאת קפלינסקי",
+    "role": "owner",
+    "danceStyles": [
+      "flamenco"
+    ],
+    "visibility": "public",
+    "assignedGroupIds": [
+      "grp_flamenco",
+      "grp_rep"
+    ],
+    "privateLessonEnabled": true,
+    "managementAccess": true
+  },
+  {
+    "id": "fac_u_shahar",
+    "studioId": "studio_lk",
+    "userId": "u_shahar",
+    "fullName": "שחר קפלינסקי",
+    "role": "management",
+    "danceStyles": [],
+    "visibility": "public",
+    "assignedGroupIds": [
+      "grp_rep",
+      "grp_tech"
+    ],
+    "privateLessonEnabled": false,
+    "managementAccess": true
+  },
+  {
+    "id": "fac_u_office",
+    "studioId": "studio_lk",
+    "userId": "u_office",
+    "fullName": "משרד הסטודיו",
+    "role": "management",
+    "danceStyles": [],
+    "visibility": "internal",
+    "assignedGroupIds": [],
+    "privateLessonEnabled": false,
+    "managementAccess": true
+  },
+  {
+    "id": "fac_u_t_simor",
+    "studioId": "studio_lk",
+    "userId": "u_t_simor",
+    "fullName": "סימור דניאל",
+    "role": "mentor",
+    "danceStyles": [
+      "hiphop"
+    ],
+    "visibility": "public",
+    "assignedGroupIds": [
+      "grp_hh_sel"
+    ],
+    "privateLessonEnabled": true
+  },
+  {
+    "id": "fac_u_t_yakir",
+    "studioId": "studio_lk",
+    "userId": "u_t_yakir",
+    "fullName": "יקיר גבאי",
+    "role": "mentor",
+    "danceStyles": [
+      "hiphop"
+    ],
+    "visibility": "public",
+    "assignedGroupIds": [
+      "grp_hh_teen",
+      "grp_hh_new"
+    ],
+    "privateLessonEnabled": true
+  },
+  {
+    "id": "fac_u_t_hazan",
+    "studioId": "studio_lk",
+    "userId": "u_t_hazan",
+    "fullName": "דניאל חזן",
+    "role": "mentor",
+    "danceStyles": [
+      "hiphop"
+    ],
+    "visibility": "public",
+    "assignedGroupIds": [
+      "grp_hh_new"
+    ],
+    "privateLessonEnabled": true
+  },
+  {
+    "id": "fac_u_t_almog",
+    "studioId": "studio_lk",
+    "userId": "u_t_almog",
+    "fullName": "אלמוג דוד",
+    "role": "mentor",
+    "danceStyles": [
+      "modern"
+    ],
+    "visibility": "public",
+    "assignedGroupIds": [
+      "grp_mod_adv"
+    ],
+    "privateLessonEnabled": true
+  },
+  {
+    "id": "fac_u_t_shabi",
+    "studioId": "studio_lk",
+    "userId": "u_t_shabi",
+    "fullName": "שבי שלום אברמוביץ",
+    "role": "mentor",
+    "danceStyles": [
+      "modern",
+      "ballet"
+    ],
+    "visibility": "public",
+    "assignedGroupIds": [
+      "grp_mod_adv",
+      "grp_mod_mid",
+      "grp_ballet_sel"
+    ],
+    "privateLessonEnabled": true
+  },
+  {
+    "id": "fac_u_t_lena",
+    "studioId": "studio_lk",
+    "userId": "u_t_lena",
+    "fullName": "לנה קרושקו",
+    "role": "mentor",
+    "danceStyles": [
+      "ballet",
+      "pointe"
+    ],
+    "visibility": "public",
+    "assignedGroupIds": [
+      "grp_ballet_kids",
+      "grp_ballet_sel"
+    ],
+    "privateLessonEnabled": true
+  },
+  {
+    "id": "fac_u_t_michael",
+    "studioId": "studio_lk",
+    "userId": "u_t_michael",
+    "fullName": "מיכאל שניידר",
+    "role": "mentor",
+    "danceStyles": [
+      "ballet"
+    ],
+    "visibility": "public",
+    "assignedGroupIds": [
+      "grp_ballet_kids"
+    ],
+    "privateLessonEnabled": true
+  },
+  {
+    "id": "fac_u_t_yigal",
+    "studioId": "studio_lk",
+    "userId": "u_t_yigal",
+    "fullName": "יגאל משינסקי",
+    "role": "mentor",
+    "danceStyles": [
+      "ballet"
+    ],
+    "visibility": "public",
+    "assignedGroupIds": [
+      "grp_ballet_sel"
+    ],
+    "privateLessonEnabled": true
+  },
+  {
+    "id": "fac_u_t_cornelia",
+    "studioId": "studio_lk",
+    "userId": "u_t_cornelia",
+    "fullName": "קורנליה זוהר",
+    "role": "mentor",
+    "danceStyles": [
+      "repertoire"
+    ],
+    "visibility": "public",
+    "assignedGroupIds": [
+      "grp_rep"
+    ],
+    "privateLessonEnabled": true
+  }
+]

@@ -1,0 +1,4 @@
+[
+  { "id": "att_1", "studioId": "studio_lk", "classId": "c_hiphop_mon", "studentId": "u_maya", "mark": "present", "date": "2026-05-11" },
+  { "id": "att_2", "studioId": "studio_lk", "classId": "c_modern_tue", "studentId": "u_maya", "mark": "late", "date": "2026-05-12" }
+]

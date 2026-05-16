@@ -1,0 +1,8 @@
+{
+  "shop": true,
+  "privateLessons": true,
+  "payments": true,
+  "teacherDashboard": true,
+  "managementDashboard": true,
+  "superAdminTools": true
+}

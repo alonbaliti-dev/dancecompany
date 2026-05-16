@@ -1,0 +1,16 @@
+[
+  {
+    "id": "plr_seed",
+    "studioId": "studio_lk",
+    "studentId": "u_maya",
+    "requestedByUserId": "u_parent_maya",
+    "teacherId": "u_lena",
+    "duration": 30,
+    "price": 150,
+    "status": "teacher_suggested",
+    "studentNote": "עדיפות לאחר הצהריים",
+    "suggestedSlots": ["יום שני 17:00", "יום רביעי 18:30"],
+    "createdAt": "2026-05-16T00:00:00.000Z",
+    "updatedAt": "2026-05-16T00:00:00.000Z"
+  }
+]

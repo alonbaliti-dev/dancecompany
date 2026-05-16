@@ -1,0 +1,20 @@
+[
+  {
+    "id": "plar_demo_waiting",
+    "studioId": "studio_lk",
+    "teacherId": "u_t_yakir",
+    "teacherName": "יקיר גבאי",
+    "productId": "pl_u_t_yakir",
+    "requestedByUserId": "u_maya",
+    "requestedByName": "מאיה כהן",
+    "studentId": "u_maya",
+    "studentName": "מאיה כהן",
+    "durationMinutes": 45,
+    "preferredTimeNotes": "אחר הצהריים בימי ג׳–ה׳",
+    "studentNote": "הכנה למופע — רוצה לחזק טכניקה",
+    "status": "waiting_for_teacher",
+    "paymentStatus": "not_started",
+    "createdAt": "2026-05-15T20:47:44.704Z",
+    "updatedAt": "2026-05-15T20:47:44.704Z"
+  }
+]

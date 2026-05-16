@@ -1,0 +1,96 @@
+---
+description: LK Student Space — build as a dance-academy operating system, not a screen collection
+alwaysApply: true
+---
+
+# LK Student Space — Operating System Mindset
+
+## Core principle
+
+Build a **long-term operating system** for dance academies. Every change must improve reliability, maintainability, clarity, scalability, usability, emotional experience, and operational usefulness.
+
+**Not:** isolated screens, Tailwind demos, prototype patches, or feature dumps.
+
+## Think in systems, not screens
+
+Before adding or changing UI, define how the feature connects to:
+
+| System | Location / pattern |
+|--------|-------------------|
+| Database | `lib/app/AppProvider` + `patchDatabase` / `setDatabase` — never hardcode editable content in components |
+| Permissions | `lib/security/permissions.ts` + `guards.ts` — check **before** mutate or navigate to sensitive UI |
+| Audit | `appendAuditToDb` / `PlatformContext.appendAudit` on every sensitive write |
+| Activity | `lib/services/activity-feed-service.ts` via `logActivity` |
+| Notifications | `lib/security/notifications.ts` + communication rules |
+| Seasons | database `seasons` + active season in app state |
+| Search | platform-os search index, not per-screen filters |
+| Media | visibility via `lib/gallery-permissions.ts` / `lib/security/visibility.ts` |
+| Archive | platform-os archive, not ad-hoc deletes |
+
+No isolated features. If a module cannot name its DB tables, permission guard, and audit action — it is not ready.
+
+## Boot and state (non-negotiable)
+
+1. Sync `safeInitialDatabase` → `appReady` → login/shell immediately.
+2. Background sync only (`/api/local-db/read`, 3s timeout, badge not blocker).
+3. Single write path: `AppProvider` / `useAppState` / `useLocalDatabase` adapter.
+4. No blocking loaders, no duplicate `PlatformProvider`, no startup API gates.
+
+## Domain operations over component logic
+
+Prefer:
+
+```
+lib/domains/<domain>/operations.ts  → build*Mutation() with guard + mutate + audit
+lib/hooks/useDomainMutation.ts      → single client write path (use in contexts)
+lib/domains/core/permissions.ts     → domainGuards registry
+components/<domain>/...             → presentation only
+```
+
+Avoid: business rules, permission checks, or seed data inside React components.
+
+## Editable by design
+
+Studio reality changes constantly. All important content lives in the database:
+
+- groups, users, roles, texts, events, pricing, schedules, feature flags
+- Super Admin: export/import, backups, integrity checks, editable text (HE + EN)
+- Faculty mapping: `lib/studio/faculty-seed-data.ts` only — no invented bios
+
+## Role-centered experience
+
+Optimize for real people — show **what matters now** and **next action**:
+
+- Students: motivation, progress, belonging — minimal clutter
+- Parents: linked children only, trust, clarity
+- Teachers: speed — attendance, tasks, assigned groups, private lessons
+- Management: studio health, coordination, alerts
+- Super Admin (אלון בליטי): platform control, DB, flags, audit, cross-studio
+
+## Product pillars (equal weight)
+
+1. **Media** — uploads, visibility, moderation, galleries, task/ rehearsal / show memories
+2. **Events** — annual show = operating mode (arrivals, backstage, tickets, checklists, lineup, live updates)
+3. **Communication** — targeted notifications, group chats, staff chat, read receipts, no broadcast leaks
+4. **Commerce** — shop + private lessons from DB; payments server-side later; never store card data
+
+## Calm UI
+
+Always ask: what matters most right now? What is the next action? What can hide?
+
+Reduce clutter. No overload. Premium feel: Apple Fitness / Watch / Music — not generic dashboard.
+
+## Stabilization before expansion
+
+Do not add features until the layer is stable:
+
+1. Boot + database + import/export
+2. Permissions on all sensitive paths
+3. Navigation (mobile 5-tab, tablet rail, desktop sidebar)
+4. Edit flows + audit on writes
+5. Responsive + Safari + PWA safe-area
+6. Then expand domains (media pipeline, event mode, attendance intelligence)
+
+## Build verification
+
+After structural changes: `npm run build` must pass. Pilot bar: instant open, login, sync badge, shop reachable, roles work, no dead CTAs.

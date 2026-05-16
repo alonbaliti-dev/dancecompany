@@ -1,0 +1,224 @@
+[
+  {
+    "studioId": "studio_lk",
+    "id": "st_studio_warmup",
+    "title": "חימום יומי לכל הסטודיו",
+    "description": "חמש דקות חימום דינמי לפני כל אימון — מומלץ לתעד בבית פעם בשבוע.",
+    "targetType": "studio",
+    "createdByUserId": "u_liata",
+    "createdByName": "ליאת קפלינסקי",
+    "startDate": "2026-05-01",
+    "dueDate": "2026-05-17",
+    "endDate": "2026-06-30",
+    "frequency": "weekly",
+    "timesPerWeek": 3,
+    "targetCompletions": 4,
+    "completedCount": 0,
+    "xpReward": 25,
+    "relatedGoal": "הכנה להופעה",
+    "perStudentCompletions": {
+      "u_maya": 2,
+      "u_yuval": 1,
+      "u_tal": 0
+    },
+    "progressPercent": 0,
+    "status": "not_started"
+  },
+  {
+    "studioId": "studio_lk",
+    "id": "st_group_sel_video",
+    "title": "העלאת סרטון — מופע סוף שנה",
+    "description": "לצלם את הקומבינציה המלאה למופע סוף השנה בזווית רחבה ולהעלות עד חמישי — לאחר עדכון ההנהלה.",
+    "targetType": "group",
+    "assignedGroupIds": [
+      "grp_hh_sel"
+    ],
+    "createdByUserId": "u_t_yakir",
+    "createdByName": "יקיר גבאי",
+    "startDate": "2026-05-11",
+    "dueDate": "2026-05-14",
+    "frequency": "once",
+    "targetCompletions": 1,
+    "completedCount": 0,
+    "xpReward": 50,
+    "relatedGoal": "LK Hip Hop Crew · מופע סוף שנה",
+    "perStudentCompletions": {
+      "u_maya": 0
+    },
+    "progressPercent": 0,
+    "status": "not_started"
+  },
+  {
+    "studioId": "studio_lk",
+    "id": "st_group_sel_practice",
+    "title": "תרגול ביתי ×3 השבוע",
+    "description": "שלושה סשןים קצרים של תרגול ביתי — כל סשן מינימום 12 דקות.",
+    "targetType": "group",
+    "assignedGroupIds": [
+      "grp_hh_sel"
+    ],
+    "createdByUserId": "u_liata",
+    "createdByName": "ליאת קפלינסקי",
+    "startDate": "2026-05-12",
+    "dueDate": "2026-05-18",
+    "frequency": "weekly",
+    "timesPerWeek": 3,
+    "targetCompletions": 3,
+    "completedCount": 0,
+    "xpReward": 40,
+    "perStudentCompletions": {
+      "u_maya": 1
+    },
+    "progressPercent": 0,
+    "status": "not_started"
+  },
+  {
+    "studioId": "studio_lk",
+    "id": "st_personal_maya_flex",
+    "title": "גמישות — יעד אישי",
+    "description": "שמונה דקות שפגט וירידת גב לאחרי כל שיעור נבחרת.",
+    "targetType": "personal",
+    "assignedStudentIds": [
+      "u_maya"
+    ],
+    "createdByUserId": "u_t_yakir",
+    "createdByName": "יקיר גבאי",
+    "startDate": "2026-05-10",
+    "dueDate": "2026-05-14",
+    "frequency": "daily",
+    "targetCompletions": 5,
+    "completedCount": 3,
+    "xpReward": 35,
+    "relatedGoal": "גמישות אישית",
+    "progressPercent": 0,
+    "status": "not_started"
+  },
+  {
+    "studioId": "studio_lk",
+    "id": "st_personal_maya_done",
+    "title": "להביא תלבושת שחורה",
+    "description": "לחזרה והופעה: שחור מלא, סניקרס לבנות.",
+    "targetType": "personal",
+    "assignedStudentIds": [
+      "u_maya"
+    ],
+    "createdByUserId": "u_liata",
+    "createdByName": "ליאת קפלינסקי",
+    "startDate": "2026-05-01",
+    "dueDate": "2026-05-12",
+    "frequency": "once",
+    "targetCompletions": 1,
+    "completedCount": 1,
+    "xpReward": 10,
+    "relatedGoal": "הופעה",
+    "progressPercent": 0,
+    "status": "not_started"
+  },
+  {
+    "studioId": "studio_lk",
+    "id": "st_overdue_modern",
+    "title": "תרגול מודרני — סרטון כיתה",
+    "description": "לצפות בסרטון הקומבינציה מ-Modern Ensemble ולסמן צפייה.",
+    "targetType": "group",
+    "assignedGroupIds": [
+      "grp_mod_adv"
+    ],
+    "createdByUserId": "u_t_yakir",
+    "createdByName": "יקיר גבאי",
+    "startDate": "2026-05-01",
+    "dueDate": "2026-05-10",
+    "frequency": "once",
+    "targetCompletions": 1,
+    "completedCount": 0,
+    "xpReward": 15,
+    "perStudentCompletions": {
+      "u_yuval": 0
+    },
+    "progressPercent": 0,
+    "status": "not_started"
+  },
+  {
+    "studioId": "studio_lk",
+    "id": "st_teen_weekly",
+    "title": "תרגיל פריסטייל — היפ הופ מתבגרים",
+    "description": "שלושה סרטונים קצרים של פריסטייל בבית.",
+    "targetType": "group",
+    "assignedGroupIds": [
+      "grp_hh_teen"
+    ],
+    "createdByUserId": "u_t_yakir",
+    "createdByName": "יקיר גבאי",
+    "startDate": "2026-05-13",
+    "dueDate": "2026-05-20",
+    "frequency": "weekly",
+    "targetCompletions": 3,
+    "completedCount": 0,
+    "xpReward": 30,
+    "perStudentCompletions": {
+      "u_tal": 2
+    },
+    "progressPercent": 0,
+    "status": "not_started"
+  },
+  {
+    "studioId": "studio_lk",
+    "id": "st_newbies_once",
+    "title": "שיעורי בית — היפ הופ בסיס",
+    "description": "לתרגל את הבסיס של השבוע ולצלם סיכום אחד.",
+    "targetType": "group",
+    "assignedGroupIds": [
+      "grp_hh_new"
+    ],
+    "createdByUserId": "u_t_yakir",
+    "createdByName": "יקיר גבאי",
+    "startDate": "2026-05-13",
+    "dueDate": "2026-05-16",
+    "frequency": "once",
+    "targetCompletions": 1,
+    "completedCount": 0,
+    "xpReward": 20,
+    "perStudentCompletions": {},
+    "progressPercent": 0,
+    "status": "not_started"
+  },
+  {
+    "studioId": "studio_lk",
+    "id": "st_flamenco_compas",
+    "title": "תרגול קומפאס — Junior Flamenco",
+    "description": "חמש דקות קצב ועיגון לפני השיעור — להקליט 30 שניות ולשלוח לקבוצה.",
+    "targetType": "group",
+    "assignedGroupIds": [
+      "grp_flamenco"
+    ],
+    "createdByUserId": "u_liata",
+    "createdByName": "ליאת קפלינסקי",
+    "startDate": "2026-05-13",
+    "dueDate": "2026-05-17",
+    "frequency": "weekly",
+    "timesPerWeek": 2,
+    "targetCompletions": 2,
+    "completedCount": 0,
+    "xpReward": 30,
+    "relatedGoal": "פלמנקו · קצב וביטוי",
+    "progressPercent": 0,
+    "status": "not_started"
+  },
+  {
+    "studioId": "studio_lk",
+    "id": "st_mgmt_audit",
+    "title": "סיכום נוכחות שבועי — כל המורים",
+    "description": "לוודא שסימון נוכחות הושלם לכל השיעורים.",
+    "targetType": "studio",
+    "createdByUserId": "u_liata",
+    "createdByName": "ליאת קפלינסקי",
+    "startDate": "2026-05-11",
+    "dueDate": "2026-05-15",
+    "frequency": "weekly",
+    "targetCompletions": 1,
+    "completedCount": 0,
+    "xpReward": 0,
+    "perStudentCompletions": {},
+    "progressPercent": 0,
+    "status": "not_started"
+  }
+]

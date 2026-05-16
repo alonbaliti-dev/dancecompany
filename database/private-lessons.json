@@ -1,0 +1,263 @@
+{
+  "products": [
+    {
+      "id": "pl_u_liata",
+      "studioId": "studio_lk",
+      "teacherId": "u_liata",
+      "teacherName": "ליאת קפלינסקי",
+      "teacherStyles": [
+        "פלמנקו"
+      ],
+      "title": "שיעור פרטי עם ליאת קפלינסקי",
+      "description": "מוזיקליות פלמנקו · ביטוי",
+      "durations": [
+        {
+          "minutes": 30,
+          "price": 150
+        },
+        {
+          "minutes": 45,
+          "price": 225
+        }
+      ],
+      "availabilityNote": "לפי יומן המורה · תיאום דרך האפליקציה",
+      "warmupPolicy": "מומלץ להגיע מחוממים/מחוממות לפני השיעור הפרטי. אם המורה יזהה שהתלמיד/ה לא חומם/ה כראוי, המורה יוביל חימום מלא ומקצועי כחלק מזמן השיעור — הזמן יוקדש לחימום ולא יורחב מעבר למשך השיעור שנרכש.",
+      "isActive": true
+    },
+    {
+      "id": "pl_u_t_simor",
+      "studioId": "studio_lk",
+      "teacherId": "u_t_simor",
+      "teacherName": "סימור דניאל",
+      "teacherStyles": [
+        "היפ הופ"
+      ],
+      "title": "שיעור פרטי עם סימור דניאל",
+      "description": "יסודות היפ הופ · פריסטייל",
+      "durations": [
+        {
+          "minutes": 30,
+          "price": 150
+        },
+        {
+          "minutes": 45,
+          "price": 225
+        }
+      ],
+      "availabilityNote": "לפי יומן המורה · תיאום דרך האפליקציה",
+      "warmupPolicy": "מומלץ להגיע מחוממים/מחוממות לפני השיעור הפרטי. אם המורה יזהה שהתלמיד/ה לא חומם/ה כראוי, המורה יוביל חימום מלא ומקצועי כחלק מזמן השיעור — הזמן יוקדש לחימום ולא יורחב מעבר למשך השיעור שנרכש.",
+      "isActive": true
+    },
+    {
+      "id": "pl_u_t_yakir",
+      "studioId": "studio_lk",
+      "teacherId": "u_t_yakir",
+      "teacherName": "יקיר גבאי",
+      "teacherStyles": [
+        "היפ הופ"
+      ],
+      "title": "שיעור פרטי עם יקיר גבאי",
+      "description": "יסודות היפ הופ · פריסטייל",
+      "durations": [
+        {
+          "minutes": 30,
+          "price": 150
+        },
+        {
+          "minutes": 45,
+          "price": 225
+        }
+      ],
+      "availabilityNote": "לפי יומן המורה · תיאום דרך האפליקציה",
+      "warmupPolicy": "מומלץ להגיע מחוממים/מחוממות לפני השיעור הפרטי. אם המורה יזהה שהתלמיד/ה לא חומם/ה כראוי, המורה יוביל חימום מלא ומקצועי כחלק מזמן השיעור — הזמן יוקדש לחימום ולא יורחב מעבר למשך השיעור שנרכש.",
+      "isActive": true
+    },
+    {
+      "id": "pl_u_t_hazan",
+      "studioId": "studio_lk",
+      "teacherId": "u_t_hazan",
+      "teacherName": "דניאל חזן",
+      "teacherStyles": [
+        "היפ הופ"
+      ],
+      "title": "שיעור פרטי עם דניאל חזן",
+      "description": "יסודות היפ הופ · פריסטייל",
+      "durations": [
+        {
+          "minutes": 30,
+          "price": 150
+        },
+        {
+          "minutes": 45,
+          "price": 225
+        }
+      ],
+      "availabilityNote": "לפי יומן המורה · תיאום דרך האפליקציה",
+      "warmupPolicy": "מומלץ להגיע מחוממים/מחוממות לפני השיעור הפרטי. אם המורה יזהה שהתלמיד/ה לא חומם/ה כראוי, המורה יוביל חימום מלא ומקצועי כחלק מזמן השיעור — הזמן יוקדש לחימום ולא יורחב מעבר למשך השיעור שנרכש.",
+      "isActive": true
+    },
+    {
+      "id": "pl_u_t_almog",
+      "studioId": "studio_lk",
+      "teacherId": "u_t_almog",
+      "teacherName": "אלמוג דוד",
+      "teacherStyles": [
+        "מודרני"
+      ],
+      "title": "שיעור פרטי עם אלמוג דוד",
+      "description": "טכניקה מודרנית · קומפוזיציה",
+      "durations": [
+        {
+          "minutes": 30,
+          "price": 150
+        },
+        {
+          "minutes": 45,
+          "price": 225
+        }
+      ],
+      "availabilityNote": "לפי יומן המורה · תיאום דרך האפליקציה",
+      "warmupPolicy": "מומלץ להגיע מחוממים/מחוממות לפני השיעור הפרטי. אם המורה יזהה שהתלמיד/ה לא חומם/ה כראוי, המורה יוביל חימום מלא ומקצועי כחלק מזמן השיעור — הזמן יוקדש לחימום ולא יורחב מעבר למשך השיעור שנרכש.",
+      "isActive": true
+    },
+    {
+      "id": "pl_u_t_shabi",
+      "studioId": "studio_lk",
+      "teacherId": "u_t_shabi",
+      "teacherName": "שבי שלום אברמוביץ",
+      "teacherStyles": [
+        "מודרני",
+        "בלט קלאסי"
+      ],
+      "title": "שיעור פרטי עם שבי שלום אברמוביץ",
+      "description": "טכניקה מודרנית · קומפוזיציה · טכניקה קלאסית · קו · שלמות",
+      "durations": [
+        {
+          "minutes": 30,
+          "price": 150
+        },
+        {
+          "minutes": 45,
+          "price": 225
+        }
+      ],
+      "availabilityNote": "לפי יומן המורה · תיאום דרך האפליקציה",
+      "warmupPolicy": "מומלץ להגיע מחוממים/מחוממות לפני השיעור הפרטי. אם המורה יזהה שהתלמיד/ה לא חומם/ה כראוי, המורה יוביל חימום מלא ומקצועי כחלק מזמן השיעור — הזמן יוקדש לחימום ולא יורחב מעבר למשך השיעור שנרכש.",
+      "isActive": true
+    },
+    {
+      "id": "pl_u_t_lena",
+      "studioId": "studio_lk",
+      "teacherId": "u_t_lena",
+      "teacherName": "לנה קרושקו",
+      "teacherStyles": [
+        "בלט קלאסי",
+        "פוינט"
+      ],
+      "title": "שיעור פרטי עם לנה קרושקו",
+      "description": "טכניקה קלאסית · קו · שלמות · הכנה לפוינט · כוח ויציבות",
+      "durations": [
+        {
+          "minutes": 30,
+          "price": 150
+        },
+        {
+          "minutes": 45,
+          "price": 225
+        }
+      ],
+      "availabilityNote": "לפי יומן המורה · תיאום דרך האפליקציה",
+      "warmupPolicy": "מומלץ להגיע מחוממים/מחוממות לפני השיעור הפרטי. אם המורה יזהה שהתלמיד/ה לא חומם/ה כראוי, המורה יוביל חימום מלא ומקצועי כחלק מזמן השיעור — הזמן יוקדש לחימום ולא יורחב מעבר למשך השיעור שנרכש.",
+      "isActive": true
+    },
+    {
+      "id": "pl_u_t_michael",
+      "studioId": "studio_lk",
+      "teacherId": "u_t_michael",
+      "teacherName": "מיכאל שניידר",
+      "teacherStyles": [
+        "בלט קלאסי"
+      ],
+      "title": "שיעור פרטי עם מיכאל שניידר",
+      "description": "טכניקה קלאסית · קו · שלמות",
+      "durations": [
+        {
+          "minutes": 30,
+          "price": 150
+        },
+        {
+          "minutes": 45,
+          "price": 225
+        }
+      ],
+      "availabilityNote": "לפי יומן המורה · תיאום דרך האפליקציה",
+      "warmupPolicy": "מומלץ להגיע מחוממים/מחוממות לפני השיעור הפרטי. אם המורה יזהה שהתלמיד/ה לא חומם/ה כראוי, המורה יוביל חימום מלא ומקצועי כחלק מזמן השיעור — הזמן יוקדש לחימום ולא יורחב מעבר למשך השיעור שנרכש.",
+      "isActive": true
+    },
+    {
+      "id": "pl_u_t_yigal",
+      "studioId": "studio_lk",
+      "teacherId": "u_t_yigal",
+      "teacherName": "יגאל משינסקי",
+      "teacherStyles": [
+        "בלט קלאסי"
+      ],
+      "title": "שיעור פרטי עם יגאל משינסקי",
+      "description": "טכניקה קלאסית · קו · שלמות",
+      "durations": [
+        {
+          "minutes": 30,
+          "price": 150
+        },
+        {
+          "minutes": 45,
+          "price": 225
+        }
+      ],
+      "availabilityNote": "לפי יומן המורה · תיאום דרך האפליקציה",
+      "warmupPolicy": "מומלץ להגיע מחוממים/מחוממות לפני השיעור הפרטי. אם המורה יזהה שהתלמיד/ה לא חומם/ה כראוי, המורה יוביל חימום מלא ומקצועי כחלק מזמן השיעור — הזמן יוקדש לחימום ולא יורחב מעבר למשך השיעור שנרכש.",
+      "isActive": true
+    },
+    {
+      "id": "pl_u_t_cornelia",
+      "studioId": "studio_lk",
+      "teacherId": "u_t_cornelia",
+      "teacherName": "קורנליה זוהר",
+      "teacherStyles": [
+        "רפרטואר"
+      ],
+      "title": "שיעור פרטי עם קורנליה זוהר",
+      "description": "ליווי רפרטואר · הכנה לבמה",
+      "durations": [
+        {
+          "minutes": 30,
+          "price": 150
+        },
+        {
+          "minutes": 45,
+          "price": 225
+        }
+      ],
+      "availabilityNote": "לפי יומן המורה · תיאום דרך האפליקציה",
+      "warmupPolicy": "מומלץ להגיע מחוממים/מחוממות לפני השיעור הפרטי. אם המורה יזהה שהתלמיד/ה לא חומם/ה כראוי, המורה יוביל חימום מלא ומקצועי כחלק מזמן השיעור — הזמן יוקדש לחימום ולא יורחב מעבר למשך השיעור שנרכש.",
+      "isActive": true
+    }
+  ],
+  "bookings": [
+    {
+      "id": "plb_demo_1",
+      "studioId": "studio_lk",
+      "studentId": "u_maya",
+      "studentName": "מאיה כהן",
+      "teacherId": "u_t_yakir",
+      "teacherName": "יקיר גבאי",
+      "productId": "pl_u_t_yakir",
+      "durationMinutes": 45,
+      "price": 225,
+      "currency": "ILS",
+      "paymentStatus": "paid",
+      "bookingStatus": "requested",
+      "createdAt": "2026-05-10T07:00:00.000Z"
+    }
+  ]
+}

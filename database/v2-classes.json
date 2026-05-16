@@ -1,0 +1,8 @@
+[
+  { "id": "c_flamenco_sun", "studioId": "studio_lk", "groupId": "g_flamenco", "title": "פלמנקו", "weekday": "ראשון", "time": "17:00", "room": "סטודיו 1" },
+  { "id": "c_hiphop_mon", "studioId": "studio_lk", "groupId": "g_hiphop", "title": "היפ הופ", "weekday": "שני", "time": "18:00", "room": "סטודיו 2" },
+  { "id": "c_modern_tue", "studioId": "studio_lk", "groupId": "g_modern", "title": "מודרני", "weekday": "שלישי", "time": "17:30", "room": "סטודיו 1" },
+  { "id": "c_classic_wed", "studioId": "studio_lk", "groupId": "g_classic", "title": "קלאסי", "weekday": "רביעי", "time": "16:30", "room": "סטודיו 1" },
+  { "id": "c_repertoire_thu", "studioId": "studio_lk", "groupId": "g_repertoire", "title": "רפרטואר", "weekday": "חמישי", "time": "19:00", "room": "סטודיו 2" },
+  { "id": "c_pointe_fri", "studioId": "studio_lk", "groupId": "g_pointe", "title": "פוינט", "weekday": "שישי", "time": "12:00", "room": "סטודיו 1" }
+]

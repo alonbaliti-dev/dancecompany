@@ -1,0 +1,16 @@
+{
+  "studio_lk": {
+    "studioName": "LK Dance School — ליאת קפלינסקי",
+    "logoText": "LK",
+    "primaryColor": "#b91c1c",
+    "accentColor": "#fbbf24",
+    "appName": "מרחב התלמיד/ה · כפר ויתקין"
+  },
+  "studio_demo": {
+    "studioName": "סטודיו מאייר",
+    "logoText": "מא",
+    "primaryColor": "#6366f1",
+    "accentColor": "#a5b4fc",
+    "appName": "מערכת סטודיו — מאייר"
+  }
+}

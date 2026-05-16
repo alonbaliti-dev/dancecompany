@@ -1,0 +1,30 @@
+{
+  "id": "/",
+  "name": "LK Student Space",
+  "short_name": "LK Space",
+  "description": "Personal dance studio space for students, parents, teachers and studio admins.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "background_color": "#050506",
+  "theme_color": "#050506",
+  "orientation": "any",
+  "lang": "he",
+  "dir": "rtl",
+  "categories": ["education", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
