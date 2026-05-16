@@ -584,7 +584,8 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
         const tone = toneForStyle(group?.style);
         return (
           <Surface key={lesson.id} tone={tone} className="p-3">
-            <div className="flex items-center gap-3 text-right">
+            <div className="flex flex-col gap-3 text-right sm:flex-row sm:items-center">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
               <span className={v6Cx("grid h-12 w-12 shrink-0 place-items-center rounded-[20px]", v6Tone[tone].soft, v6Tone[tone].text)}><CalendarDays size={18} /></span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-3">
@@ -593,7 +594,8 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
                 </div>
                 <p className="mt-1 truncate text-sm text-white/52">{lesson.weekday} · {lesson.time} · {lesson.room}</p>
               </div>
-              {(user.permissions.manageAttendance || user.role === "super_admin") ? <V6Button variant="ghost" onClick={() => { audit(user, "פתיחת נוכחות", lesson.id); show("סימון נוכחות נפתח"); }}>נוכחות</V6Button> : null}
+              </div>
+              {(user.permissions.manageAttendance || user.role === "super_admin") ? <div className="sm:shrink-0 [&>button]:w-full"><V6Button variant="ghost" onClick={() => { audit(user, "פתיחת נוכחות", lesson.id); show("סימון נוכחות נפתח"); }}>נוכחות</V6Button></div> : null}
             </div>
           </Surface>
         );
