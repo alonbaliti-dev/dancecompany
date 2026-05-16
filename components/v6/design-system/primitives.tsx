@@ -36,9 +36,9 @@ export function FeedRow({ icon: Icon, title, body, meta, tone = "studio" }: { ic
       <span className={v6Cx("grid h-9 w-9 shrink-0 place-items-center rounded-full", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={15} /></span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-[13px] font-bold text-white">{title}</span>
-        <span className="mt-0.5 block truncate text-[12px] text-white/46">{body}</span>
+        <span className="mt-0.5 block line-clamp-2 text-[12px] leading-snug text-white/46">{body}</span>
       </span>
-      <span className="shrink-0 rounded-full bg-white/[0.06] px-2 py-1 text-[10px] font-black text-white/42">{meta}</span>
+      <span className="max-w-[5.5rem] shrink-0 truncate rounded-full bg-white/[0.06] px-2 py-1 text-[10px] font-black text-white/42">{meta}</span>
     </div>
   );
 }
