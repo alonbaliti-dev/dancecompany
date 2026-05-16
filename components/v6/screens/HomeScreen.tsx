@@ -106,7 +106,7 @@ export function HomeScreen({ user, openScreen, openTab }: { user: V6User; openSc
             <span className="text-[12px] font-bold text-white/58">{copy.title}</span>
             <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-black text-emerald-100">Live</span>
           </div>
-          <div className="grid grid-cols-[1fr_auto] gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
             <Button onClick={() => next ? openTab("lessons") : openScreen("private_lessons")}>{next ? `${next.title} · ${next.time}` : "קביעת שיעור פרטי"}</Button>
             <Button variant="ghost" onClick={() => openTab("messages")}>הודעות</Button>
           </div>
