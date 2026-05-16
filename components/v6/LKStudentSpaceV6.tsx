@@ -762,6 +762,7 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
   function save() {
     const idValue = selectedId || `user_${Date.now().toString(36)}`;
     dispatch({ type: "upsert_user", actor, user: { ...(selected ?? actor), id: idValue, studioId: actor.studioId, name, phone, role, permissions: permissionsFor(role), active: true, groupIds: selected?.groupIds ?? [], linkedStudentIds: selected?.linkedStudentIds ?? [] }, credential: { userId: idValue, phone, password } });
+    setSelectedId(idValue);
     show("המשתמש נשמר");
   }
   const editor = (
@@ -772,7 +773,7 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
       <FormField label="סיסמה חדשה" value={password} onChange={setPassword} />
       <div className="sticky bottom-0 -mx-1 flex gap-2 rounded-[22px] bg-zinc-950/88 p-2 backdrop-blur">
         <V6Button onClick={() => { save(); setSheetOpen(false); }}>שמירה</V6Button>
-        <V6Button variant="ghost" disabled={!selected} onClick={() => { if (!selected) { show("איפוס זמין אחרי שמירת משתמש חדש"); return; } dispatch({ type: "reset_password", actor, userId: selected.id, password }); show("סיסמה עודכנה"); }}>איפוס</V6Button>
+        <V6Button variant="ghost" onClick={() => { if (!selected) { show("איפוס זמין אחרי שמירת משתמש חדש"); return; } dispatch({ type: "reset_password", actor, userId: selected.id, password }); show("סיסמה עודכנה"); }}>איפוס</V6Button>
       </div>
     </div>
   );
