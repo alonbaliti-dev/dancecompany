@@ -136,45 +136,21 @@ export function AttendanceIntelligenceScreen({
   onOpenTasks?: () => void;
 }) {
   const ctx = useAttendanceIntelligenceOptional();
-  if (!ctx || !canViewAttendanceIntelligence(user)) {
-    return (
-      <div className={screenClass}>
-        <Header title="מעקב נוכחות" subtitle="אין הרשאה לצפות בנתוני נוכחות." />
-      </div>
-    );
-  }
-
-  if (!canViewAttendanceIntelligenceStaff(user)) {
-    return <FamilyAttendanceView user={user} ctx={ctx} initialStudentId={initialStudentId} />;
-  }
-
-  const { summaries, groups, overview, schoolYearLabel, sendParentUpdate, flagForReview } = ctx;
   const { showToast } = useToast();
-  const userCtx = ctx.user;
-
-  function notifyParents(studentId: string) {
-    const result = sendParentUpdate(studentId);
-    if (result.ok === false) {
-      showToast(result.reason, "error");
-      return;
-    }
-    showToast(`עדכון נשלח ל־${result.recipientCount} הורים`, "success");
-  }
   const { layoutMode } = useDeviceLayout();
   const isWide = layoutMode === "desktop" || layoutMode === "tablet";
-
   const [section, setSection] = useState<SectionId>("recent");
   const [groupFilter, setGroupFilter] = useState<string>("all");
   const [riskFilter, setRiskFilter] = useState<AttendanceRiskLevel | "all">("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [teacherFilter, setTeacherFilter] = useState<string>("all");
+  const summaries = ctx?.summaries ?? [];
 
   const teachers = useMemo(() => {
     const map = new Map<string, string>();
     for (const s of summaries) map.set(s.teacherId, s.teacherName);
     return [...map.entries()].map(([id, name]) => ({ id, name }));
   }, [summaries]);
-
-  const [teacherFilter, setTeacherFilter] = useState<string>("all");
 
   const filtered = useMemo(() => {
     let list = summaries;
@@ -198,6 +174,30 @@ export function AttendanceIntelligenceScreen({
     }
     return [...filtered].sort((a, b) => a.attendancePct - b.attendancePct);
   }, [filtered, section]);
+
+  if (!ctx || !canViewAttendanceIntelligence(user)) {
+    return (
+      <div className={screenClass}>
+        <Header title="מעקב נוכחות" subtitle="אין הרשאה לצפות בנתוני נוכחות." />
+      </div>
+    );
+  }
+
+  if (!canViewAttendanceIntelligenceStaff(user)) {
+    return <FamilyAttendanceView user={user} ctx={ctx} initialStudentId={initialStudentId} />;
+  }
+
+  const { groups, overview, schoolYearLabel, sendParentUpdate, flagForReview } = ctx;
+  const userCtx = ctx.user;
+
+  function notifyParents(studentId: string) {
+    const result = sendParentUpdate(studentId);
+    if (result.ok === false) {
+      showToast(result.reason, "error");
+      return;
+    }
+    showToast(`עדכון נשלח ל־${result.recipientCount} הורים`, "success");
+  }
 
   const selected = selectedId ? summaries.find((s) => s.studentId === selectedId) : undefined;
 
