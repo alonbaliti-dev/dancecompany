@@ -20,7 +20,7 @@ export function AppShellFrame({ user, studioName, onLogout, children }: { user: 
   return (
     <div suppressHydrationWarning className="min-h-dynamic overflow-x-hidden bg-[#040405] text-white" dir="rtl">
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(ellipse_90%_40%_at_50%_-12%,rgba(52,211,153,0.14),transparent_56%),radial-gradient(ellipse_52%_36%_at_0%_74%,rgba(217,70,239,0.08),transparent_56%),#040405]" />
-      <div className="relative z-10 mx-auto box-border min-h-dynamic w-full max-w-[430px] px-4 pb-[calc(8.4rem+env(safe-area-inset-bottom,0px))] pt-[calc(0.8rem+env(safe-area-inset-top,0px))] sm:px-5 md:max-w-5xl">
+      <div className="relative z-10 mx-auto box-border min-h-dynamic w-full max-w-[430px] px-4 pb-[calc(10.5rem+env(safe-area-inset-bottom,0px))] pt-[calc(0.8rem+env(safe-area-inset-top,0px))] sm:px-5 md:max-w-5xl">
         <div className="sticky top-[calc(0.55rem+env(safe-area-inset-top,0px))] z-40 mb-5 flex min-h-[58px] items-center justify-between gap-3 rounded-[28px] border border-white/[0.06] bg-zinc-950/58 px-3.5 py-2.5 shadow-[0_14px_42px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl">
           <button onClick={onLogout} className="min-h-11 rounded-full border border-white/10 px-3 py-2 text-xs font-bold text-white/62 transition active:scale-95">יציאה</button>
           <div className="flex min-w-0 items-center gap-2.5 text-right">
