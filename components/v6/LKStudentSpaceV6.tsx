@@ -53,15 +53,15 @@ import {
   type V6Tone
 } from "@/components/v6/design-system";
 import { HomeScreen } from "@/components/v6/screens/HomeScreen";
-import { selectV6LessonsForActor } from "@/lib/domains/attendance/selectors";
+import { selectV6LessonsForActor, selectV6StudentsForAttendanceGroup } from "@/lib/domains/attendance/selectors";
 import { buildV6SaveAttendanceOperation } from "@/lib/domains/attendance/operations";
 import { selectV6MessagesForActor, selectV6NotificationsForActor } from "@/lib/domains/messages/selectors";
 import { selectV6PrivateLessonsForActor } from "@/lib/domains/private-lessons/selectors";
-import { buildV6SaveProductOperation } from "@/lib/domains/shop/operations";
-import { selectV6ShopProductsByCategory, selectV6FeaturedShopLanes } from "@/lib/domains/shop/selectors";
+import { buildV6SaveProductOperation, v6InventoryStatuses, v6ProductCategories, v6ProductTypes } from "@/lib/domains/shop/operations";
+import { selectV6ShopProductsForActor, selectV6FeaturedShopLanes } from "@/lib/domains/shop/selectors";
 import { selectV6MediaForActor } from "@/lib/domains/media/selectors";
 import { buildV6ResetPasswordOperation, buildV6UpsertUserOperation } from "@/lib/domains/users/v6-operations";
-import { selectV6UsersByRole } from "@/lib/domains/users/selectors";
+import { groupUsersByRole, selectV6UsersByRole, sortByHebrewName } from "@/lib/domains/users/selectors";
 import { selectV6SystemIssues } from "@/lib/domains/system/selectors";
 import { selectV6AIInsightsForActor } from "@/lib/domains/ai/selectors";
 import { computeV6ManagementHealth, computeV6PrivateLessonCoordination, summarizeV6Audit } from "@/lib/engines/v6";
@@ -103,8 +103,50 @@ const attendanceStatusLabel: Record<V6AttendanceStatus, string> = {
   missing: "חסר/ה"
 };
 
+const productTypeLabel: Record<NonNullable<V6Product["type"]>, string> = {
+  physical: "מוצר פיזי",
+  event_ticket: "כרטיס לאירוע",
+  private_lesson: "שיעור פרטי",
+  workshop_camp: "סדנה / מחנה",
+  accessory: "אביזר",
+  clothing: "ביגוד"
+};
+
+const inventoryStatusLabel: Record<NonNullable<V6Product["inventoryStatus"]>, string> = {
+  in_stock: "במלאי",
+  out_of_stock: "אזל מהמלאי",
+  limited: "כמות מוגבלת",
+  preorder: "הזמנה מוקדמת",
+  draft: "טיוטה / מוסתר"
+};
+
+const productPriceModeLabel: Record<NonNullable<V6Product["priceMode"]>, string> = {
+  paid: "מחיר רגיל",
+  free: "חינם",
+  request: "מחיר לפי בקשה"
+};
+
+type V6SheetType = "add-user" | "edit-user" | "view-user" | "add-product" | "edit-product" | "attendance" | "link-parent" | "reset-password" | "upload-media";
+type V6SheetMode = "add" | "edit" | "view";
+type V6ActiveSheet = {
+  type: V6SheetType;
+  entityId?: string;
+  mode?: V6SheetMode;
+  payload?: Record<string, unknown>;
+};
+
 function cx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(" ");
+}
+
+function uniqueBy<T>(items: T[], keyFor: (item: T) => string) {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = keyFor(item);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 let v6ClientIdCounter = 0;
@@ -158,6 +200,19 @@ function ActionCard({ icon: Icon, title, subtitle, tone, onClick }: { icon: Reac
       </span>
       <DirectionalChevron className="text-white/24" />
     </button>
+  );
+}
+
+function sheetKey(sheet: V6ActiveSheet) {
+  return `${sheet.type}:${sheet.entityId ?? "new"}:${sheet.mode ?? "edit"}`;
+}
+
+function V6SheetController({ activeSheet, title, children, onClose }: { activeSheet: V6ActiveSheet | null; title: string; children: ReactNode; onClose: () => void }) {
+  if (!activeSheet) return null;
+  return (
+    <BottomSheet key={sheetKey(activeSheet)} title={title} onClose={onClose}>
+      {children}
+    </BottomSheet>
   );
 }
 
@@ -247,12 +302,12 @@ function Shell() {
           {!home && screen === "users" ? <UsersScreen actor={user} show={show} back={() => setScreen("home")} /> : null}
           {!home && screen === "private_lessons" ? <PrivateLessons user={user} show={show} back={() => setScreen("home")} /> : null}
           {!home && screen === "media" ? <MediaScreen user={user} show={show} back={() => setScreen("home")} /> : null}
-          {!home && screen === "database" ? <DatabaseScreen actor={user} show={show} back={() => setScreen("home")} /> : null}
+          {!home && screen === "database" ? <DatabaseScreen show={show} back={() => setScreen("home")} /> : null}
           {!home && screen === "texts" ? <TextsScreen actor={user} show={show} back={() => setScreen("home")} /> : null}
           {!home && screen === "flags" ? <FlagsScreen actor={user} show={show} back={() => setScreen("home")} /> : null}
           {!home && screen === "audit" ? <AuditScreen back={() => setScreen("home")} /> : null}
           {!home && screen === "system" ? <SystemScreen back={() => setScreen("home")} /> : null}
-          {!home && screen === "branding" ? <BrandingScreen actor={user} show={show} back={() => setScreen("home")} /> : null}
+          {!home && screen === "branding" ? <BrandingScreen show={show} back={() => setScreen("home")} /> : null}
         </div>
       </AppShellFrame>
       <BottomNavDock tab={tab} unread={unread} onTab={(next) => { setScreen("home"); setTab(next); window.scrollTo({ top: 0 }); }} />
@@ -279,12 +334,16 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
   const { db, dispatch } = useV6();
   const lessons = selectV6LessonsForActor(db, user);
   const nextLesson = lessons[0];
-  const [attendanceLessonId, setAttendanceLessonId] = useState("");
+  const [activeSheet, setActiveSheet] = useState<V6ActiveSheet | null>(null);
   const [classDate, setClassDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [attendanceDraft, setAttendanceDraft] = useState<Record<string, { status: V6AttendanceStatus; note: string }>>({});
+  const attendanceLessonId = activeSheet?.type === "attendance" ? activeSheet.entityId ?? "" : "";
   const attendanceLesson = db.lessons.find((lesson) => lesson.id === attendanceLessonId);
   const attendanceGroup = attendanceLesson ? db.groups.find((group) => group.id === attendanceLesson.groupId) : undefined;
-  const attendanceStudents = attendanceGroup ? db.users.filter((item) => attendanceGroup.studentIds.includes(item.id)) : [];
+  const attendanceStudents = attendanceGroup ? selectV6StudentsForAttendanceGroup(db, attendanceGroup.id) : [];
+  const attendanceRecordsForLesson = attendanceLesson && attendanceGroup ? db.attendance.filter((record) => record.lessonId === attendanceLesson.id && record.groupId === attendanceGroup.id && record.classDate === classDate) : [];
+  const attendanceMarkedCount = attendanceRecordsForLesson.length;
+  const attendanceLastSaved = attendanceRecordsForLesson.map((record) => record.savedAt ?? record.updatedAt ?? record.createdAt).sort().at(-1);
   function openAttendance(lessonId: string) {
     const lesson = db.lessons.find((item) => item.id === lessonId);
     const group = lesson ? db.groups.find((item) => item.id === lesson.groupId) : undefined;
@@ -297,7 +356,7 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
       show(operation.reason ?? "אין הרשאה לסימון נוכחות");
       return;
     }
-    const students = db.users.filter((item) => group.studentIds.includes(item.id));
+    const students = selectV6StudentsForAttendanceGroup(db, group.id);
     if (!students.length) {
       show("אין תלמידים משויכים לקבוצה");
       return;
@@ -307,7 +366,7 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
       const existing = db.attendance.find((record) => record.lessonId === lesson.id && record.groupId === group.id && record.classDate === classDate && record.studentId === student.id);
       nextDraft[student.id] = { status: existing?.status ?? "present", note: existing?.note ?? "" };
     });
-    setAttendanceLessonId(lesson.id);
+    setActiveSheet({ type: "attendance", entityId: lesson.id, mode: "edit", payload: { groupId: group.id, classDate } });
     setAttendanceDraft(nextDraft);
   }
   function setAttendanceStatus(studentId: string, status: V6AttendanceStatus) {
@@ -317,8 +376,8 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
     setAttendanceDraft((draft) => ({ ...draft, [studentId]: { status: draft[studentId]?.status ?? "present", note } }));
   }
   function markAllPresent() {
-    setAttendanceDraft((draft) => Object.fromEntries(Object.entries(draft).map(([studentId, item]) => [studentId, item.status === "missing" ? { ...item, status: "present" as const } : item])));
-    show("נוכחות כללית סומנה בלי למחוק חריגות");
+    setAttendanceDraft((draft) => Object.fromEntries(Object.entries(draft).map(([studentId, item]) => [studentId, { ...item, status: "present" as const }])));
+    show("כולם סומנו נוכחים. אפשר לסמן חריגים עכשיו");
   }
   function saveAttendance() {
     if (!attendanceLesson || !attendanceGroup) {
@@ -338,6 +397,7 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
         status: draft.status,
         note: draft.note.trim() || undefined,
         markedByUserId: user.id,
+        savedAt: now,
         createdAt: now,
         updatedAt: now
       };
@@ -348,7 +408,7 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
       return;
     }
     dispatch({ type: "save_attendance", actor: user, lessonId: attendanceLesson.id, groupId: attendanceGroup.id, classDate, records });
-    setAttendanceLessonId("");
+    setActiveSheet(null);
     show("הנוכחות נשמרה");
   }
   const attendanceEditor = attendanceLesson && attendanceGroup ? (
@@ -356,22 +416,35 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
       <Surface tone="studio" className="p-3">
         <p className="text-[11px] font-black text-emerald-100/62">נוכחות שיעור</p>
         <h3 className="mt-1 truncate text-[18px] font-black tracking-[-0.04em]">{attendanceGroup.name} · {attendanceLesson.time}</h3>
-        <p className="mt-1 text-xs leading-relaxed text-white/48">שמירה אחת מעדכנת רשומות, תובנות נוכחות, התראות ואודיט.</p>
+        <p className="mt-1 text-xs leading-relaxed text-white/48">
+          {attendanceGroup.danceStyle ?? attendanceGroup.style} · {db.users.filter((teacher) => attendanceGroup.teacherIds.includes(teacher.id)).map((teacher) => teacher.name).join(", ") || "מורה לא שויך"} · {attendanceStudents.length} תלמידים
+        </p>
+        <p className="mt-1 text-xs leading-relaxed text-white/48">
+          סומנו {attendanceMarkedCount}/{attendanceStudents.length} · {attendanceLastSaved ? `נשמר לאחרונה ${new Date(attendanceLastSaved).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}` : "טרם נשמר היום"}
+        </p>
       </Surface>
       <div className="grid grid-cols-2 gap-2 [&>button]:w-full">
         <V6Button onClick={saveAttendance}>שמירת נוכחות</V6Button>
-        <V6Button variant="ghost" onClick={() => setAttendanceLessonId("")}>ביטול</V6Button>
+        <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
       </div>
       <FormField label="תאריך שיעור" value={classDate} onChange={setClassDate} type="date" />
       <V6Button variant="ghost" onClick={markAllPresent}>סמן כולם נוכחים</V6Button>
       <div className="space-y-3">
         {attendanceStudents.map((student) => {
           const draft = attendanceDraft[student.id] ?? { status: "present" as V6AttendanceStatus, note: "" };
+          const recentAbsences = db.attendance.filter((record) => record.studentId === student.id && (record.status === "absent" || record.status === "missing")).length;
+          const parent = db.users.find((item) => item.role === "parent" && (item.linkedStudentIds.includes(student.id) || student.linkedParentIds?.includes(item.id)));
+          const openTasks = db.tasks.filter((task) => student.groupIds.includes(task.groupId) && !task.doneByUserIds.includes(student.id)).length;
           return (
             <div key={student.id} className="rounded-[24px] border border-white/[0.050] bg-white/[0.030] p-3 text-start">
               <div className="flex items-center gap-3">
                 <p className="min-w-0 flex-1 truncate text-[15px] font-bold">{student.name}</p>
                 <V6StatusBadge tone={draft.status === "absent" || draft.status === "missing" ? "urgent" : draft.status === "late" ? "shop" : "studio"}>{attendanceStatusLabel[draft.status]}</V6StatusBadge>
+              </div>
+              <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] text-white/42">
+                {recentAbsences ? <span>היעדרויות אחרונות: <BidiNumber>{recentAbsences}</BidiNumber></span> : <span>נוכחות יציבה</span>}
+                {openTasks ? <span>משימות פתוחות: <BidiNumber>{openTasks}</BidiNumber></span> : null}
+                {parent && (user.role === "management" || user.role === "super_admin" || user.permissions.manageAttendance) ? <bdi className="text-left">הורה: {parent.phone}</bdi> : null}
               </div>
               <div className="mt-3 flex flex-wrap gap-2">{(["present", "absent", "late", "excused"] as V6AttendanceStatus[]).map((status) => <button key={status} onClick={() => setAttendanceStatus(student.id, status)} className={v6Cx("rounded-full px-3 py-2 text-xs font-black", draft.status === status ? "bg-emerald-200 text-zinc-950" : "bg-white/[0.060] text-white/58")}>{attendanceStatusLabel[status]}</button>)}</div>
               <div className="mt-3"><FormField label="הערה" value={draft.note} onChange={(value) => setAttendanceNote(student.id, value)} placeholder="למשל סיבת היעדרות או איחור" /></div>
@@ -381,7 +454,7 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
       </div>
       <div className="sticky bottom-0 -mx-1 flex gap-2 rounded-[24px] border border-white/[0.055] bg-zinc-950/88 p-2 shadow-[0_-16px_42px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.055)] backdrop-blur">
         <V6Button onClick={saveAttendance}>שמירת נוכחות</V6Button>
-        <V6Button variant="ghost" onClick={() => setAttendanceLessonId("")}>ביטול</V6Button>
+        <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
       </div>
     </div>
   ) : null;
@@ -423,8 +496,7 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
       })}
       </div>
       </EditorialSection>
-      {attendanceEditor ? <BottomSheet title="סימון נוכחות" onClose={() => setAttendanceLessonId("")}>{attendanceEditor}</BottomSheet> : null}
-      {attendanceEditor ? <Surface tone="studio" className="hidden space-y-3 md:block">{attendanceEditor}</Surface> : null}
+      <V6SheetController activeSheet={attendanceEditor ? activeSheet : null} title="סימון נוכחות" onClose={() => setActiveSheet(null)}>{attendanceEditor}</V6SheetController>
     </div>
   );
 }
@@ -462,8 +534,10 @@ function ProductCard({ product, user, show, onPrivateLesson, onEdit }: { product
   const privateLesson = product.category.includes("שיעורים");
   const ticket = product.category.includes("כרטיסים");
   const tone: V6Tone = privateLesson ? "studio" : ticket ? "repertoire" : "shop";
-  const collection = privateLesson ? "Private Studio" : ticket ? "Stage Access" : "Studio Boutique";
+  const collection = product.category || (privateLesson ? "Private Studio" : ticket ? "Stage Access" : "Studio Boutique");
   const image = product.featuredImageMediaId ? db.media.find((item) => item.id === product.featuredImageMediaId) : undefined;
+  const priceLabel = product.priceMode === "request" ? "לפי בקשה" : product.priceMode === "free" ? "חינם" : `₪ ${product.price}`;
+  const inventoryLabel = inventoryStatusLabel[product.inventoryStatus ?? (product.active ? "in_stock" : "draft")];
   const action = privateLesson
     ? () => onPrivateLesson()
     : () => {
@@ -479,7 +553,11 @@ function ProductCard({ product, user, show, onPrivateLesson, onEdit }: { product
             <RtlText as="h2" className="text-[18px] font-semibold tracking-[-0.035em]">{product.title}</RtlText>
             <RtlText as="p" className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-white/60">{product.description}</RtlText>
           </div>
-          <p className="shrink-0 text-[15px] font-semibold text-[#fff7df]/88"><BidiNumber>₪ {product.price}</BidiNumber></p>
+          <p className="shrink-0 text-[15px] font-semibold text-[#fff7df]/88"><BidiNumber>{priceLabel}</BidiNumber></p>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          <V6StatusBadge tone={product.active ? "shop" : "urgent"}>{inventoryLabel}</V6StatusBadge>
+          {product.memberOnly || product.visibility === "members" ? <V6StatusBadge tone="management">לחברים בלבד</V6StatusBadge> : null}
         </div>
         <div className="mt-4 flex items-center gap-2">
           <V6Button disabled={!product.active} onClick={action}>{privateLesson ? "זמינות" : "רכישה"}</V6Button>
@@ -494,18 +572,27 @@ function ProductCard({ product, user, show, onPrivateLesson, onEdit }: { product
 function Shop({ user, show, openScreen }: { user: V6User; show: (message: string) => void; openScreen: (screen: V6Screen) => void }) {
   const { db, dispatch } = useV6();
   const [category, setCategory] = useState("הכול");
-  const [productSheetOpen, setProductSheetOpen] = useState(false);
+  const [activeSheet, setActiveSheet] = useState<V6ActiveSheet | null>(null);
   const [productId, setProductId] = useState("");
   const [productTitle, setProductTitle] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [productCategory, setProductCategory] = useState("אביזרים");
+  const [productType, setProductType] = useState<NonNullable<V6Product["type"]>>("accessory");
   const [productPrice, setProductPrice] = useState("");
+  const [productPriceMode, setProductPriceMode] = useState<NonNullable<V6Product["priceMode"]>>("paid");
   const [productActive, setProductActive] = useState(true);
+  const [productInventoryStatus, setProductInventoryStatus] = useState<NonNullable<V6Product["inventoryStatus"]>>("in_stock");
+  const [productVisibility, setProductVisibility] = useState<NonNullable<V6Product["visibility"]>>("public");
+  const [productSizes, setProductSizes] = useState("");
+  const [productColors, setProductColors] = useState("");
+  const [productNotes, setProductNotes] = useState("");
+  const [productPickupNote, setProductPickupNote] = useState("");
+  const [productMemberOnly, setProductMemberOnly] = useState(false);
   const [productImageId, setProductImageId] = useState("");
   const productImageInput = useRef<HTMLInputElement>(null);
-  const categories = ["הכול", "אביזרים", "כרטיסים", "פרטיים"];
-  const productCategories = ["אביזרים", "כרטיסים למופעים", "שיעורים פרטיים", "ביגוד", "סדנאות"];
-  const filtered = category === "פרטיים" ? selectV6ShopProductsByCategory(db, "שיעורים") : selectV6ShopProductsByCategory(db, category);
+  const categories = uniqueBy(["הכול", "אביזרים", "כרטיסים", "פרטיים", "ביגוד"], (item) => item);
+  const productCategories = uniqueBy(v6ProductCategories, (item) => item.trim());
+  const filtered = category === "פרטיים" ? selectV6ShopProductsForActor(db, user, "שיעורים") : selectV6ShopProductsForActor(db, user, category);
   const lanes = selectV6FeaturedShopLanes(db);
   const shopImages = db.media.filter((item) => item.mediaType === "image" && (item.visibility === "shop" || item.linkedProductId || item.localPreviewUrl));
   function openProductEditor(product?: V6Product) {
@@ -514,10 +601,19 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
     setProductTitle(product?.title ?? "");
     setProductDescription(product?.description ?? "");
     setProductCategory(product?.category ?? "אביזרים");
+    setProductType(product?.type ?? "accessory");
     setProductPrice(product ? String(product.price) : "");
+    setProductPriceMode(product?.priceMode ?? "paid");
     setProductActive(product?.active ?? true);
+    setProductInventoryStatus(product?.inventoryStatus ?? (product?.active === false ? "draft" : "in_stock"));
+    setProductVisibility(product?.visibility ?? "public");
+    setProductSizes(product?.sizes?.join(", ") ?? "");
+    setProductColors(product?.colors?.join(", ") ?? "");
+    setProductNotes(product?.notes ?? "");
+    setProductPickupNote(product?.pickupDeliveryNote ?? "");
+    setProductMemberOnly(product?.memberOnly ?? (product?.visibility === "members"));
     setProductImageId(product?.featuredImageMediaId ?? product?.imageMediaIds[0] ?? "");
-    setProductSheetOpen(true);
+    setActiveSheet(product ? { type: "edit-product", entityId: product.id, mode: "edit" } : { type: "add-product", entityId: nextId, mode: "add" });
   }
   function uploadProductImage(file?: File) {
     if (!file) return;
@@ -538,8 +634,17 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
       title: productTitle,
       description: productDescription,
       category: productCategory,
-      price: Number(productPrice),
-      active: productActive,
+      type: productType,
+      price: productPriceMode === "free" || (productPriceMode === "request" && !productPrice.trim()) ? 0 : Number(productPrice),
+      priceMode: productPriceMode,
+      active: productActive && productInventoryStatus !== "draft",
+      inventoryStatus: productInventoryStatus,
+      visibility: productMemberOnly ? "members" : productVisibility,
+      sizes: productSizes.split(","),
+      colors: productColors.split(","),
+      notes: productNotes,
+      pickupDeliveryNote: productPickupNote,
+      memberOnly: productMemberOnly,
       imageMediaIds: productImageId ? [productImageId] : [],
       featuredImageMediaId: productImageId || undefined
     };
@@ -550,7 +655,7 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
     }
     dispatch({ type: "save_product", actor: user, product });
     setCategory(product.category.includes("שיעורים") ? "פרטיים" : product.category.includes("כרטיסים") ? "כרטיסים" : product.category);
-    setProductSheetOpen(false);
+    setActiveSheet(null);
     show("המוצר נשמר ומופיע בחנות");
   }
   const productEditor = (
@@ -562,15 +667,29 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
       </Surface>
       <div className="grid grid-cols-2 gap-2 [&>button]:w-full">
         <V6Button onClick={saveProduct}>שמירת מוצר</V6Button>
-        <V6Button variant="ghost" onClick={() => setProductSheetOpen(false)}>ביטול</V6Button>
+        <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
       </div>
       <FormField label="שם מוצר" value={productTitle} onChange={setProductTitle} />
       <FormField label="תיאור" value={productDescription} onChange={setProductDescription} />
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="block text-start"><span className="text-[12px] font-bold text-white/50">קטגוריה</span><select value={productCategory} onChange={(e) => setProductCategory(e.target.value)} className="mt-2 min-h-[52px] w-full rounded-[20px] border border-transparent bg-white/[0.075] px-4 text-white outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]">{productCategories.map((item) => <option key={item} value={item} className="bg-zinc-950">{item}</option>)}</select></label>
-        <FormField label="מחיר" value={productPrice} onChange={setProductPrice} type="number" />
+        <label className="block text-start"><span className="text-[12px] font-bold text-white/50">סוג מוצר</span><select value={productType} onChange={(e) => setProductType(e.target.value as NonNullable<V6Product["type"]>)} className="mt-2 min-h-[52px] w-full rounded-[20px] border border-transparent bg-white/[0.075] px-4 text-white outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]">{v6ProductTypes.map((item) => <option key={item} value={item} className="bg-zinc-950">{productTypeLabel[item]}</option>)}</select></label>
       </div>
-      <label className="block text-start"><span className="text-[12px] font-bold text-white/50">סטטוס מלאי</span><select value={productActive ? "active" : "archived"} onChange={(e) => setProductActive(e.target.value === "active")} className="mt-2 min-h-[52px] w-full rounded-[20px] border border-transparent bg-white/[0.075] px-4 text-white outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]"><option value="active" className="bg-zinc-950">זמין בחנות</option><option value="archived" className="bg-zinc-950">מושבת / ארכיון</option></select></label>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block text-start"><span className="text-[12px] font-bold text-white/50">תמחור</span><select value={productPriceMode} onChange={(e) => setProductPriceMode(e.target.value as NonNullable<V6Product["priceMode"]>)} className="mt-2 min-h-[52px] w-full rounded-[20px] border border-transparent bg-white/[0.075] px-4 text-white outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]">{Object.entries(productPriceModeLabel).map(([id, label]) => <option key={id} value={id} className="bg-zinc-950">{label}</option>)}</select></label>
+        <FormField label="מחיר ₪" value={productPrice} onChange={setProductPrice} type="number" />
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block text-start"><span className="text-[12px] font-bold text-white/50">סטטוס מלאי</span><select value={productInventoryStatus} onChange={(e) => { const next = e.target.value as NonNullable<V6Product["inventoryStatus"]>; setProductInventoryStatus(next); setProductActive(next !== "draft"); }} className="mt-2 min-h-[52px] w-full rounded-[20px] border border-transparent bg-white/[0.075] px-4 text-white outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]">{v6InventoryStatuses.map((item) => <option key={item} value={item} className="bg-zinc-950">{inventoryStatusLabel[item]}</option>)}</select></label>
+        <label className="block text-start"><span className="text-[12px] font-bold text-white/50">נראות</span><select value={productVisibility} onChange={(e) => setProductVisibility(e.target.value as NonNullable<V6Product["visibility"]>)} className="mt-2 min-h-[52px] w-full rounded-[20px] border border-transparent bg-white/[0.075] px-4 text-white outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]"><option value="public" className="bg-zinc-950">גלוי בחנות</option><option value="members" className="bg-zinc-950">לחברים בלבד</option><option value="hidden" className="bg-zinc-950">מוסתר</option></select></label>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <FormField label="מידות (מופרד בפסיקים)" value={productSizes} onChange={setProductSizes} />
+        <FormField label="צבעים (מופרד בפסיקים)" value={productColors} onChange={setProductColors} />
+      </div>
+      <FormField label="הערות מוצר" value={productNotes} onChange={setProductNotes} />
+      <FormField label="הערת איסוף / משלוח" value={productPickupNote} onChange={setProductPickupNote} />
+      <button onClick={() => setProductMemberOnly((value) => !value)} className={v6Cx("w-full rounded-[22px] px-4 py-3 text-start text-sm font-black", productMemberOnly ? "bg-emerald-200 text-zinc-950" : "bg-white/[0.060] text-white/58")}>דרופ מוגבל לחברי סטודיו בלבד</button>
       <input ref={productImageInput} type="file" accept="image/*" className="hidden" onChange={(event) => uploadProductImage(event.target.files?.[0])} />
       <div className="space-y-2 rounded-[24px] border border-white/[0.050] bg-white/[0.035] p-3">
         <div className="flex gap-2 [&>button]:flex-1"><V6Button variant="ghost" onClick={() => productImageInput.current?.click()}><Upload size={16} /> העלאת תמונה</V6Button></div>
@@ -578,7 +697,7 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
       </div>
       <div className="sticky bottom-0 -mx-1 flex gap-2 rounded-[24px] border border-white/[0.055] bg-zinc-950/88 p-2 shadow-[0_-16px_42px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.055)] backdrop-blur">
         <V6Button onClick={saveProduct}>שמירת מוצר</V6Button>
-        <V6Button variant="ghost" onClick={() => setProductSheetOpen(false)}>ביטול</V6Button>
+        <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
       </div>
     </div>
   );
@@ -602,12 +721,11 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
         </button>
       </div>
       </EditorialSection>
-      {productSheetOpen ? <BottomSheet title={productTitle || "מוצר חדש"} onClose={() => setProductSheetOpen(false)}>{productEditor}</BottomSheet> : null}
+      <V6SheetController activeSheet={activeSheet} title={productTitle || "מוצר חדש"} onClose={() => setActiveSheet(null)}>{productEditor}</V6SheetController>
       <div className="grid gap-3 md:grid-cols-2">
         {filtered.map((product) => <ProductCard key={product.id} product={product} user={user} show={show} onPrivateLesson={() => openScreen("private_lessons")} onEdit={(user.permissions.manageShop || user.role === "super_admin") ? () => openProductEditor(product) : undefined} />)}
       </div>
       {(user.permissions.manageShop || user.role === "super_admin") ? <ActionCard icon={Plus} title="הוספת מוצר" subtitle="ניהול מוצר ותמונות" tone="shop" onClick={() => openProductEditor()} /> : null}
-      {productSheetOpen ? <Surface tone="shop" className="hidden space-y-3 md:block">{productEditor}</Surface> : null}
       <Surface tone="shop" className="space-y-3 p-4">
         <div className="flex items-center gap-2 text-start"><CreditCard className="shrink-0 text-yellow-100/70" size={17} /><span className="min-w-0 flex-1 text-xs font-medium text-white/38">תשלום מאובטח יופעל בצד שרת</span></div>
         <div className="grid grid-cols-3 gap-1.5 rounded-[20px] bg-black/18 p-1.5 text-center text-xs font-semibold text-white/56 shadow-[inset_0_1px_0_rgba(255,255,255,0.040)]">
@@ -621,13 +739,22 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
 function More({ user, openScreen, openTab }: { user: V6User; openScreen: (screen: V6Screen) => void; openTab: (tab: V6Tab) => void }) {
   const { db } = useV6();
   const aiInsights = useMemo(() => selectV6AIInsightsForActor(db, user).slice(0, 1), [db, user]);
+  const seenMoreTargets = new Set<string>();
   const sections = [
     { title: "מערכת", items: user.role === "super_admin" ? [{ title: "מסד נתונים", subtitle: "ייצוא, ייבוא וגיבוי", icon: Database, tone: "admin" as Tone, screen: "database" as V6Screen }, { title: "טקסטים", subtitle: "תוכן ניתן לעריכה", icon: Sparkles, tone: "repertoire" as Tone, screen: "texts" as V6Screen }, { title: "פיצ׳רים", subtitle: "דגלי יכולת", icon: Flag, tone: "admin" as Tone, screen: "flags" as V6Screen }, { title: "אודיט", subtitle: "יומן פעולות", icon: ClipboardList, tone: "management" as Tone, screen: "audit" as V6Screen }, { title: "בריאות מערכת", subtitle: "סטטוס מקומי", icon: HeartPulse, tone: "studio" as Tone, screen: "system" as V6Screen }, { title: "מיתוג", subtitle: "שם, שפה ונראות סטודיו", icon: Settings, tone: "admin" as Tone, screen: "branding" as V6Screen }] : [] },
     { title: "הסטודיו", items: [{ title: "שיעורים פרטיים", subtitle: "בקשות, מועדים ותשלום", icon: Receipt, tone: "shop" as Tone, screen: "private_lessons" as V6Screen }, { title: "מדיה וגלריה", subtitle: "תמונות, וידאו וחומרים", icon: ImagePlus, tone: "modern" as Tone, screen: "media" as V6Screen }] },
     { title: "חנות ותשלומים", items: [{ title: "בוטיק ותשלומים", subtitle: "מוצרים, כרטיסים ואמצעי תשלום", icon: ShoppingBag, tone: "shop" as Tone, tab: "shop" as V6Tab }] },
     { title: "כלים למורה", items: user.role === "teacher" || user.role === "management" || user.role === "super_admin" ? [{ title: "נוכחות וקבוצות", subtitle: "פעולות מהירות למורה", icon: School, tone: "studio" as Tone, screen: "system" as V6Screen }] : [] },
     { title: "ניהול", items: user.permissions.manageUsers || user.role === "super_admin" ? [{ title: "ניהול משתמשים", subtitle: "זהויות, קשרים והרשאות", icon: Users, tone: "management" as Tone, screen: "users" as V6Screen }] : [] }
-  ].filter((s) => s.items.length);
+  ].map((section) => ({
+    ...section,
+    items: section.items.filter((item) => {
+      const key = "tab" in item ? `tab:${item.tab}` : `screen:${item.screen}`;
+      if (seenMoreTargets.has(key)) return false;
+      seenMoreTargets.add(key);
+      return true;
+    })
+  })).filter((s) => s.items.length);
   return (
     <div className="space-y-4">
       <HeroSurface tone={user.role === "super_admin" ? "admin" : user.role === "management" ? "management" : "modern"} className="min-h-[208px] p-5">
@@ -657,7 +784,11 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
   const selected = db.users.find((u) => u.id === selectedId);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<V6Role | "all">("all");
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [groupFilter, setGroupFilter] = useState("all");
+  const [ageFilter, setAgeFilter] = useState("all");
+  const [styleFilter, setStyleFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [activeSheet, setActiveSheet] = useState<V6ActiveSheet | null>(null);
   const [name, setName] = useState(selected?.name ?? "");
   const [phone, setPhone] = useState(selected?.phone ?? "");
   const [role, setRole] = useState<V6Role>(selected?.role ?? "student");
@@ -665,10 +796,28 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
   const [active, setActive] = useState(selected?.active ?? true);
   const [groupIds, setGroupIds] = useState<string[]>(selected?.groupIds ?? []);
   const [linkedStudentIds, setLinkedStudentIds] = useState<string[]>(selected?.linkedStudentIds ?? []);
+  const [ageGroup, setAgeGroup] = useState(selected?.ageGroup ?? "");
+  const [danceStyleIds, setDanceStyleIds] = useState<string[]>(selected?.danceStyleIds ?? []);
+  const [notes, setNotes] = useState(selected?.notes ?? "");
+  const [communicationPrefs, setCommunicationPrefs] = useState(selected?.communicationPrefs ?? "");
+  const [primaryContact, setPrimaryContact] = useState(selected?.primaryContact ?? false);
+  const [privateLessonEnabled, setPrivateLessonEnabled] = useState(selected?.privateLessonEnabled ?? false);
+  const [responsibility, setResponsibility] = useState(selected?.responsibility ?? "");
   const [password, setPassword] = useState("new2026");
   const queryValue = query.trim();
-  const filteredUsers = selectV6UsersByRole(db, actor, filter).filter((user) => !queryValue || `${user.name} ${user.phone} ${roleLabel[user.role]}`.includes(queryValue));
-  const availableStudents = db.users.filter((user) => user.role === "student" && user.id !== selectedId);
+  const ageGroups = [...new Set(db.users.map((user) => user.ageGroup).filter(Boolean) as string[])].sort((a, b) => a.localeCompare(b, "he"));
+  const danceStyles = [...new Set(db.groups.map((group) => group.danceStyle ?? group.style).filter(Boolean))].sort((a, b) => a.localeCompare(b, "he"));
+  const filteredUsers = selectV6UsersByRole(db, actor, filter).filter((user) => {
+    const userGroups = db.groups.filter((group) => user.groupIds.includes(group.id));
+    const userStyles = [...(user.danceStyleIds ?? []), ...userGroups.map((group) => group.danceStyle ?? group.style)];
+    return (!queryValue || `${user.name} ${user.phone} ${roleLabel[user.role]}`.includes(queryValue))
+      && (groupFilter === "all" || user.groupIds.includes(groupFilter))
+      && (ageFilter === "all" || user.ageGroup === ageFilter || userGroups.some((group) => group.ageGroup === ageFilter))
+      && (styleFilter === "all" || userStyles.includes(styleFilter))
+      && (statusFilter === "all" || (statusFilter === "active" ? user.active : !user.active));
+  });
+  const groupedUsers = groupUsersByRole(filteredUsers);
+  const availableStudents = sortByHebrewName(db.users.filter((user) => user.role === "student" && user.id !== selectedId));
   const filterOptions: Array<{ id: V6Role | "all"; label: string }> = [
     { id: "all", label: "כולם" },
     { id: "student", label: "תלמידים" },
@@ -676,7 +825,7 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
     { id: "teacher", label: "מורים" },
     { id: "management", label: "הנהלה" }
   ];
-  function load(user: V6User) {
+  function openUserSheet(user: V6User, mode: V6SheetMode = "view") {
     setSelectedId(user.id);
     setName(user.name);
     setPhone(user.phone);
@@ -685,8 +834,35 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
     setActive(user.active);
     setGroupIds(user.groupIds);
     setLinkedStudentIds(user.linkedStudentIds);
+    setAgeGroup(user.ageGroup ?? "");
+    setDanceStyleIds(user.danceStyleIds ?? []);
+    setNotes(user.notes ?? "");
+    setCommunicationPrefs(user.communicationPrefs ?? "");
+    setPrimaryContact(user.primaryContact ?? false);
+    setPrivateLessonEnabled(user.privateLessonEnabled ?? false);
+    setResponsibility(user.responsibility ?? "");
     setPassword("");
-    setSheetOpen(true);
+    setActiveSheet({ type: mode === "view" ? "view-user" : "edit-user", entityId: user.id, mode });
+  }
+  function openNewUser(roleValue: V6Role = "student") {
+    const nextPermissions = permissionsFor(roleValue);
+    setSelectedId("");
+    setName("");
+    setPhone("");
+    setRole(roleValue);
+    setPermissions(nextPermissions);
+    setActive(true);
+    setGroupIds([]);
+    setLinkedStudentIds([]);
+    setAgeGroup("");
+    setDanceStyleIds([]);
+    setNotes("");
+    setCommunicationPrefs("");
+    setPrimaryContact(false);
+    setPrivateLessonEnabled(false);
+    setResponsibility("");
+    setPassword("new2026");
+    setActiveSheet({ type: "add-user", mode: "add", payload: { role: roleValue } });
   }
   function setRoleAndPermissions(nextRole: V6Role) {
     setRole(nextRole);
@@ -699,6 +875,9 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
   function toggleLinkedStudent(studentId: string) {
     setLinkedStudentIds((items) => items.includes(studentId) ? items.filter((id) => id !== studentId) : [...items, studentId]);
   }
+  function toggleDanceStyle(style: string) {
+    setDanceStyleIds((items) => items.includes(style) ? items.filter((id) => id !== style) : [...items, style]);
+  }
   function togglePermission(key: keyof V6Permissions) {
     if (!actor.permissions.editPermissions && actor.role !== "super_admin") {
       show("אין הרשאה לעריכת הרשאות");
@@ -708,8 +887,9 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
   }
   function save() {
     const idValue = selectedId || nextV6ClientId("user");
-    const user: V6User = { ...(selected ?? { id: idValue, studioId: actor.studioId, name: "", phone: "", role, permissions, active: true, groupIds: [], linkedStudentIds: [] }), id: idValue, studioId: actor.studioId, name, phone, role, permissions, active, groupIds: role === "parent" ? [] : groupIds, linkedStudentIds: role === "parent" ? linkedStudentIds : [] };
-    const credential = selected ? undefined : { userId: idValue, phone, password };
+    const existingUser = activeSheet?.type === "add-user" ? undefined : selected;
+    const user: V6User = { ...(existingUser ?? { id: idValue, studioId: actor.studioId, name: "", phone: "", role, permissions, active: true, groupIds: [], linkedStudentIds: [] }), id: idValue, studioId: actor.studioId, name, phone, role, permissions, active, status: active ? "active" : "inactive", groupIds: role === "parent" ? [] : groupIds, linkedStudentIds: role === "parent" ? linkedStudentIds : [], ageGroup: role === "student" ? ageGroup : undefined, danceStyleIds: role === "student" || role === "teacher" ? danceStyleIds : undefined, notes, communicationPrefs: role === "parent" ? communicationPrefs : undefined, primaryContact: role === "parent" ? primaryContact : undefined, privateLessonEnabled: role === "teacher" ? privateLessonEnabled : undefined, responsibility: role === "management" || role === "super_admin" ? responsibility : undefined };
+    const credential = existingUser ? undefined : { userId: idValue, phone, password };
     const operation = buildV6UpsertUserOperation(db, actor, user, credential);
     if (!operation.allowed) {
       show(operation.reason ?? "לא ניתן לשמור משתמש");
@@ -743,7 +923,7 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
         <p className="mt-1 text-xs leading-relaxed text-white/48">שינוי תפקיד מעדכן את הרשאות המשתמש דרך אותו מסלול נתונים.</p>
       </div>
       <div className="grid grid-cols-2 gap-2 [&>button]:w-full">
-        <V6Button onClick={() => { if (save()) setSheetOpen(false); }}>שמירה</V6Button>
+        <V6Button onClick={() => { if (save()) setActiveSheet(null); }}>שמירה</V6Button>
         <V6Button variant="ghost" onClick={resetPassword}>איפוס סיסמה</V6Button>
       </div>
       <FormField label="שם" value={name} onChange={setName} />
@@ -753,22 +933,28 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
         <label className="block text-start"><span className="text-[12px] font-bold text-white/50">סטטוס</span><select value={active ? "active" : "inactive"} onChange={(e) => setActive(e.target.value === "active")} className="mt-2 min-h-[52px] w-full rounded-[20px] border border-transparent bg-white/[0.075] px-4 text-white outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]"><option value="active" className="bg-zinc-950">פעיל</option><option value="inactive" className="bg-zinc-950">מושבת</option></select></label>
       </div>
       {(role === "teacher" || role === "student") ? <div className="rounded-[24px] border border-white/[0.050] bg-white/[0.032] p-3 text-start"><p className="mb-2 text-[12px] font-bold text-white/50">{role === "teacher" ? "שיוך מורה לקבוצות" : "שיוך תלמיד/ה לקבוצות"}</p><div className="flex flex-wrap gap-2">{db.groups.map((group) => <button key={group.id} onClick={() => toggleGroup(group.id)} className={v6Cx("rounded-full px-3 py-2 text-xs font-black", groupIds.includes(group.id) ? "bg-emerald-200 text-zinc-950" : "bg-white/[0.060] text-white/58")}>{group.name}</button>)}</div></div> : null}
+      {role === "student" ? <FormField label="קבוצת גיל" value={ageGroup} onChange={setAgeGroup} placeholder="למשל נוער / בוגרות" /> : null}
+      {(role === "teacher" || role === "student") ? <div className="rounded-[24px] border border-white/[0.050] bg-white/[0.032] p-3 text-start"><p className="mb-2 text-[12px] font-bold text-white/50">סגנונות ריקוד</p><div className="flex flex-wrap gap-2">{danceStyles.map((style) => <button key={style} onClick={() => toggleDanceStyle(style)} className={v6Cx("rounded-full px-3 py-2 text-xs font-black", danceStyleIds.includes(style) ? "bg-cyan-200 text-zinc-950" : "bg-white/[0.060] text-white/58")}>{style}</button>)}</div></div> : null}
       {role === "parent" ? <div className="rounded-[24px] border border-white/[0.050] bg-white/[0.032] p-3 text-start"><p className="mb-2 text-[12px] font-bold text-white/50">קישור הורה לתלמיד/ה</p><div className="flex flex-wrap gap-2">{availableStudents.map((student) => <button key={student.id} onClick={() => toggleLinkedStudent(student.id)} className={v6Cx("rounded-full px-3 py-2 text-xs font-black", linkedStudentIds.includes(student.id) ? "bg-sky-200 text-zinc-950" : "bg-white/[0.060] text-white/58")}>{student.name}</button>)}</div></div> : null}
+      {role === "parent" ? <div className="grid gap-3 sm:grid-cols-2"><FormField label="העדפות תקשורת" value={communicationPrefs} onChange={setCommunicationPrefs} /><button onClick={() => setPrimaryContact((value) => !value)} className={v6Cx("min-h-[54px] rounded-[22px] px-4 text-start text-sm font-black", primaryContact ? "bg-sky-200 text-zinc-950" : "bg-white/[0.060] text-white/58")}>איש קשר ראשי</button></div> : null}
+      {role === "teacher" ? <button onClick={() => setPrivateLessonEnabled((value) => !value)} className={v6Cx("w-full rounded-[22px] px-4 py-3 text-start text-sm font-black", privateLessonEnabled ? "bg-yellow-200 text-zinc-950" : "bg-white/[0.060] text-white/58")}>זמין/ה לשיעורים פרטיים</button> : null}
+      {(role === "management" || role === "super_admin") ? <FormField label="אחריות / תפקיד ניהולי" value={responsibility} onChange={setResponsibility} /> : null}
+      <FormField label="הערות" value={notes} onChange={setNotes} />
       <div className="rounded-[24px] border border-white/[0.050] bg-white/[0.032] p-3 text-start">
         <p className="mb-2 text-[12px] font-bold text-white/50">הרשאות</p>
         <div className="flex flex-wrap gap-2">{permissionLabels.map(([key, label]) => <button key={key} onClick={() => togglePermission(key)} className={v6Cx("rounded-full px-3 py-2 text-xs font-black", permissions[key] ? "bg-violet-200 text-zinc-950" : "bg-white/[0.060] text-white/58")}>{label}</button>)}</div>
       </div>
       <FormField label={selected ? "סיסמה חדשה לאיפוס" : "סיסמה ראשונית"} value={password} onChange={setPassword} />
       <div className="sticky bottom-0 -mx-1 flex gap-2 rounded-[24px] border border-white/[0.055] bg-zinc-950/88 p-2 shadow-[0_-16px_42px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.055)] backdrop-blur">
-        <V6Button onClick={() => { if (save()) setSheetOpen(false); }}>שמירה</V6Button>
+        <V6Button onClick={() => { if (save()) setActiveSheet(null); }}>שמירה</V6Button>
         <V6Button variant="ghost" onClick={resetPassword}>איפוס</V6Button>
-        <V6Button variant="ghost" onClick={() => setSheetOpen(false)}>ביטול</V6Button>
+        <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
       </div>
     </div>
   );
   return (
     <div className="space-y-5">
-      <BackHeader title="ניהול משתמשים" back={back} action={<V6Button onClick={() => { setSelectedId(""); setName(""); setPhone(""); setRole("student"); setPermissions(permissionsFor("student")); setActive(true); setGroupIds([]); setLinkedStudentIds([]); setPassword("new2026"); setSheetOpen(true); }}>חדש</V6Button>} />
+      <BackHeader title="ניהול משתמשים" back={back} action={<V6Button onClick={() => openNewUser("student")}>חדש</V6Button>} />
       <HeroSurface tone="management" className="min-h-[190px] p-5">
         <V6StatusBadge tone="management">זהויות</V6StatusBadge>
         <h2 className="mt-4 max-w-[18rem] text-right text-[clamp(1.95rem,9.5vw,2.82rem)] font-semibold leading-[0.90] tracking-[-0.078em]">להחזיק את הלהקה נכון</h2>
@@ -778,29 +964,46 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
       <div className="space-y-3">
         <FormField label="חיפוש" value={query} onChange={setQuery} placeholder="חיפוש לפי שם או טלפון" />
         <SegmentedControl value={filterOptions.find((item) => item.id === filter)?.label ?? "כולם"} options={filterOptions.map((item) => item.label)} onChange={(value) => setFilter(filterOptions.find((item) => item.label === value)?.id ?? "all")} />
+        <div className="grid gap-2 sm:grid-cols-4">
+          <label className="block text-start"><span className="text-[12px] font-bold text-white/50">קבוצה</span><select value={groupFilter} onChange={(e) => setGroupFilter(e.target.value)} className="mt-2 min-h-[48px] w-full rounded-[18px] border border-transparent bg-white/[0.075] px-3 text-white outline-none"><option value="all" className="bg-zinc-950">כל הקבוצות</option>{db.groups.map((group) => <option key={group.id} value={group.id} className="bg-zinc-950">{group.name}</option>)}</select></label>
+          <label className="block text-start"><span className="text-[12px] font-bold text-white/50">גיל</span><select value={ageFilter} onChange={(e) => setAgeFilter(e.target.value)} className="mt-2 min-h-[48px] w-full rounded-[18px] border border-transparent bg-white/[0.075] px-3 text-white outline-none"><option value="all" className="bg-zinc-950">כל הגילים</option>{ageGroups.map((age) => <option key={age} value={age} className="bg-zinc-950">{age}</option>)}</select></label>
+          <label className="block text-start"><span className="text-[12px] font-bold text-white/50">סגנון</span><select value={styleFilter} onChange={(e) => setStyleFilter(e.target.value)} className="mt-2 min-h-[48px] w-full rounded-[18px] border border-transparent bg-white/[0.075] px-3 text-white outline-none"><option value="all" className="bg-zinc-950">כל הסגנונות</option>{danceStyles.map((style) => <option key={style} value={style} className="bg-zinc-950">{style}</option>)}</select></label>
+          <label className="block text-start"><span className="text-[12px] font-bold text-white/50">פעילות</span><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="mt-2 min-h-[48px] w-full rounded-[18px] border border-transparent bg-white/[0.075] px-3 text-white outline-none"><option value="all" className="bg-zinc-950">כולם</option><option value="active" className="bg-zinc-950">פעילים</option><option value="inactive" className="bg-zinc-950">לא פעילים</option></select></label>
+        </div>
       </div>
       </EditorialSection>
-      {sheetOpen ? <BottomSheet title={selected?.name ?? "משתמש חדש"} onClose={() => setSheetOpen(false)}>{editor}</BottomSheet> : null}
-      <div className="grid gap-3 lg:grid-cols-[1fr_1fr]">
+      <V6SheetController activeSheet={activeSheet} title={selected?.name ?? "משתמש חדש"} onClose={() => setActiveSheet(null)}>{editor}</V6SheetController>
+      <div className="grid gap-3">
         <EditorialSection title="אנשי הסטודיו" kicker={`${filteredUsers.length} מוצגים`} tone="management" className="lg:p-3">
-          <div className="space-y-2.5">{filteredUsers.map((user) => <button key={user.id} onClick={() => load(user)} className="w-full"><UserCard user={user} active={selected?.id === user.id} /></button>)}</div>
+          <div className="space-y-4">{groupedUsers.map((group) => <div key={group.role} className="space-y-2"><p className="text-start text-[11px] font-black text-white/40">{roleLabel[group.role]}</p>{group.users.map((user) => <button key={user.id} onClick={() => openUserSheet(user)} className="w-full"><UserCard user={user} db={db} active={selected?.id === user.id} /></button>)}</div>)}</div>
         </EditorialSection>
-        <Surface tone="management" className="hidden space-y-3 lg:block">{editor}</Surface>
       </div>
     </div>
   );
 }
 
-function UserCard({ user, active }: { user: V6User; active?: boolean }) {
+function UserCard({ user, db, active }: { user: V6User; db: ReturnType<typeof useV6>["db"]; active?: boolean }) {
   const tone = toneForRole(user.role);
+  const groups = db.groups.filter((group) => user.groupIds.includes(group.id));
+  const linkedChildren = user.role === "parent" ? db.users.filter((student) => user.linkedStudentIds.includes(student.id)).map((student) => student.name).join(", ") : "";
+  const linkedParents = user.role === "student" ? db.users.filter((parent) => parent.role === "parent" && (parent.linkedStudentIds.includes(user.id) || user.linkedParentIds?.includes(parent.id))).map((parent) => parent.name).join(", ") : "";
+  const styles = [...new Set([...(user.danceStyleIds ?? []), ...groups.map((group) => group.danceStyle ?? group.style)])].join(", ");
+  const meta = user.role === "parent"
+    ? `ילדים: ${linkedChildren || "לא שויך"}`
+    : user.role === "teacher"
+      ? `${styles || "ללא סגנון"} · ${groups.map((group) => group.name).join(", ") || "ללא קבוצות"}`
+      : user.role === "student"
+        ? `${groups.map((group) => group.name).join(", ") || "ללא קבוצה"} · ${user.ageGroup ?? "גיל לא צוין"} · הורים: ${linkedParents || "לא שויך"}`
+        : user.responsibility || "הרשאות וניהול";
   return (
     <div dir="rtl" className={v6Cx("flex items-center gap-3 rounded-[25px] border p-3 text-start shadow-[inset_0_1px_0_rgba(255,255,255,0.040)]", active ? "border-transparent bg-[linear-gradient(135deg,#fff7df,#f4d58d_58%,#dfffee)] text-zinc-950" : "border-[rgba(255,255,255,0.040)] bg-white/[0.030] text-white")}>
       <span className={v6Cx("grid h-10 w-10 shrink-0 place-items-center rounded-[17px] font-semibold", active ? "bg-black/10 text-zinc-950" : v6Cx(v6Tone[tone].soft, v6Tone[tone].text))}>{user.name.slice(0, 1)}</span>
       <span className="min-w-0 flex-1">
         <RtlText as="span" className="block truncate text-[15px] font-semibold tracking-[-0.020em]">{user.name}</RtlText>
         <bdi className={v6Cx("mt-1 block truncate text-left text-[12px] font-medium", active ? "text-zinc-700" : "text-white/46")}>{user.phone}</bdi>
+        <RtlText as="span" className={v6Cx("mt-1 block truncate text-[11px] font-medium", active ? "text-zinc-700" : "text-white/42")}>{meta}</RtlText>
       </span>
-      <span className={v6Cx("shrink-0 text-[10px] font-semibold", active ? "text-zinc-800" : "text-white/48")}>{roleLabel[user.role]}</span>
+      <span className={v6Cx("shrink-0 text-[10px] font-semibold", active ? "text-zinc-800" : "text-white/48")}>{user.active ? roleLabel[user.role] : "לא פעיל"}</span>
       <DirectionalChevron className="opacity-35" />
     </div>
   );
@@ -869,18 +1072,41 @@ function PrivateLessons({ user, show, back }: { user: V6User; show: (message: st
 function MediaScreen({ user, show, back }: { user: V6User; show: (message: string) => void; back: () => void }) {
   const { db, dispatch } = useV6();
   const input = useRef<HTMLInputElement>(null);
+  const [activeSheet, setActiveSheet] = useState<V6ActiveSheet | null>(null);
   const [title, setTitle] = useState("חומר חדש");
   const [groupId, setGroupId] = useState(user.groupIds[0] ?? db.groups[0]?.id ?? "");
   const groups = user.role === "teacher" ? db.groups.filter((g) => user.groupIds.includes(g.id)) : db.groups;
   function save(file?: File) {
     const media: V6MediaItem = { id: nextV6ClientId("media"), studioId: user.studioId, uploadedByUserId: user.id, title, fileName: file?.name ?? "local-preview", mediaType: file?.type.startsWith("video/") ? "video" : "image", linkedGroupId: groupId, visibility: "group", localPreviewUrl: file ? URL.createObjectURL(file) : undefined, createdAt: new Date().toISOString() };
     dispatch({ type: "save_media", actor: user, media });
+    setActiveSheet(null);
     show("המדיה נשמרה");
   }
   const media = selectV6MediaForActor(db, user);
+  const mediaEditor = (
+    <div className="space-y-4">
+      <Surface tone="modern" className="p-3">
+        <p className="text-[11px] font-black text-cyan-100/62">העלאת מדיה</p>
+        <h3 className="mt-1 truncate text-[18px] font-black tracking-[-0.04em]">{title || "חומר חדש"}</h3>
+        <p className="mt-1 text-xs leading-relaxed text-white/48">נשמר במסד המקומי עם שיוך לקבוצה והרשאות צפייה.</p>
+      </Surface>
+      <FormField label="כותרת" value={title} onChange={setTitle} />
+      <label className="block text-right"><span className="text-xs text-white/46">קבוצה</span><select value={groupId} onChange={(e) => setGroupId(e.target.value)} className="mt-2 min-h-12 w-full rounded-[18px] border border-transparent bg-white/[0.075] px-3 text-white outline-none">{groups.map((g) => <option key={g.id} value={g.id} className="bg-zinc-950">{g.name}</option>)}</select></label>
+      <input ref={input} type="file" accept="image/*,video/*" className="hidden" onChange={(e) => save(e.target.files?.[0])} />
+      <div className="grid grid-cols-2 gap-2 [&>button]:w-full">
+        <V6Button onClick={() => input.current?.click()}><Upload size={16} /> בחירת קובץ</V6Button>
+        <V6Button variant="ghost" onClick={() => save()}>שמירת מטאדאטה</V6Button>
+      </div>
+      <p className="text-right text-xs leading-relaxed text-white/44">ב־MVP נשמרת מטאדאטה ותצוגה מקומית. בפרודקשן הקבצים יעברו לאחסון מאובטח.</p>
+      <div className="sticky bottom-0 -mx-1 flex gap-2 rounded-[24px] border border-white/[0.055] bg-zinc-950/88 p-2 shadow-[0_-16px_42px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.055)] backdrop-blur">
+        <V6Button onClick={() => save()}>שמירת מטאדאטה</V6Button>
+        <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
+      </div>
+    </div>
+  );
   return (
     <div className="space-y-4">
-      <BackHeader title="מדיה וגלריה" back={back} />
+      <BackHeader title="מדיה וגלריה" back={back} action={<V6Button onClick={() => setActiveSheet({ type: "upload-media", mode: "add" })}>העלאה</V6Button>} />
       <HeroSurface tone="modern" className="min-h-[220px] p-5">
         <div className="pointer-events-none absolute left-5 top-5 h-32 w-24 rotate-3 rounded-[38px] border border-[rgba(255,255,255,0.08)] bg-[linear-gradient(145deg,rgba(255,255,255,0.12),rgba(34,211,238,0.08),rgba(61,16,39,0.18))]" />
         <div className="pointer-events-none absolute left-11 bottom-8 h-16 w-28 rounded-full bg-cyan-100/10 blur-2xl" />
@@ -888,22 +1114,14 @@ function MediaScreen({ user, show, back }: { user: V6User; show: (message: strin
         <h2 className="mt-4 max-w-[18rem] text-right text-[clamp(2.1rem,11vw,3.1rem)] font-semibold leading-[0.86] tracking-[-0.09em]">רגעי חזרה, במה וקהילה</h2>
         <p className="mt-4 max-w-[20rem] text-right text-sm leading-relaxed text-white/64">תצוגת מדיה מטופלת כמו אלבום סטודיו, עם הרשאות וקבוצות מאחורי הקלעים.</p>
       </HeroSurface>
-      <Surface tone="modern" className="space-y-3">
-        <FormField label="כותרת" value={title} onChange={setTitle} />
-        <label className="block text-right"><span className="text-xs text-white/46">קבוצה</span><select value={groupId} onChange={(e) => setGroupId(e.target.value)} className="mt-2 min-h-12 w-full rounded-[18px] border border-transparent bg-white/[0.075] px-3 text-white outline-none">{groups.map((g) => <option key={g.id} value={g.id} className="bg-zinc-950">{g.name}</option>)}</select></label>
-        <input ref={input} type="file" accept="image/*,video/*" className="hidden" onChange={(e) => save(e.target.files?.[0])} />
-        <div className="flex gap-2">
-          <V6Button onClick={() => input.current?.click()}><Upload size={16} /> בחירת קובץ</V6Button>
-          <V6Button variant="ghost" onClick={() => save()}>שמירת מטאדאטה</V6Button>
-        </div>
-        <p className="text-right text-xs leading-relaxed text-white/44">ב־MVP נשמרת מטאדאטה ותצוגה מקומית. בפרודקשן הקבצים יעברו לאחסון מאובטח.</p>
-      </Surface>
+      <V6SheetController activeSheet={activeSheet} title="העלאת מדיה" onClose={() => setActiveSheet(null)}>{mediaEditor}</V6SheetController>
+      <ActionCard icon={ImagePlus} title="העלאת מדיה" subtitle="תמונה, וידאו או מטאדאטה" tone="modern" onClick={() => setActiveSheet({ type: "upload-media", mode: "add" })} />
       {media.map((item) => <Surface key={item.id} tone="modern"><h2 className="text-right font-bold">{item.title}</h2><p className="mt-1 text-right text-sm text-white/55">{item.fileName}</p></Surface>)}
     </div>
   );
 }
 
-function DatabaseScreen({ actor, show, back }: { actor: V6User; show: (message: string) => void; back: () => void }) {
+function DatabaseScreen({ show, back }: { show: (message: string) => void; back: () => void }) {
   const { db, exportDatabase, importDatabase } = useV6();
   const ref = useRef<HTMLInputElement>(null);
   return (
@@ -933,7 +1151,7 @@ function FlagsScreen({ actor, show, back }: { actor: V6User; show: (message: str
   return <div className="space-y-4"><BackHeader title="דגלי יכולת" back={back} /><HeroSurface tone="admin" className="min-h-[205px] p-5"><V6StatusBadge tone="admin">בקרת מוצר</V6StatusBadge><h2 className="mt-4 max-w-[18rem] text-right text-[clamp(2rem,10vw,3rem)] font-semibold leading-[0.88] tracking-[-0.085em]">יכולות נפתחות בזהירות</h2><p className="mt-3 max-w-[20rem] text-right text-sm leading-relaxed text-white/60">דגלים רגישים נשארים זמינים לסופר אדמין, אבל לא נראים כמו קובץ קונפיגורציה.</p></HeroSurface><EditorialSection title="דגלים פעילים" kicker="כל שינוי נרשם" tone="admin"><div className="space-y-2.5">{Object.entries(db.featureFlags).map(([key, value]) => <div key={key} className="flex items-center justify-between gap-3 rounded-[26px] border border-[rgba(255,255,255,0.046)] bg-white/[0.035] p-3 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.045)]"><button onClick={() => { dispatch({ type: "update_flags", actor, flags: { [key]: !value } }); show("הדגל עודכן"); }} className={v6Cx("shrink-0 rounded-full px-3 py-1.5 text-xs font-black shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]", value ? "bg-emerald-200 text-zinc-950" : "bg-white/10 text-white/58")}>{value ? "פעיל" : "כבוי"}</button><span className="truncate text-sm font-black tracking-[-0.02em]">{key}</span></div>)}</div></EditorialSection></div>;
 }
 
-function BrandingScreen({ actor, show, back }: { actor: V6User; show: (message: string) => void; back: () => void }) {
+function BrandingScreen({ show, back }: { show: (message: string) => void; back: () => void }) {
   return <div className="space-y-4"><BackHeader title="מיתוג" back={back} /><HeroSurface tone="admin" className="min-h-[190px] p-5"><V6StatusBadge tone="admin">זהות סטודיו</V6StatusBadge><h2 className="mt-4 max-w-[18rem] text-right text-[clamp(2rem,10vw,2.8rem)] font-semibold leading-[0.9] tracking-[-0.08em]">זהות סטודיו נשמרת במסד</h2><p className="mt-3 max-w-[20rem] text-right text-sm leading-relaxed text-white/60">המיתוג נשאר חלק ממערכת אחת, לא שכבת צבע על מסכים.</p></HeroSurface><Surface tone="admin"><p className="text-right text-sm text-white/58">מיתוג הסטודיו נשמר במסד ויורחב בשלב הבא.</p><div className="mt-3"><V6Button onClick={() => show("מיתוג מוכן לעריכה")}>בדיקת מיתוג</V6Button></div></Surface></div>;
 }
 

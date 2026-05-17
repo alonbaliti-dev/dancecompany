@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useReducer, useState, type ReactNode } from "react";
 import { cloneV6Database } from "./seed";
+import { mergeV6Database, normalizeV6Database } from "./dedupe";
 import { buildV6SaveProductOperation } from "@/lib/domains/shop/operations";
 import { buildV6SaveAttendanceOperation } from "@/lib/domains/attendance/operations";
 import { buildV6ResetPasswordOperation, buildV6UpsertUserOperation } from "@/lib/domains/users/v6-operations";
@@ -62,12 +63,12 @@ function auditEntry(actor: V6User, action: string, target: string): V6AuditEntry
 }
 
 function withAudit(db: V6Database, entry: V6AuditEntry): V6Database {
-  return { ...db, auditLog: [entry, ...db.auditLog].slice(0, 300) };
+  return normalizeV6Database({ ...db, auditLog: [entry, ...db.auditLog].slice(0, 300) });
 }
 
 function notify(db: V6Database, input: Omit<V6Notification, "id" | "createdAt" | "readBy">): V6Database {
   const notification: V6Notification = { ...input, id: id("ntf"), readBy: [], createdAt: now() };
-  return { ...db, notifications: [notification, ...db.notifications].slice(0, 250) };
+  return normalizeV6Database({ ...db, notifications: [notification, ...db.notifications].slice(0, 250) });
 }
 
 function managementIds(db: V6Database, studioId: string) {
@@ -77,17 +78,32 @@ function managementIds(db: V6Database, studioId: string) {
 function familyIds(db: V6Database, studentId: string) {
   const student = db.users.find((u) => u.id === studentId);
   if (!student) return [];
-  return [student.id, ...db.users.filter((u) => u.role === "parent" && u.linkedStudentIds.includes(student.id)).map((u) => u.id)];
+  return [student.id, ...db.users.filter((u) => u.role === "parent" && (u.linkedStudentIds.includes(student.id) || student.linkedParentIds?.includes(u.id))).map((u) => u.id)];
 }
 
 function syncGroupsWithUsers(db: V6Database, users: V6User[]): V6Database {
+  const parentIdsByStudent = new Map<string, string[]>();
+  users
+    .filter((user) => user.role === "parent")
+    .forEach((parent) => {
+      parent.linkedStudentIds.forEach((studentId) => {
+        parentIdsByStudent.set(studentId, [...(parentIdsByStudent.get(studentId) ?? []), parent.id]);
+      });
+    });
+  const normalizedUsers = users.map((user) => {
+    const groupIds = [...new Set(user.groupIds)];
+    const linkedStudentIds = [...new Set(user.linkedStudentIds)];
+    if (user.role === "student") return { ...user, groupIds, linkedStudentIds: [], linkedParentIds: [...new Set([...(user.linkedParentIds ?? []), ...(parentIdsByStudent.get(user.id) ?? [])])], status: user.status ?? (user.active ? "active" : "inactive") };
+    if (user.role === "parent") return { ...user, groupIds: [], linkedStudentIds, linkedParentIds: [], status: user.status ?? (user.active ? "active" : "inactive") };
+    return { ...user, groupIds, linkedStudentIds: [], linkedParentIds: [], status: user.status ?? (user.active ? "active" : "inactive") };
+  });
   return {
     ...db,
-    users,
+    users: normalizedUsers,
     groups: db.groups.map((group) => ({
       ...group,
-      teacherIds: users.filter((user) => (user.role === "teacher" || user.role === "management") && user.groupIds.includes(group.id)).map((user) => user.id),
-      studentIds: users.filter((user) => user.role === "student" && user.groupIds.includes(group.id)).map((user) => user.id)
+      teacherIds: normalizedUsers.filter((user) => (user.role === "teacher" || user.role === "management") && user.groupIds.includes(group.id)).map((user) => user.id),
+      studentIds: normalizedUsers.filter((user) => user.role === "student" && user.groupIds.includes(group.id)).map((user) => user.id)
     }))
   };
 }
@@ -95,7 +111,7 @@ function syncGroupsWithUsers(db: V6Database, users: V6User[]): V6Database {
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "replace_db":
-      return { ...state, db: action.db, sync: "local" };
+      return { ...state, db: normalizeV6Database(action.db), sync: "local" };
     case "login":
       return { ...state, session: { userId: action.userId } };
     case "logout":
@@ -120,7 +136,7 @@ function reducer(state: State, action: Action): State {
       db = syncGroupsWithUsers(db, users);
       db = notify(db, { studioId: user.studioId, userIds: [user.id], title: exists ? "הפרטים שלך עודכנו" : "נוצר לך חשבון", body: "אפשר להתחבר עם הטלפון והסיסמה שנשמרו.", type: "user", screen: "users" });
       db = notify(db, { studioId: user.studioId, userIds: managementIds(db, user.studioId), title: exists ? "משתמש עודכן" : "משתמש חדש", body: user.name, type: "user", screen: "users" });
-      return { ...state, db: withAudit(db, auditEntry(action.actor, exists ? "עדכון משתמש" : "יצירת משתמש", user.id)) };
+      return { ...state, db: withAudit(normalizeV6Database(db), auditEntry(action.actor, exists ? "עדכון משתמש" : "יצירת משתמש", user.id)) };
     }
     case "reset_password": {
       const target = state.db.users.find((u) => u.id === action.userId);
@@ -133,7 +149,7 @@ function reducer(state: State, action: Action): State {
         credentials: [credential, ...state.db.credentials.filter((c) => c.userId !== target.id)]
       };
       db = notify(db, { studioId: target.studioId, userIds: [target.id], title: "הסיסמה עודכנה", body: "ההנהלה עדכנה את פרטי ההתחברות שלך.", type: "user", screen: "users" });
-      return { ...state, db: withAudit(db, auditEntry(action.actor, "איפוס סיסמה", action.userId)) };
+      return { ...state, db: withAudit(normalizeV6Database(db), auditEntry(action.actor, "איפוס סיסמה", action.userId)) };
     }
     case "request_private_lesson": {
       const request: V6PrivateLesson = {
@@ -148,7 +164,7 @@ function reducer(state: State, action: Action): State {
         suggestedSlots: [],
         createdAt: now()
       };
-      let db: V6Database = { ...state.db, privateLessons: [request, ...state.db.privateLessons] };
+      let db: V6Database = normalizeV6Database({ ...state.db, privateLessons: [request, ...state.db.privateLessons] });
       db = notify(db, { studioId: action.actor.studioId, userIds: [action.teacherId, ...managementIds(db, action.actor.studioId)], title: "בקשת שיעור פרטי", body: `${action.duration} דקות`, type: "private_lesson", screen: "private_lessons" });
       return { ...state, db: withAudit(db, auditEntry(action.actor, "בקשת שיעור פרטי", request.id)) };
     }
@@ -185,10 +201,10 @@ function reducer(state: State, action: Action): State {
         products: exists ? state.db.products.map((p) => (p.id === product.id ? product : p)) : [product, ...state.db.products]
       };
       db = notify(db, { studioId: product.studioId, userIds: managementIds(db, product.studioId), title: exists ? "מוצר עודכן" : "מוצר חדש בחנות", body: product.title, type: "shop", tab: "shop" });
-      return { ...state, db: withAudit(db, auditEntry(action.actor, exists ? "עדכון מוצר" : "יצירת מוצר", product.id)) };
+      return { ...state, db: withAudit(normalizeV6Database(db), auditEntry(action.actor, exists ? "עדכון מוצר" : "יצירת מוצר", product.id)) };
     }
     case "save_media": {
-      let db: V6Database = { ...state.db, media: [action.media, ...state.db.media.filter((m) => m.id !== action.media.id)] };
+      let db: V6Database = normalizeV6Database({ ...state.db, media: [action.media, ...state.db.media.filter((m) => m.id !== action.media.id)] });
       db = notify(db, { studioId: action.actor.studioId, userIds: managementIds(db, action.actor.studioId), title: "מדיה חדשה", body: action.media.title, type: "media", screen: "media" });
       return { ...state, db: withAudit(db, auditEntry(action.actor, "שמירת מדיה", action.media.id)) };
     }
@@ -211,12 +227,12 @@ function reducer(state: State, action: Action): State {
           if (!student) return;
           db = notify(db, { studioId: action.actor.studioId, userIds: [...new Set([...familyIds(db, student.id), ...managementIds(db, action.actor.studioId)])], title: "היעדרות נרשמה", body: `${student.name} · ${record.note || "ללא הערה"}`, type: "system", tab: "lessons" });
         });
-      return { ...state, db: withAudit(db, auditEntry(action.actor, "שמירת נוכחות", `${action.lessonId}:${action.classDate}`)) };
+      return { ...state, db: withAudit(normalizeV6Database(db), auditEntry(action.actor, "שמירת נוכחות", `${action.lessonId}:${action.classDate}`)) };
     }
     case "mark_notification_read":
-      return { ...state, db: { ...state.db, notifications: state.db.notifications.map((n) => (n.id === action.notificationId ? { ...n, readBy: [...new Set([...n.readBy, action.userId])] } : n)) } };
+      return { ...state, db: normalizeV6Database({ ...state.db, notifications: state.db.notifications.map((n) => (n.id === action.notificationId ? { ...n, readBy: [...new Set([...n.readBy, action.userId])] } : n)) }) };
     case "mark_all_read":
-      return { ...state, db: { ...state.db, notifications: state.db.notifications.map((n) => (n.userIds.includes(action.userId) ? { ...n, readBy: [...new Set([...n.readBy, action.userId])] } : n)) } };
+      return { ...state, db: normalizeV6Database({ ...state.db, notifications: state.db.notifications.map((n) => (n.userIds.includes(action.userId) ? { ...n, readBy: [...new Set([...n.readBy, action.userId])] } : n)) }) };
     case "update_text":
       return { ...state, db: withAudit({ ...state.db, editableTexts: { ...state.db.editableTexts, [action.key]: action.value } }, auditEntry(action.actor, "עדכון טקסט", action.key)) };
     case "update_flags":
@@ -239,7 +255,7 @@ export function V6AppProvider({ children }: { children: ReactNode }) {
     try {
       const savedDb = localStorage.getItem(DB_KEY);
       const savedSession = localStorage.getItem(SESSION_KEY);
-      if (savedDb) dispatch({ type: "replace_db", db: { ...cloneV6Database(), ...JSON.parse(savedDb), version: 6 } as V6Database });
+      if (savedDb) dispatch({ type: "replace_db", db: mergeV6Database(cloneV6Database(), { ...JSON.parse(savedDb), version: 6 } as V6Database) });
       if (savedSession) {
         const parsed = JSON.parse(savedSession) as V6Session;
         if (parsed?.userId) dispatch({ type: "login", userId: parsed.userId });
@@ -283,7 +299,7 @@ export function V6AppProvider({ children }: { children: ReactNode }) {
     try {
       const parsed = JSON.parse(await file.text()) as V6Database;
       if (!parsed || !Array.isArray(parsed.users)) return { ok: false as const, reason: "קובץ מסד לא תקין" };
-      dispatch({ type: "replace_db", db: { ...cloneV6Database(), ...parsed, version: 6 } });
+      dispatch({ type: "replace_db", db: mergeV6Database(cloneV6Database(), { ...parsed, version: 6 }) });
       return { ok: true as const };
     } catch {
       return { ok: false as const, reason: "לא ניתן לקרוא את הקובץ" };

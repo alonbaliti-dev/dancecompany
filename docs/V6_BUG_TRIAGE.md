@@ -34,3 +34,66 @@ Functional triage is prioritized over visual redesign. Current V6 visual/RTL cha
 - Attendance: failed/fixed for absent records not updating every insight path, then passed. Domain QA verified teacher assigned-group access, unauthorized group exclusion, all-present save, absent/late/excused/note save, persistence, attendance percentage, attendance risk, AI risk insight, management health, event readiness, export shape, and audit.
 - Shop regression: passed. Domain QA verified add product, edit product, active shop selector visibility, persistence/export shape, and audit entry.
 - Follow-up: browser automation in the Cursor side panel still has limited coordinate reliability for long bottom-sheet forms, so final persistence/export assertions were backed by code-level QA against the same domain operations and selectors.
+
+## 2026-05-17 Critical Functional Recovery Pass
+
+Functional recovery superseded visual redesign. The pass preserved the existing V6 visual system and focused only on shop product management, user management, and group-centered attendance.
+
+| Area | Exact flow tested | Expected | Actual/root cause | Fix applied | QA status |
+| --- | --- | --- | --- | --- | --- |
+| Shop product create/edit | Add product with name, category, type, price in ₪, description, image from media, inventory/status, visibility, save, then view in shop/export state | Complete product sheet validates and saves through provider/domain; image and price render immediately | Product model only had title/category/price/active/image IDs; UI lacked product type, price mode, inventory status, visibility, member-only details and richer metadata | Added optional V6 product fields, domain constants/validation/normalization, category/type/inventory/visibility/price-mode controls, image-library binding, member-only and notes/pickup metadata | Automated lint/typecheck/build passed. Browser QA confirmed sheet fields, price input, and media-library selection; side-panel click interception blocked final save click, so persistence is covered by provider/domain save path and build checks |
+| User sorting/grouping/edit context | Open user management, search/filter by role/group/age/style/status, inspect cards, edit student/parent/teacher/management context fields | Hebrew alphabetical sorting, grouped by role, relationship-aware cards and filters, complete edit context | User selector returned raw DB order and editor only handled basic role/groups/links | Added shared `sortByHebrewName`, `groupUsersByRole`, `groupStudentsByGroup`, `groupTeachersByStyle`, `sortGroupsByAgeAndStyle`; added filters and role-specific fields for age/style/parents/children/private lessons/responsibility/notes | Automated lint/typecheck/build passed. Code QA verifies selectors and editor state persist through `upsert_user`, group sync, parent linkage sync, permissions, audit and local export |
+| Attendance group flow | Open lessons, choose assigned group/class, mark all present, mark absent/late/excused exceptions, add notes, save, reopen context | Teacher sees assigned groups only; student rows sorted; group context shows style/teacher/time/count/marked/last saved; save updates attendance records and downstream engines | Attendance row order was raw DB order; all-present did not set every row; context lacked saved timestamp and marked count | Added sorted attendance students selector, full group context, all-present overwrite, saved timestamps, recent absence/task/parent cues, and persisted records with `savedAt` | Automated lint/typecheck/build passed. Code QA verifies save operation permissions, record replacement keys, attendance rate/risk/management/event readiness consumers |
+
+Checks run:
+
+- `npm run lint` passed.
+- `npm run typecheck` passed.
+- `npm run build` passed with Next.js 16.2.6/Turbopack. Build emitted only the existing Node `module.register()` deprecation warning.
+
+Manual/browser QA notes:
+
+- Shop sheet opened in the browser, showed required fields, accepted price `123`, and selected an existing media-library image.
+- The browser side panel contained a prior local DB state with older test products and a Next dev hydration overlay; a fixed/bottom navigation layer intercepted the final sheet save click in automation. No code or build failure was observed.
+- No deployment, commit, push, merge, backend expansion, AI expansion, or visual redesign was performed.
+
+## 2026-05-17 Critical V6 Structural Cleanup
+
+Structural cleanup superseded visual polish. The pass focused on duplicate records, edit sheet reachability, and V6 local UI/state flows only.
+
+| Area | Root cause | Fix applied | Affected screens | QA status |
+| --- | --- | --- | --- | --- |
+| Duplicate records | V6 hydration/import accepted saved arrays without a canonical normalization pass, and selectors rendered raw arrays if old local state already contained duplicate IDs/composite rows. User/group relationships could also drift between `users.groupIds`, parent links, and `groups.teacherIds/studentIds`. | Added `lib/v6/dedupe.ts` with `dedupeById`, `dedupeByCompositeKey`, `dedupeParentStudentLinks`, `dedupeTeacherGroupAssignments`, `dedupeShopProducts`, `normalizeV6Database`, and `mergeV6Database`. Seed clone, local hydration, import, and sensitive reducer writes now normalize by ID/composite keys and prefer latest timestamp when present. Shop/users/attendance/messages/media selectors also dedupe their outputs. | Users, products, groups, parent/student links, teacher assignments, shop categories/products, More menu targets, media, attendance, notifications. | Typecheck passed. Lint passed with existing warnings. Local duplicate state is normalized on next load/write. |
+| Edit sheets too low/unreachable | `BottomSheet` was rendered inside the animated V6 shell, so `position: fixed` could be scoped by transformed ancestors. Several desktop flows also rendered the same editor inline below content, creating duplicate/unreachable forms. | `BottomSheet` now portals to `document.body`, locks `html` and `body` scroll, uses fixed viewport height, internal `overflow-y-auto`, safe-area padding, sticky header, and sticky form footers supplied by editors. Removed duplicate desktop inline editors for attendance, shop products, and users. | Add/edit product, image picker inside product editor, add/edit user, reset password, parent/student link, group assignment, attendance marking/notes, media upload. | Browser QA at 390px reproduced the original unreachable-sheet failure before the portal fix. After hot reload, Cursor browser snapshots and screenshots disagreed, so final reachability is backed by the portal/fixed-height implementation plus typecheck/lint/build. |
+| Sheet state conflicts | Each flow used booleans/IDs plus duplicated inline editor rendering, so multiple editor surfaces could exist for one action. | Converted active edit flows to typed `activeSheet` objects in screen scope: attendance, product add/edit, user add/edit, and media upload. Only one primary sheet renders per screen, and save/cancel closes it. | Lessons, Shop, Users, Media. | Code QA verifies single sheet state and removal of inline duplicate editors. |
+
+Checks run for this pass:
+
+- `npm run typecheck` passed.
+- `npm run lint` passed with existing repository warnings.
+- `npm run build` passed with the existing Node `module.register()` deprecation warning from the toolchain.
+
+Constraints honored:
+
+- No visual polish work, deployment, backend/AI expansion, commit, push, or merge was performed.
+
+## 2026-05-17 Management Stabilization Checkpoint
+
+This checkpoint stayed on `fix/v6-management-stabilization` and did not resume deployment or visual polish. The goal was to make the management sheet system reliable enough for add/edit users, add/edit products, and attendance flows.
+
+| Area | Root cause found | Fix applied | Manual QA status |
+| --- | --- | --- | --- |
+| Sheet visibility and positioning | The portal existed but the core panel could remain visually unreliable during hot reload/manual QA, and the scroll-lock focus effect reran on every form state change because `onClose` changed identity. This could steal focus while typing. | Kept the sheet portal but made the dialog a plain stable fixed panel, added explicit fixed/z-index inline positioning for the overlay, preserved internal scroll, and stored `onClose` in a ref so Escape handling does not refocus the sheet on every keystroke. | Passed in browser. User, product, and attendance sheets render visibly over the app, have internal scrolling, and keep the bottom nav behind the overlay. |
+| Sheet pointer events | The full-screen backdrop could win hit-testing over dialog controls in some nested-scroll states, intermittently intercepting save clicks. | Gave the backdrop `zIndex: 0` and the dialog `zIndex: 1` inside the fixed overlay. | Passed in browser. User save, product save, and attendance save buttons received clicks reliably after the fix. |
+| Product manager visibility | Management product lists used the active-shop selector, so draft/hidden/inactive products could disappear from the edit surface after save. | Added `selectV6ShopProductsForActor`; managers/super admins see deduped products for editing, while regular shop users still see only active visible products. | Passed in browser. Added product, selected existing media image, saved, reopened, edited price from `123` to `145`, saved, and saw the updated price in shop. |
+| User management persistence | Existing typed sheet state was safe, but the sheet infrastructure made add/edit/reset flows unreliable before the overlay fixes. | Kept single `activeSheet` user editor and stabilized the shared sheet layer underneath it. | Passed in browser. Added student, saved and saw grouped/sorted list update, reopened user sheet, reset password, edited name, saved, and saw the updated card persist. |
+| Attendance persistence | Attendance flow needed verification through the now-stable sheet, including reopen and management summary update. | No domain rewrite needed beyond the existing active sheet and saved attendance path; verified the sheet fixes against the attendance editor. | Passed in browser. Opened group, marked absent with note, saved, saw management summary update, reopened with note persisted, then used “mark all present,” saved, and saw summary update to `1 סומנו, 0 חסרים, 0 איחורים`. |
+
+Checks for this checkpoint:
+
+- `npm run typecheck` passed before manual QA.
+- Full `npm run lint`, `npm run typecheck`, and `npm run build` are required after this documentation update.
+
+Constraints honored:
+
+- No deployment, push, merge, backend expansion, AI expansion, or visual polish was performed.

@@ -14,9 +14,23 @@ export function buildV6UpsertUserOperation(db: V6Database, actor: V6User, user: 
   const invalidLinkedStudent = user.linkedStudentIds.some((studentId) => !db.users.some((item) => item.id === studentId && item.role === "student"));
   if (invalidLinkedStudent) return v6Denied("קישור תלמיד/ה לא תקין");
   const exists = db.users.some((item) => item.id === user.id);
+  const normalizedActive = user.status ? user.status === "active" : user.active;
   return v6Allowed({
     exists,
-    user: { ...user, name: user.name.trim(), phone: user.phone.trim(), groupIds: [...new Set(user.groupIds)], linkedStudentIds: [...new Set(user.linkedStudentIds)] },
+    user: {
+      ...user,
+      name: user.name.trim(),
+      phone: user.phone.trim(),
+      active: normalizedActive,
+      status: user.status ?? (normalizedActive ? "active" : "inactive"),
+      groupIds: [...new Set(user.groupIds)],
+      linkedStudentIds: [...new Set(user.linkedStudentIds)],
+      linkedParentIds: [...new Set(user.linkedParentIds ?? [])],
+      danceStyleIds: [...new Set(user.danceStyleIds ?? [])],
+      notes: user.notes?.trim(),
+      communicationPrefs: user.communicationPrefs?.trim(),
+      responsibility: user.responsibility?.trim()
+    },
     credential: credential ? { ...credential, phone: credential.phone.trim(), password: credential.password.trim() } : undefined
   });
 }

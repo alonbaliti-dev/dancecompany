@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type ElementType, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { ChevronLeft, WandSparkles } from "lucide-react";
 import { aiSafetyNotice } from "@/lib/ai/ai-orchestrator";
@@ -160,17 +161,72 @@ export function FormField({ label, value, onChange, type = "text", placeholder }
 }
 
 export function BottomSheet({ title, children, onClose }: { title: string; children: ReactNode; onClose: () => void }) {
-  return (
-    <div dir="rtl" className="fixed inset-0 z-[300] flex items-end bg-black/68 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] backdrop-blur-md md:hidden">
-      <motion.div initial={{ y: 36, opacity: 0 }} animate={{ y: 0, opacity: 1 }} style={{ height: "min(86dvh, 720px)" }} className="w-full overflow-hidden rounded-[34px] border border-[rgba(255,255,255,0.09)] bg-[#090608] shadow-[0_32px_100px_rgba(0,0,0,0.66),inset_0_1px_0_rgba(255,255,255,0.1)]">
-        <div className="flex items-center gap-3 px-5 py-4 shadow-[inset_0_-1px_0_rgba(255,255,255,0.06)]">
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    const previousOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    window.requestAnimationFrame(() => sheetRef.current?.focus());
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onCloseRef.current();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [mounted]);
+
+  const sheet = (
+    <div
+      dir="rtl"
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 2147483647,
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "center",
+        background: "rgba(0,0,0,0.68)",
+        paddingTop: "calc(env(safe-area-inset-top, 0px) + 12px)"
+      }}
+      className="px-0 pb-0 backdrop-blur-md md:p-6"
+    >
+      <button type="button" aria-label="סגירת שכבת עריכה" style={{ zIndex: 0 }} className="absolute inset-0 cursor-default" onClick={onClose} />
+      <div
+        ref={sheetRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        tabIndex={-1}
+        onClick={(event) => event.stopPropagation()}
+        style={{ zIndex: 1, height: "min(720px, calc(100dvh - env(safe-area-inset-top, 0px) - 12px))", insetInline: 0, bottom: 0 }}
+        className="relative flex w-full max-w-[430px] flex-col overflow-hidden rounded-t-[34px] border border-[rgba(255,255,255,0.09)] bg-[#090608] shadow-[0_32px_100px_rgba(0,0,0,0.66),inset_0_1px_0_rgba(255,255,255,0.1)] outline-none md:max-w-[760px] md:rounded-[36px]"
+      >
+        <div className="sticky top-0 z-10 flex items-center gap-3 bg-[#090608]/96 px-5 py-4 shadow-[inset_0_-1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl">
           <h2 className="min-w-0 flex-1 truncate text-start text-xl font-semibold tracking-[-0.03em]">{title}</h2>
           <Button variant="ghost" onClick={onClose}>סגירה</Button>
         </div>
-        <div style={{ height: "calc(100% - 5rem)" }} className="overflow-y-auto p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">{children}</div>
-      </motion.div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5 pb-[calc(5rem+env(safe-area-inset-bottom,0px))]">{children}</div>
+      </div>
     </div>
   );
+
+  return mounted ? createPortal(sheet, document.body) : null;
 }
 
 export function Toast({ message }: { message: string | null }) {

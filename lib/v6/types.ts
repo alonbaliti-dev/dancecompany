@@ -38,6 +38,15 @@ export type V6User = {
   permissions: V6Permissions;
   groupIds: string[];
   linkedStudentIds: string[];
+  linkedParentIds?: string[];
+  ageGroup?: string;
+  danceStyleIds?: string[];
+  status?: "active" | "inactive" | "pending" | "paused";
+  notes?: string;
+  communicationPrefs?: string;
+  primaryContact?: boolean;
+  privateLessonEnabled?: boolean;
+  responsibility?: string;
   active: boolean;
 };
 
@@ -52,6 +61,9 @@ export type V6Group = {
   studioId: string;
   name: string;
   style: string;
+  ageGroup?: string;
+  danceStyle?: string;
+  schedule?: string;
   teacherIds: string[];
   studentIds: string[];
 };
@@ -94,7 +106,19 @@ export type V6Product = {
   title: string;
   description: string;
   category: string;
+  type?: "physical" | "event_ticket" | "private_lesson" | "workshop_camp" | "accessory" | "clothing";
   price: number;
+  priceMode?: "paid" | "free" | "request";
+  inventoryStatus?: "in_stock" | "out_of_stock" | "limited" | "preorder" | "draft";
+  visibility?: "public" | "members" | "hidden";
+  sizes?: string[];
+  colors?: string[];
+  notes?: string;
+  pickupDeliveryNote?: string;
+  memberOnly?: boolean;
+  eventId?: string;
+  groupIds?: string[];
+  danceStyleIds?: string[];
   active: boolean;
   imageMediaIds: string[];
   featuredImageMediaId?: string;
@@ -112,6 +136,7 @@ export type V6AttendanceRecord = {
   status: V6AttendanceStatus;
   note?: string;
   markedByUserId?: string;
+  savedAt?: string;
   createdAt: string;
   updatedAt?: string;
 };
