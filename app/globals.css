@@ -5,30 +5,36 @@
 :root {
   color-scheme: dark;
 
-  --bg-canvas: #030304;
-  --bg-card: #0c0c0f;
-  --bg-elevated: #141418;
-  --bg-glass: rgba(12, 12, 15, 0.82);
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-accent: rgba(52, 211, 153, 0.28);
+  --bg-canvas: #050304;
+  --bg-card: #10080b;
+  --bg-elevated: #171014;
+  --bg-glass: rgba(16, 8, 11, 0.84);
+  --border-subtle: rgba(255, 255, 255, 0.085);
+  --border-accent: rgba(215, 181, 109, 0.28);
 
   --text-primary: rgba(255, 255, 255, 0.92);
   --text-secondary: rgba(255, 255, 255, 0.55);
   --text-muted: rgba(255, 255, 255, 0.38);
 
-  --color-accent: #3ee8a8;
-  --color-accent-dim: rgba(62, 232, 168, 0.14);
-  --color-flamenco: #f472b6;
-  --color-hiphop: #60a5fa;
-  --color-ballet: #c4b5fd;
+  --color-accent: #d7b56d;
+  --color-accent-dim: rgba(215, 181, 109, 0.14);
+  --color-flamenco: #b72f3d;
+  --color-hiphop: #8b5cf6;
+  --color-ballet: #d8d2ff;
   --color-success: #34d399;
   --color-warning: #fbbf24;
   --color-danger: #fb7185;
   --color-info: #38bdf8;
-  --color-achievement: #fcd34d;
+  --color-achievement: #f4d58d;
+  --color-velvet: #3d1027;
+  --color-champagne: #d7b56d;
+  --color-platinum: #d8d2ff;
+  --color-stage-amber: #f4d58d;
+  --color-royal-blue: #2563eb;
+  --color-velvet-purple: #3d1027;
 
-  --lk-card-radius: 1.25rem;
-  --lk-nav-height: 3.95rem;
+  --lk-card-radius: 2rem;
+  --lk-nav-height: 4.45rem;
 
   --font-sans: ui-sans-serif, system-ui, sans-serif;
 
@@ -101,6 +107,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   touch-action: manipulation;
+  letter-spacing: -0.01em;
 }
 
 html,
@@ -132,6 +139,11 @@ body[data-standalone="true"] {
 
 button,
 [role="button"] {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   scroll-margin-top: 1rem;
@@ -146,8 +158,16 @@ textarea {
   scroll-margin-bottom: calc(var(--nav-offset) + 2.5rem);
 }
 
+input,
+select,
+textarea {
+  appearance: none;
+  color: inherit;
+  font: inherit;
+}
+
 ::selection {
-  background: rgba(52, 211, 153, 0.28);
+  background: rgba(215, 181, 109, 0.30);
   color: #fff;
 }
 
@@ -324,10 +344,10 @@ textarea {
 /* Premium ambient canvas — Apple Fitness–inspired depth */
 .app-canvas-glow {
   background:
-    radial-gradient(ellipse 95% 55% at 50% -18%, rgba(62, 232, 168, 0.14), transparent 52%),
-    radial-gradient(ellipse 50% 42% at 92% 12%, rgba(244, 114, 182, 0.09), transparent 48%),
-    radial-gradient(ellipse 48% 38% at 4% 52%, rgba(96, 165, 250, 0.07), transparent 50%),
-    radial-gradient(ellipse 40% 30% at 70% 88%, rgba(196, 181, 253, 0.05), transparent 45%),
+    radial-gradient(ellipse 95% 55% at 50% -18%, rgba(244, 213, 141, 0.13), transparent 52%),
+    radial-gradient(ellipse 50% 42% at 92% 12%, rgba(100, 28, 63, 0.16), transparent 48%),
+    radial-gradient(ellipse 48% 38% at 4% 52%, rgba(139, 92, 246, 0.09), transparent 50%),
+    radial-gradient(ellipse 40% 30% at 70% 88%, rgba(16, 185, 129, 0.07), transparent 45%),
     var(--bg-canvas);
 }
 
@@ -446,6 +466,34 @@ textarea {
 .lk-text-balance {
   overflow-wrap: anywhere;
   text-wrap: pretty;
+}
+
+.bidi-plain {
+  unicode-bidi: plaintext;
+}
+
+.bidi-isolate {
+  unicode-bidi: isolate;
+}
+
+.rtl-text {
+  direction: rtl;
+  text-align: start;
+  unicode-bidi: plaintext;
+}
+
+.ltr-number {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.rtl-row {
+  direction: rtl;
+  text-align: start;
+}
+
+.rtl-row > .rtl-row-trailing {
+  margin-inline-start: auto;
 }
 
 .no-scrollbar::-webkit-scrollbar {

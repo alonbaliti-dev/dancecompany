@@ -12,7 +12,7 @@ export function v6Allowed<TPayload>(payload?: TPayload): V6DomainResult<TPayload
   return { allowed: true, payload };
 }
 
-export function v6Denied(reason: string): V6DomainResult {
+export function v6Denied<TPayload = never>(reason: string): V6DomainResult<TPayload> {
   return { allowed: false, reason };
 }
 

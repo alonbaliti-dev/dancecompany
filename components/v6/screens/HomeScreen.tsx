@@ -10,7 +10,7 @@ import { selectV6UnreadCount, selectV6NotificationsForActor, selectV6MessagesFor
 import { selectV6PrivateLessonsForActor } from "@/lib/domains/private-lessons/selectors";
 import { selectV6AIInsightsForActor } from "@/lib/domains/ai/selectors";
 import { computeV6AttendanceRisks, computeV6EventReadiness, computeV6ManagementHealth, computeV6PrivateLessonCoordination } from "@/lib/engines/v6";
-import { ActionPill, AISuggestionStack, Button, FeedRow, HeroSurface, StatusBadge, Widget, v6Cx, v6Tone, type V6Tone } from "@/components/v6/design-system";
+import { ActionPill, AISuggestionStack, BidiNumber, Button, EditorialSection, FeedRow, HeroSurface, RtlText, StatusBadge, Widget, v6Cx, v6Tone, type V6Tone } from "@/components/v6/design-system";
 
 type HomeAction = {
   icon: ElementType;
@@ -29,28 +29,28 @@ function roleTone(role: V6Role): V6Tone {
 }
 
 function roleHomeCopy(user: V6User) {
-  if (user.role === "teacher") return { title: "מרכז שיעור מהיר", subtitle: "נוכחות, הודעות, מדיה ומשימות בלי עומס בזמן אמת." };
-  if (user.role === "management") return { title: "מרכז שליטה", subtitle: "מה דורש טיפול עכשיו, ומה יכול להישאר רגוע." };
-  if (user.role === "super_admin") return { title: "חדר מערכת", subtitle: "בריאות פלטפורמה, אודיט, AI וכלים מתקדמים במקום אחד." };
-  if (user.role === "parent") return { title: "תמונת מצב רגועה", subtitle: "השיעור הבא, הודעות חשובות, מדיה ותשלומים רלוונטיים." };
-  return { title: "היום שלך בסטודיו", subtitle: "שיעור הבא, משימות, מדיה והתקדמות בצורה קצרה וברורה." };
+  if (user.role === "teacher") return { title: "החזרה מתחילה בשקט", subtitle: "השיעור הבא, הנוכחות והקבוצה כבר מסודרים סביב פעולה אחת.", cue: "סימן למורה", action: "פתיחת שיעור" };
+  if (user.role === "management") return { title: "מה דורש החלטה עכשיו", subtitle: "רק הסיכונים והבקשות שצריכים יד הנהלה עולים קדימה.", cue: "פיקוד סטודיו", action: "סקירת מצב" };
+  if (user.role === "super_admin") return { title: "בריאות המוצר לפני הכול", subtitle: "אודיט, מסד והרשאות מוצגים כמו קוקפיט מוצרי רגוע.", cue: "קוקפיט מערכת", action: "פתיחת בריאות" };
+  if (user.role === "parent") return { title: "הילד נראה, היום רגוע", subtitle: "השיעור הבא, הודעות חשובות ותשלום קרוב בלי עומס.", cue: "שקט להורה", action: "מה קורה היום" };
+  return { title: "רגע לפני שנכנסים לסטודיו", subtitle: "השיעור הבא, ההתקדמות והעדכון החשוב מתכנסים לנקודת התחלה אחת.", cue: "מאחורי הקלעים", action: "התחלת היום" };
 }
 
 function Metric({ icon: Icon, tone, value, label, trend }: { icon: ElementType; tone: V6Tone; value: string; label: string; trend: string }) {
   return (
-    <div className="min-w-0 rounded-[23px] bg-white/[0.058] px-3 py-3 text-right shadow-[0_12px_30px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl">
-      <div className="flex items-center justify-between gap-2">
-        <span className={v6Cx("grid h-8 w-8 shrink-0 place-items-center rounded-full", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={15} /></span>
-        <span className="truncate text-[1.05rem] font-black tracking-[-0.04em] text-white">{value}</span>
+    <div dir="rtl" className="min-w-0 rounded-[24px] border border-[rgba(255,255,255,0.040)] bg-white/[0.032] px-3 py-3 text-start shadow-[inset_0_1px_0_rgba(255,255,255,0.040)]">
+      <div className="flex items-center gap-2">
+        <span className={v6Cx("grid h-8 w-8 shrink-0 place-items-center rounded-[14px]", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={14} /></span>
+        <span className="min-w-0 flex-1 truncate text-[1.08rem] font-semibold tracking-[-0.04em] text-white/90"><BidiNumber>{value}</BidiNumber></span>
       </div>
-      <p className="mt-2 truncate text-[11px] font-bold text-white/58">{label}</p>
-      <p className="mt-0.5 line-clamp-2 text-[10px] leading-tight text-white/36">{trend}</p>
+      <RtlText as="p" className="mt-2 truncate text-[11px] font-semibold text-white/56">{label}</RtlText>
+      <RtlText as="p" className="mt-0.5 line-clamp-2 text-[10px] leading-tight text-white/40">{trend}</RtlText>
     </div>
   );
 }
 
 function ProgressRing({ value }: { value: number }) {
-  return <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full text-[11px] font-black text-white" style={{ background: `conic-gradient(rgba(167,243,208,.95) ${value * 3.6}deg, rgba(255,255,255,.10) 0)` }}><span className="grid h-10 w-10 place-items-center rounded-full bg-zinc-950">{value}%</span></div>;
+  return <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full text-[10px] font-semibold text-white/88" style={{ background: `conic-gradient(rgba(236,253,245,.88) ${value * 3.6}deg, rgba(255,255,255,.10) 0)` }}><span className="grid h-10 w-10 place-items-center rounded-full bg-zinc-950/92 shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]"><BidiNumber>{value}%</BidiNumber></span></div>;
 }
 
 export function HomeScreen({ user, openScreen, openTab }: { user: V6User; openScreen: (screen: V6Screen) => void; openTab: (tab: V6Tab) => void }) {
@@ -84,44 +84,37 @@ export function HomeScreen({ user, openScreen, openTab }: { user: V6User; openSc
     ...tasks.slice(0, 1).map((item) => ({ id: item.id, icon: ClipboardList, title: item.title, body: "משימה פתוחה לפי קבוצה והרשאות", meta: "משימה", tone: "repertoire" as V6Tone }))
   ].slice(0, 4);
   const operational = user.role === "management" || user.role === "super_admin" || user.role === "teacher";
+  const primaryAction = user.role === "super_admin" ? () => openScreen("system") : user.role === "management" ? () => openScreen("users") : next ? () => openTab("lessons") : () => openScreen("private_lessons");
 
   return (
     <div className="space-y-4">
-      <HeroSurface tone={tone}>
-        <div className="pointer-events-none absolute -left-12 -top-16 h-40 w-40 rounded-full bg-white/12 blur-3xl" />
-        <div className="relative flex items-start justify-between gap-4">
-          <ProgressRing value={attendanceRate} />
-          <div className="min-w-0 text-right">
-            <div className="flex flex-wrap items-center justify-end gap-2">
+      <HeroSurface tone={tone} className="min-h-[342px] px-5 py-5">
+        <div className="pointer-events-none absolute left-6 bottom-9 h-20 w-20 rounded-[30px] border border-white/[0.045] bg-black/12" />
+        <div className="relative flex items-start gap-4">
+          <div className="min-w-0 flex-1 text-start">
+            <div className="flex flex-wrap items-center justify-start gap-2">
               <StatusBadge tone={tone}>{roleLabel[user.role]}</StatusBadge>
-              {primaryGroup ? <span className="rounded-full bg-black/16 px-2.5 py-1 text-[11px] font-bold text-white/58">{primaryGroup.name}</span> : null}
+              {primaryGroup ? <RtlText as="span" className="text-[11px] font-medium text-white/48">{primaryGroup.name}</RtlText> : null}
             </div>
-            <p className="mt-4 text-[11px] font-black uppercase tracking-[0.22em] text-white/45">LK Student Space</p>
-            <h1 className="mt-1 max-w-[15rem] text-[2.1rem] font-semibold leading-[0.98] tracking-[-0.07em] text-white">היי {user.name.split(" ")[0]}</h1>
-            <p className="mt-3 max-w-[18rem] text-[13px] leading-relaxed text-white/64">{copy.subtitle}</p>
+            <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.28em] text-white/38">{copy.cue}</p>
+            <h1 className="mt-1 max-w-[19rem] text-[clamp(2.48rem,12vw,3.62rem)] font-semibold leading-[0.84] tracking-[-0.095em] text-white">{copy.title}</h1>
+            <RtlText as="p" className="mt-4 max-w-[19rem] text-[13px] leading-relaxed text-white/68">שלום, {user.name.split(" ")[0]} · {copy.subtitle}</RtlText>
           </div>
+          <ProgressRing value={attendanceRate} />
         </div>
-        <div className="relative mt-5 rounded-[24px] bg-black/18 p-2.5 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]">
-          <div className="flex items-center justify-between gap-2 px-1 pb-2">
-            <span className="text-[12px] font-bold text-white/58">{copy.title}</span>
-            <span className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-black text-emerald-100">Live</span>
+        <div className="relative mt-8 rounded-[28px] border border-[rgba(255,255,255,0.044)] bg-black/22 p-3 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.045)]">
+          <div className="flex items-center gap-2 px-1 pb-2.5 text-start">
+            <span className="min-w-0 flex-1 text-[12px] font-semibold text-white/58">{copy.action}</span>
+            <RtlText as="span" className="shrink-0 text-[10px] font-semibold text-white/42">{next ? next.weekday : "היום"}</RtlText>
           </div>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-            <Button onClick={() => next ? openTab("lessons") : openScreen("private_lessons")}>{next ? `${next.title} · ${next.time}` : "קביעת שיעור פרטי"}</Button>
-            <Button variant="ghost" onClick={() => openTab("messages")}>הודעות</Button>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] [&>button]:w-full">
+            <Button onClick={primaryAction}>{next ? `${next.title} · ${next.time}` : user.role === "super_admin" ? "בריאות מערכת" : "קביעת שיעור פרטי"}</Button>
+            <Button variant="ghost" onClick={() => openTab("messages")}>{unread ? <><BidiNumber>{unread}</BidiNumber> עדכונים</> : "הודעות"}</Button>
           </div>
         </div>
       </HeroSurface>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-        <Metric icon={Check} tone={tone} value={attendance.length ? `${attendanceRate}%` : "חדש"} label="נוכחות" trend={attendance.length ? "מעקב פעיל" : "טרם סומן"} />
-        <Metric icon={Bell} tone={unread ? "urgent" : "modern"} value={unread ? `${unread}` : "0"} label="עדכונים" trend={unread ? "דורש קריאה" : "רגוע"} />
-        <Metric icon={CalendarDays} tone={tone} value={next ? next.time : "—"} label="שיעור הבא" trend={next ? next.weekday : "אין היום"} />
-        <Metric icon={Receipt} tone="shop" value={`${privateLessons.length}`} label="פרטיים" trend={coordination.needsAttention ? "בטיפול" : "זמינות"} />
-        <Metric icon={ClipboardList} tone="repertoire" value={`${tasks.length}`} label="משימות" trend={tasks.length ? "פתוחות" : "נקי"} />
-      </div>
-
-      <section className="overflow-hidden rounded-[29px] bg-[linear-gradient(135deg,rgba(255,255,255,0.072),rgba(255,255,255,0.032))] px-3 py-3 shadow-[0_18px_48px_rgba(0,0,0,0.24),inset_0_1px_0_rgba(255,255,255,0.075)] backdrop-blur-2xl">
+      <section className="overflow-hidden rounded-[28px] border border-[rgba(255,255,255,0.034)] bg-white/[0.024] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.034)]">
         <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">{actions.map((action) => <ActionPill key={action.title} {...action} />)}</div>
       </section>
 
@@ -130,25 +123,21 @@ export function HomeScreen({ user, openScreen, openTab }: { user: V6User; openSc
           <div className="grid grid-cols-2 gap-2">
             <Metric icon={Bell} tone={managementHealth.urgentCount ? "urgent" : "studio"} value={`${managementHealth.urgentCount}`} label="דחופים" trend={managementHealth.summary} />
             <Metric icon={ClipboardList} tone="management" value={`${attendanceRisks.length}`} label="נוכחות" trend="סיכונים פעילים" />
-            <Metric icon={Receipt} tone="shop" value={`${coordination.needsAttention}`} label="פרטיים" trend="דורש תיאום" />
+            <Metric icon={Receipt} tone="shop" value={`${coordination.needsAttention}`} label="פרטיים" trend="דורשים תיאום" />
             <Metric icon={Sparkles} tone="repertoire" value={eventReadiness ? `${eventReadiness.score}%` : "—"} label="אירוע" trend={eventReadiness?.nextAction ?? "אין אירוע"} />
           </div>
         </Widget>
       ) : null}
 
-      <section className="grid gap-3 md:grid-cols-[1.04fr_0.96fr]">
+      <section className="grid gap-3 md:grid-cols-[1fr_1fr]">
         <Widget title="מה קורה עכשיו" kicker="פעילות ועדכונים" icon={Bell} tone={unread ? "urgent" : "modern"}>
-          <div className="space-y-2">{feed.map((item) => <FeedRow key={item.id} {...item} />)}</div>
-        </Widget>
-        <Widget title="הקרוב ביותר" kicker="היום והשבוע" icon={CalendarDays} tone={tone}>
           <div className="space-y-2">
-            <FeedRow icon={CalendarDays} title={next?.title ?? "אין שיעור קרוב"} body={next ? `${next.weekday} · ${next.time} · ${next.room}` : "אפשר לפתוח שיעור פרטי או הודעות"} meta="שיעור" tone={tone} />
-            <FeedRow icon={Sparkles} title={eventReadiness?.title ?? "אירועי סטודיו"} body={eventReadiness?.nextAction ?? "אין אירוע קרוב"} meta="אירוע" tone="repertoire" />
+            {feed.length ? feed.map((item) => <FeedRow key={item.id} {...item} />) : <FeedRow icon={Check} title="הכול שקט" body="אין עדכונים שמבקשים תשומת לב כרגע." meta="רגוע" tone={tone} />}
           </div>
         </Widget>
       </section>
 
-      <AISuggestionStack insights={aiInsights} />
+      {aiInsights.length ? <AISuggestionStack insights={aiInsights} /> : null}
     </div>
   );
 }

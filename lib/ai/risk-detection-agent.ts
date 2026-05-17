@@ -4,7 +4,7 @@ export const riskDetectionAgent: AIAgent = {
   id: "risk_detection",
   label: "Risk Detection Agent",
   run: ({ actor, db }) => {
-    const missingAttendance = db.attendance.filter((item) => item.status === "missing").length;
+    const missingAttendance = db.attendance.filter((item) => item.status === "missing" || item.status === "absent").length;
     if (actor.role === "student" || actor.role === "parent") return [];
     return [
       {

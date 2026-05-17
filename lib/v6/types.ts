@@ -100,6 +100,22 @@ export type V6Product = {
   featuredImageMediaId?: string;
 };
 
+export type V6AttendanceStatus = "present" | "absent" | "late" | "excused" | "missing";
+
+export type V6AttendanceRecord = {
+  id: string;
+  studioId?: string;
+  studentId: string;
+  lessonId: string;
+  groupId?: string;
+  classDate?: string;
+  status: V6AttendanceStatus;
+  note?: string;
+  markedByUserId?: string;
+  createdAt: string;
+  updatedAt?: string;
+};
+
 export type V6PrivateLesson = {
   id: string;
   studioId: string;
@@ -151,7 +167,7 @@ export type V6Database = {
   products: V6Product[];
   privateLessons: V6PrivateLesson[];
   media: V6MediaItem[];
-  attendance: Array<{ id: string; studentId: string; lessonId: string; status: "present" | "missing"; createdAt: string }>;
+  attendance: V6AttendanceRecord[];
   tasks: Array<{ id: string; groupId: string; title: string; doneByUserIds: string[] }>;
   events: Array<{ id: string; studioId: string; title: string; date: string }>;
   achievements: Array<{ id: string; studentId: string; title: string; createdAt: string }>;

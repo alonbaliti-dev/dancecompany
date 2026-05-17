@@ -6,8 +6,8 @@ export function computeV6AttendanceRisks(db: V6Database): V6AttendanceRisk[] {
     .filter((user) => user.role === "student")
     .map((student) => {
       const entries = db.attendance.filter((item) => item.studentId === student.id);
-      const missingCount = entries.filter((item) => item.status === "missing").length;
-      const presentCount = entries.filter((item) => item.status === "present").length;
+      const missingCount = entries.filter((item) => item.status === "missing" || item.status === "absent").length;
+      const presentCount = entries.filter((item) => item.status === "present" || item.status === "late").length;
       const riskLevel: V6AttendanceRisk["riskLevel"] = missingCount >= 3 ? "high" : missingCount >= 1 ? "medium" : "low";
       return {
         studentId: student.id,

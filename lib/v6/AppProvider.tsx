@@ -2,7 +2,10 @@
 
 import { createContext, useContext, useEffect, useMemo, useReducer, useState, type ReactNode } from "react";
 import { cloneV6Database } from "./seed";
-import type { V6AuditEntry, V6Credential, V6Database, V6MediaItem, V6Notification, V6PrivateLesson, V6Product, V6Session, V6User } from "./types";
+import { buildV6SaveProductOperation } from "@/lib/domains/shop/operations";
+import { buildV6SaveAttendanceOperation } from "@/lib/domains/attendance/operations";
+import { buildV6ResetPasswordOperation, buildV6UpsertUserOperation } from "@/lib/domains/users/v6-operations";
+import type { V6AttendanceRecord, V6AuditEntry, V6Credential, V6Database, V6MediaItem, V6Notification, V6PrivateLesson, V6Product, V6Session, V6User } from "./types";
 
 const DB_KEY = "lk-v6-database";
 const SESSION_KEY = "lk-v6-session";
@@ -27,6 +30,7 @@ type Action =
   | { type: "shop_order"; actor: V6User; productId: string }
   | { type: "save_product"; actor: V6User; product: V6Product }
   | { type: "save_media"; actor: V6User; media: V6MediaItem }
+  | { type: "save_attendance"; actor: V6User; lessonId: string; groupId: string; classDate: string; records: V6AttendanceRecord[] }
   | { type: "mark_notification_read"; userId: string; notificationId: string }
   | { type: "mark_all_read"; userId: string }
   | { type: "update_text"; actor: V6User; key: string; value: string }
@@ -76,6 +80,18 @@ function familyIds(db: V6Database, studentId: string) {
   return [student.id, ...db.users.filter((u) => u.role === "parent" && u.linkedStudentIds.includes(student.id)).map((u) => u.id)];
 }
 
+function syncGroupsWithUsers(db: V6Database, users: V6User[]): V6Database {
+  return {
+    ...db,
+    users,
+    groups: db.groups.map((group) => ({
+      ...group,
+      teacherIds: users.filter((user) => (user.role === "teacher" || user.role === "management") && user.groupIds.includes(group.id)).map((user) => user.id),
+      studentIds: users.filter((user) => user.role === "student" && user.groupIds.includes(group.id)).map((user) => user.id)
+    }))
+  };
+}
+
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "replace_db":
@@ -87,23 +103,36 @@ function reducer(state: State, action: Action): State {
     case "audit":
       return { ...state, db: withAudit(state.db, action.entry) };
     case "upsert_user": {
-      const exists = state.db.users.some((u) => u.id === action.user.id);
+      const operation = buildV6UpsertUserOperation(state.db, action.actor, action.user, action.credential);
+      if (!operation.allowed || !operation.payload) return state;
+      const { user, credential, exists } = operation.payload;
+      const previous = state.db.users.find((u) => u.id === user.id);
+      const users = exists ? state.db.users.map((u) => (u.id === user.id ? user : u)) : [user, ...state.db.users];
+      const credentials = credential
+        ? [credential, ...state.db.credentials.filter((c) => c.userId !== credential.userId)]
+        : previous && previous.phone !== user.phone
+          ? state.db.credentials.map((c) => (c.userId === user.id ? { ...c, phone: user.phone } : c))
+          : state.db.credentials;
       let db: V6Database = {
         ...state.db,
-        users: exists ? state.db.users.map((u) => (u.id === action.user.id ? action.user : u)) : [action.user, ...state.db.users],
-        credentials: action.credential ? [action.credential, ...state.db.credentials.filter((c) => c.userId !== action.credential?.userId)] : state.db.credentials
+        credentials
       };
-      db = notify(db, { studioId: action.user.studioId, userIds: [action.user.id], title: exists ? "הפרטים שלך עודכנו" : "נוצר לך חשבון", body: "אפשר להתחבר עם הטלפון והסיסמה שנשמרו.", type: "user", screen: "users" });
-      db = notify(db, { studioId: action.user.studioId, userIds: managementIds(db, action.user.studioId), title: exists ? "משתמש עודכן" : "משתמש חדש", body: action.user.name, type: "user", screen: "users" });
-      return { ...state, db: withAudit(db, auditEntry(action.actor, exists ? "עדכון משתמש" : "יצירת משתמש", action.user.id)) };
+      db = syncGroupsWithUsers(db, users);
+      db = notify(db, { studioId: user.studioId, userIds: [user.id], title: exists ? "הפרטים שלך עודכנו" : "נוצר לך חשבון", body: "אפשר להתחבר עם הטלפון והסיסמה שנשמרו.", type: "user", screen: "users" });
+      db = notify(db, { studioId: user.studioId, userIds: managementIds(db, user.studioId), title: exists ? "משתמש עודכן" : "משתמש חדש", body: user.name, type: "user", screen: "users" });
+      return { ...state, db: withAudit(db, auditEntry(action.actor, exists ? "עדכון משתמש" : "יצירת משתמש", user.id)) };
     }
     case "reset_password": {
       const target = state.db.users.find((u) => u.id === action.userId);
+      if (!target) return state;
+      const operation = buildV6ResetPasswordOperation(action.actor, target, action.password);
+      if (!operation.allowed || !operation.payload) return state;
+      const credential = { userId: target.id, phone: target.phone, password: operation.payload.password };
       let db: V6Database = {
         ...state.db,
-        credentials: state.db.credentials.map((c) => (c.userId === action.userId ? { ...c, password: action.password } : c))
+        credentials: [credential, ...state.db.credentials.filter((c) => c.userId !== target.id)]
       };
-      if (target) db = notify(db, { studioId: target.studioId, userIds: [target.id], title: "הסיסמה עודכנה", body: "ההנהלה עדכנה את פרטי ההתחברות שלך.", type: "user", screen: "users" });
+      db = notify(db, { studioId: target.studioId, userIds: [target.id], title: "הסיסמה עודכנה", body: "ההנהלה עדכנה את פרטי ההתחברות שלך.", type: "user", screen: "users" });
       return { ...state, db: withAudit(db, auditEntry(action.actor, "איפוס סיסמה", action.userId)) };
     }
     case "request_private_lesson": {
@@ -144,15 +173,45 @@ function reducer(state: State, action: Action): State {
     case "shop_order": {
       const product = state.db.products.find((p) => p.id === action.productId);
       if (!product) return state;
-      let db = notify(state.db, { studioId: action.actor.studioId, userIds: [...managementIds(state.db, action.actor.studioId), action.actor.id], title: "הזמנה חדשה בחנות", body: product.title, type: "shop", tab: "shop" });
+      const db = notify(state.db, { studioId: action.actor.studioId, userIds: [...managementIds(state.db, action.actor.studioId), action.actor.id], title: "הזמנה חדשה בחנות", body: product.title, type: "shop", tab: "shop" });
       return { ...state, db: withAudit(db, auditEntry(action.actor, "יצירת הזמנה", product.id)) };
     }
-    case "save_product":
-      return { ...state, db: withAudit({ ...state.db, products: state.db.products.some((p) => p.id === action.product.id) ? state.db.products.map((p) => (p.id === action.product.id ? action.product : p)) : [action.product, ...state.db.products] }, auditEntry(action.actor, "שמירת מוצר", action.product.id)) };
+    case "save_product": {
+      const operation = buildV6SaveProductOperation(state.db, action.actor, action.product);
+      if (!operation.allowed || !operation.payload) return state;
+      const { product, exists } = operation.payload;
+      let db: V6Database = {
+        ...state.db,
+        products: exists ? state.db.products.map((p) => (p.id === product.id ? product : p)) : [product, ...state.db.products]
+      };
+      db = notify(db, { studioId: product.studioId, userIds: managementIds(db, product.studioId), title: exists ? "מוצר עודכן" : "מוצר חדש בחנות", body: product.title, type: "shop", tab: "shop" });
+      return { ...state, db: withAudit(db, auditEntry(action.actor, exists ? "עדכון מוצר" : "יצירת מוצר", product.id)) };
+    }
     case "save_media": {
       let db: V6Database = { ...state.db, media: [action.media, ...state.db.media.filter((m) => m.id !== action.media.id)] };
       db = notify(db, { studioId: action.actor.studioId, userIds: managementIds(db, action.actor.studioId), title: "מדיה חדשה", body: action.media.title, type: "media", screen: "media" });
       return { ...state, db: withAudit(db, auditEntry(action.actor, "שמירת מדיה", action.media.id)) };
+    }
+    case "save_attendance": {
+      const operation = buildV6SaveAttendanceOperation(state.db, action.actor, action);
+      if (!operation.allowed || !operation.payload) return state;
+      const savedRecords = operation.payload.records;
+      const savedKeys = new Set(savedRecords.map((record) => `${record.lessonId}:${record.groupId}:${record.classDate}:${record.studentId}`));
+      let db: V6Database = {
+        ...state.db,
+        attendance: [
+          ...savedRecords,
+          ...state.db.attendance.filter((record) => !savedKeys.has(`${record.lessonId}:${record.groupId}:${record.classDate}:${record.studentId}`))
+        ]
+      };
+      savedRecords
+        .filter((record) => record.status === "absent" || record.status === "missing")
+        .forEach((record) => {
+          const student = db.users.find((item) => item.id === record.studentId);
+          if (!student) return;
+          db = notify(db, { studioId: action.actor.studioId, userIds: [...new Set([...familyIds(db, student.id), ...managementIds(db, action.actor.studioId)])], title: "היעדרות נרשמה", body: `${student.name} · ${record.note || "ללא הערה"}`, type: "system", tab: "lessons" });
+        });
+      return { ...state, db: withAudit(db, auditEntry(action.actor, "שמירת נוכחות", `${action.lessonId}:${action.classDate}`)) };
     }
     case "mark_notification_read":
       return { ...state, db: { ...state.db, notifications: state.db.notifications.map((n) => (n.id === action.notificationId ? { ...n, readBy: [...new Set([...n.readBy, action.userId])] } : n)) } };

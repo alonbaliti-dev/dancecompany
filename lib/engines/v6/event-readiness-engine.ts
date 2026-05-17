@@ -11,7 +11,7 @@ export type V6EventReadiness = {
 export function computeV6EventReadiness(db: V6Database): V6EventReadiness[] {
   return db.events.map((event) => {
     const openTasks = db.tasks.filter((task) => !task.doneByUserIds.length).length;
-    const missingAttendance = db.attendance.filter((item) => item.status === "missing").length;
+    const missingAttendance = db.attendance.filter((item) => item.status === "missing" || item.status === "absent").length;
     const score = Math.max(38, 100 - openTasks * 8 - missingAttendance * 6);
     const status = score < 55 ? "critical" : score < 78 ? "attention" : "calm";
     return {

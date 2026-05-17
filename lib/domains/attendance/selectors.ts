@@ -13,5 +13,6 @@ export function selectV6AttendanceForActor(db: V6Database, actor: V6User) {
 
 export function selectV6AttendanceRate(db: V6Database, actor: V6User) {
   const scoped = selectV6AttendanceForActor(db, actor);
-  return scoped.length ? Math.round((scoped.filter((item) => item.status === "present").length / scoped.length) * 100) : 0;
+  const counted = scoped.filter((item) => item.status !== "excused");
+  return counted.length ? Math.round((counted.filter((item) => item.status === "present" || item.status === "late").length / counted.length) * 100) : 0;
 }
