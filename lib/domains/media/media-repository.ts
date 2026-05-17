@@ -136,6 +136,23 @@ export type MediaCollectionInput = {
 const localMediaItems = new Map<string, MediaItemRecord>();
 const localCollectionItems = new Map<string, Array<{ mediaItemId: string; sortOrder: number }>>();
 
+type SupabaseQueryBuilder = {
+  insert: (values: unknown) => SupabaseQueryBuilder;
+  update: (values: unknown) => SupabaseQueryBuilder;
+  upsert: (values: unknown) => SupabaseQueryBuilder;
+  select: (columns?: string) => SupabaseQueryBuilder;
+  single: () => Promise<{ data: unknown; error: unknown }>;
+  eq: (column: string, value: unknown) => SupabaseQueryBuilder;
+  in: (column: string, values: readonly unknown[]) => SupabaseQueryBuilder;
+  contains: (column: string, value: unknown) => SupabaseQueryBuilder;
+  order: (column: string, options?: { ascending?: boolean }) => SupabaseQueryBuilder;
+  then: Promise<{ data: unknown; error: unknown }>["then"];
+};
+
+function fromSupabaseTable(supabase: { client: { from: (table: string) => unknown } }, table: string) {
+  return supabase.client.from(table) as SupabaseQueryBuilder;
+}
+
 type DbMediaItemRow = {
   id: string;
   studio_id: string;
@@ -335,13 +352,13 @@ export async function createMediaItemMetadata(input: CreateMediaItemMetadataInpu
     };
   }
 
-  const { data, error } = await supabase.client.from("media_items").insert(toDbMediaItem(input)).select("*").single();
+  const { data, error } = await fromSupabaseTable(supabase, "media_items").insert(toDbMediaItem(input)).select("*").single();
 
   if (error) {
     return { status: "failure", mode: "supabase", reason: "Failed to create media item metadata.", error };
   }
 
-  return { status: "success", mode: "supabase", data: fromDbMediaItem(data) };
+  return { status: "success", mode: "supabase", data: fromDbMediaItem(data as DbMediaItemRow) };
 }
 
 export async function updateMediaStatus(mediaItemId: string, status: MediaStatus): Promise<MediaRepositoryResult<MediaItemRecord>> {
@@ -356,13 +373,13 @@ export async function updateMediaStatus(mediaItemId: string, status: MediaStatus
     return { status: "success", mode: "local_metadata", data: updated, warnings: ["Status changed only in local dev metadata."] };
   }
 
-  const { data, error } = await supabase.client.from("media_items").update({ status, updated_at: updatedAt }).eq("id", mediaItemId).select("*").single();
+  const { data, error } = await fromSupabaseTable(supabase, "media_items").update({ status, updated_at: updatedAt }).eq("id", mediaItemId).select("*").single();
 
   if (error) {
     return { status: "failure", mode: "supabase", reason: "Failed to update media item status.", error };
   }
 
-  return { status: "success", mode: "supabase", data: fromDbMediaItem(data) };
+  return { status: "success", mode: "supabase", data: fromDbMediaItem(data as DbMediaItemRow) };
 }
 
 export async function listMediaItems(filters: MediaListFilters, actor?: V6User): Promise<MediaRepositoryResult<MediaItemRecord[]>> {
@@ -373,7 +390,7 @@ export async function listMediaItems(filters: MediaListFilters, actor?: V6User):
     return { status: "success", mode: "local_metadata", data: items, warnings: [supabase.reason] };
   }
 
-  let query = supabase.client.from("media_items").select("*").eq("studio_id", filters.studioId).order("created_at", { ascending: false });
+  let query = fromSupabaseTable(supabase, "media_items").select("*").eq("studio_id", filters.studioId).order("created_at", { ascending: false });
 
   if (filters.groupId) query = query.eq("group_id", filters.groupId);
   if (filters.uploaderUserId) query = query.eq("uploaded_by_user_id", filters.uploaderUserId);
@@ -394,7 +411,7 @@ export async function listMediaItems(filters: MediaListFilters, actor?: V6User):
     return { status: "failure", mode: "supabase", reason: "Failed to list media items.", error };
   }
 
-  const items = (data ?? []).map(fromDbMediaItem).filter((item) => (actor ? canActorViewMediaMetadata(actor, item) : true));
+  const items = ((data as DbMediaItemRow[] | null) ?? []).map(fromDbMediaItem).filter((item) => (actor ? canActorViewMediaMetadata(actor, item) : true));
   return { status: "success", mode: "supabase", data: items };
 }
 
@@ -437,7 +454,7 @@ export async function attachMediaToCollection(
   }
 
   const now = nowIso();
-  const { error: collectionError } = await supabase.client.from("media_collections").upsert({
+  const { error: collectionError } = await fromSupabaseTable(supabase, "media_collections").upsert({
     id: collectionId,
     studio_id: collection.studioId,
     group_id: collection.groupId ?? null,
@@ -452,7 +469,7 @@ export async function attachMediaToCollection(
     return { status: "failure", mode: "supabase", reason: "Failed to upsert media collection.", error: collectionError };
   }
 
-  const { error: itemError } = await supabase.client.from("media_collection_items").upsert({
+  const { error: itemError } = await fromSupabaseTable(supabase, "media_collection_items").upsert({
     collection_id: collectionId,
     media_item_id: mediaItemId,
     sort_order: sortOrder

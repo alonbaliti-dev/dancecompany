@@ -2,7 +2,7 @@ import type { UserPermissions } from "@/lib/types";
 
 /**
  * Server-issued session claims (mock: client sessionStorage).
- * Production: derive from Supabase Auth JWT + `profiles` row — never store passwords in session.
+ * Production: derive from the signed academy app session + `users_profile` row — never store passwords in session.
  */
 export type AppSession = {
   userId: string;

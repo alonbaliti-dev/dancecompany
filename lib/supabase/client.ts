@@ -1,9 +1,10 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "./types";
 
 export type SupabaseClientStatus =
   | {
       enabled: true;
-      client: SupabaseClient;
+      client: SupabaseClient<Database>;
       url: string;
       usingAnonKey: true;
     }
@@ -13,7 +14,7 @@ export type SupabaseClientStatus =
       missingEnv: Array<"NEXT_PUBLIC_SUPABASE_URL" | "NEXT_PUBLIC_SUPABASE_ANON_KEY">;
     };
 
-let browserClient: SupabaseClient | null = null;
+let browserClient: SupabaseClient<Database> | null = null;
 
 function publicSupabaseEnv() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
@@ -32,13 +33,13 @@ export function getSupabaseBrowserClient(): SupabaseClientStatus {
   if (missingEnv.length > 0 || !url || !anonKey) {
     return {
       enabled: false,
-      reason: "Supabase browser client is not configured. Media will use dev-only metadata fallback.",
+      reason: "Supabase browser client is not configured. Browser Supabase features remain unavailable.",
       missingEnv
     };
   }
 
   if (!browserClient) {
-    browserClient = createClient(url, anonKey, {
+    browserClient = createClient<Database>(url, anonKey, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,

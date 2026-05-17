@@ -119,7 +119,7 @@ export function UserEditorSheet({ open, actor, studios, allUsers, initial, onClo
         {!initial ? (
           <>
             <div className="rounded-xl border border-amber-400/20 bg-amber-500/[0.07] px-3 py-2 text-right text-[11px] leading-relaxed text-amber-100/85">
-              סיסמה זמנית — נשמרת בקובץ auth-credentials (פיתוח מקומי בלבד). ב-production: Supabase Auth.
+              סיסמה זמנית — בדמו מקומי נשמרת רק בסביבת פיתוח. בייצור הסיסמה נשמרת כ-hash דרך שרת האקדמיה בלבד.
             </div>
             <Field label="סיסמה זמנית (מינימום 6 תווים)">
               <input

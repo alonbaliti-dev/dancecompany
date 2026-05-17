@@ -2,7 +2,8 @@ import type { V6AttendanceRecord, V6Database, V6Group, V6MediaItem, V6Notificati
 
 type MaybeTimestamped = { id: string; updatedAt?: string; savedAt?: string; createdAt?: string };
 
-function compactUnique(values: Array<string | undefined>) {
+function compactUnique(values: Array<string | undefined> | undefined) {
+  if (!values) return [];
   return [...new Set(values.map((value) => value?.trim()).filter(Boolean) as string[])];
 }
 
@@ -101,7 +102,7 @@ export function dedupeTeacherGroupAssignments(users: V6User[], groups: V6Group[]
   });
   const normalizedUsers = users.map((user) => ({
     ...user,
-    groupIds: compactUnique([...user.groupIds, ...(groupIdsByUser.get(user.id) ?? [])]).filter((groupId) => groupIds.has(groupId)),
+    groupIds: compactUnique([...(user.groupIds ?? []), ...(groupIdsByUser.get(user.id) ?? [])]).filter((groupId) => groupIds.has(groupId)),
     danceStyleIds: compactUnique(user.danceStyleIds ?? [])
   }));
   const normalizedGroups = dedupeById(groups).map((group) => ({

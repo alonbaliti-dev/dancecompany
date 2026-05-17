@@ -3,10 +3,14 @@ import type { V6Database, V6Role, V6User } from "@/lib/v6/types";
 export type AIAgentId =
   | "chatgpt"
   | "student_insight"
+  | "parent_summary"
   | "teacher_assistant"
   | "management_analyst"
+  | "super_admin_health"
+  | "practice_engagement"
   | "risk_detection"
   | "content_writing"
+  | "media_gallery"
   | "shop_insight"
   | "event_readiness";
 
@@ -52,8 +56,17 @@ export type AIActionType =
   | "draft_task"
   | "draft_parent_update"
   | "draft_teacher_feedback"
+  | "draft_attendance_follow_up"
+  | "draft_event_announcement"
+  | "draft_reminder"
+  | "draft_summary"
   | "draft_shop_description"
   | "draft_event_reminder"
+  | "practice_recommendation"
+  | "engagement_recommendation"
+  | "event_readiness_summary"
+  | "media_organization_suggestion"
+  | "academy_health_summary"
   | "analysis";
 
 export type AITargetModule =
@@ -64,15 +77,20 @@ export type AITargetModule =
   | "messages"
   | "notifications"
   | "tasks"
+  | "attendance"
+  | "practice"
+  | "engagement"
   | "shop"
   | "events"
   | "media"
+  | "gallery"
   | "private_lessons"
   | "system";
 
 export type AITargetEntityIds = Partial<
   Record<
     | "studioIds"
+    | "academyIds"
     | "userIds"
     | "studentIds"
     | "parentIds"
@@ -94,11 +112,13 @@ export type AIRequestContext = {
   currentUser: V6User;
   role: V6Role;
   studioId: string;
+  academyId?: string;
   allowedScope: AIScope;
   targetEntityIds: AITargetEntityIds;
 };
 
 export type AIApprovalStatus = "draft" | "pending_approval" | "approved" | "rejected" | "published";
+export type AISensitivityLevel = "public" | "internal" | "personal" | "sensitive";
 
 export type AIDraft = {
   id: string;
@@ -107,8 +127,13 @@ export type AIDraft = {
   status: AIApprovalStatus;
   requiresApproval: boolean;
   label: "AI suggestion";
+  sensitivityLevel?: AISensitivityLevel;
   content: string;
   createdByUserId: string;
   studioId: string;
+  academyId?: string;
+  reviewedByUserId?: string;
+  reviewedAt?: string;
+  rejectionReason?: string;
   createdAt: string;
 };

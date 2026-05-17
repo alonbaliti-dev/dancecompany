@@ -100,7 +100,7 @@ export type LocalDatabase = {
   version: 1;
   studios: StudioRecord[];
   users: DbUserRecord[];
-  /** LOCAL DEV ONLY — `/database/auth-credentials.json`. Production: Supabase Auth. */
+  /** LOCAL DEV ONLY — `/database/auth-credentials.json`. Production: server-side `auth_credentials` hashes. */
   authCredentials: LocalAuthCredential[];
   groups: StudioGroup[];
   classes: StudioClass[];

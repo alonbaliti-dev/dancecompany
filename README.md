@@ -28,6 +28,8 @@ npm install
 npm run dev
 ```
 
+Local demo mode remains the default. Phase 2 backend files add Supabase/R2 foundations, but the app must still boot without Supabase or R2 env vars.
+
 Build verification:
 
 ```bash
@@ -37,6 +39,7 @@ npm run build
 ## Deployment
 
 Use `develop` for Vercel Preview deployments and keep Production deployments on `main`. See `VERCEL-DEPLOYMENT.md` for the branch setup, required environment variables, verification checklist and rollback procedure.
+For the first LK Studio production launch, complete `docs/PHASE_8_PRODUCTION_LAUNCH.md` before any public rollout or live payment enablement.
 
 ## Post-Deploy Verification
 
@@ -89,6 +92,8 @@ Never expose service role keys, R2 secrets, payment secrets, or AI provider keys
 - `PRODUCT_BRIEF.md`
 - `RUN_AND_DEPLOY.md`
 - `docs/MULTI_ACADEMY_ARCHITECTURE.md`
+- `docs/PHASE_2_BACKEND_FOUNDATION.md`
+- `docs/PHASE_8_PRODUCTION_LAUNCH.md`
 - `docs/CLOUDFLARE_R2_MEDIA_ARCHITECTURE.md`
 - `docs/SUPABASE_MIGRATION_PLAN.md`
 - `docs/PRODUCTION_ROADMAP.md`

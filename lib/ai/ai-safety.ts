@@ -60,7 +60,8 @@ export function validateAISafety(input: {
     targetModule: input.targetModule,
     content: input.outputText,
     actorUserId: input.context.currentUser.id,
-    studioId: input.context.studioId
+    studioId: input.context.studioId,
+    academyId: input.context.academyId
   });
   const approval = assertHumanApprovalBeforePublish(draft);
 

@@ -1,6 +1,7 @@
 # Vercel Deployment
 
 This app can be prepared and tested from `develop` without merging to `main`.
+For the first LK Studio production release gate, use `docs/PHASE_8_PRODUCTION_LAUNCH.md` as the launch-readiness source of truth.
 
 ## Connect the Repo
 
@@ -14,6 +15,7 @@ This app can be prepared and tested from `develop` without merging to `main`.
 
 - Preview deployments: `develop` and pull request branches.
 - Production deployments: `main` only.
+- No direct experimental commits to `main`.
 
 In Vercel Project Settings -> Git, set the Production Branch to `main`. With that setting, pushes to `develop` create Preview deployments and do not update Production.
 
@@ -29,6 +31,7 @@ NEXT_PUBLIC_ENABLE_DB_SYNC=false
 ```
 
 Use `NEXT_PUBLIC_APP_ENV=production` only for the Production environment. Keep `NEXT_PUBLIC_ENABLE_DB_SYNC=false` on Vercel until a remote persistence layer is intentionally enabled.
+Preview should use sandbox/test providers only. Production should use production Supabase/R2 only after the Phase 8 database, storage, RLS, backup and rollback checks are complete. Keep `PAYMENT_SANDBOX=true` until live payments receive a separate approval.
 
 ### Supabase
 
@@ -86,14 +89,16 @@ Vercel automatically sets `VERCEL=1`. The app uses it to disable local JSON writ
 Before promoting any change, run locally:
 
 ```bash
+npm run lint
+npm run typecheck
 npm run build
 ```
 
-`npm run lint` currently uses `next lint`; verify the script before treating lint as a deployment gate on Next.js 16.
+Then run the launch QA checklist in `DEPLOYMENT-QA.md` and the Phase 8 release gate in `docs/PHASE_8_PRODUCTION_LAUNCH.md`.
 
 ## Production Release
 
-Do not deploy Production from `develop`. Merge through the normal review process into `main`; Vercel should deploy Production only from `main`.
+Do not deploy Production from `develop`. Merge through the normal review process into `main`; Vercel should deploy Production only from `main`. Do not launch publicly until Phase 8 critical checks pass and the slow rollout plan is approved.
 
 ## Rollback
 

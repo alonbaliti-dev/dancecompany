@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Bell,
   CalendarDays,
@@ -47,6 +47,7 @@ import {
   RtlText,
   SafeMeta,
   SafeTitle,
+  SheetActions,
   SurfaceContent,
   SegmentedControl,
   StageImage,
@@ -80,6 +81,19 @@ import { computeV6ManagementHealth, computeV6PrivateLessonCoordination, summariz
 import type { V6AttendanceRecord, V6AttendanceStatus, V6CalendarEvent, V6MediaItem, V6Permissions, V6Product, V6Role, V6Screen, V6Tab, V6User } from "@/lib/v6/types";
 
 type Tone = "studio" | "flamenco" | "hiphop" | "classic" | "modern" | "pointe" | "repertoire" | "management" | "admin" | "shop" | "urgent";
+
+type IntegrationHealthItem = {
+  id: string;
+  labelHe: string;
+  statusHe: "מחובר" | "חסר" | "בדיקה נכשלה" | "מצב בדיקה" | "כבוי" | "במעקב";
+  detailHe: string;
+};
+
+type IntegrationHealthReport = {
+  generatedAt: string;
+  items: IntegrationHealthItem[];
+  latestErrors: string[];
+};
 
 const tones: Record<Tone, { text: string; soft: string; border: string; glow: string; grad: string }> = {
   studio: { text: "text-emerald-100", soft: "bg-emerald-300/12", border: "border-emerald-100/16", glow: "shadow-emerald-950/20", grad: "from-emerald-300/18 via-white/[0.055] to-cyan-300/8" },
@@ -189,6 +203,208 @@ let v6ClientIdCounter = 0;
 function nextV6ClientId(prefix: string) {
   v6ClientIdCounter += 1;
   return `${prefix}_${v6ClientIdCounter.toString(36)}`;
+}
+
+type MediaApiItem = {
+  id: string;
+  academy_id: string;
+  group_id: string | null;
+  class_id: string | null;
+  event_id: string | null;
+  product_id: string | null;
+  uploaded_by_user_id: string | null;
+  uploaded_by_name: string | null;
+  lesson_date: string | null;
+  lesson_time: string | null;
+  tags: string[];
+  r2_bucket: string;
+  r2_key: string;
+  thumbnail_key: string | null;
+  file_name: string;
+  mime_type: string;
+  file_size: number;
+  media_type: string;
+  visibility: "group" | "group_parents" | "teacher_only" | "staff_only" | "management_only" | "shop_public" | "event_public" | "legacy_public";
+  created_at: string;
+  render_url: string | null;
+};
+
+type CreateUploadResponse =
+  | { ok: true; mode: "r2"; mediaItemId: string; uploadUrl: string; method: "PUT"; headers: Record<string, string>; bucket: string; r2Key: string }
+  | { ok: true; mode: "local_demo"; mediaItemId: string; bucket: string; r2Key: string; reason: string };
+
+function academyIdFor(user: V6User) {
+  return user.activeAcademyId ?? user.academyId ?? user.studioId;
+}
+
+function mapApiMediaToV6(item: MediaApiItem, fallbackTitle?: string): V6MediaItem {
+  return {
+    id: item.id,
+    studioId: item.academy_id,
+    academyId: item.academy_id,
+    uploadedByUserId: item.uploaded_by_user_id ?? "unknown",
+    uploaderName: item.uploaded_by_name ?? undefined,
+    title: fallbackTitle ?? item.file_name,
+    fileName: item.file_name,
+    mediaType: item.media_type === "video" ? "video" : "image",
+    groupId: item.group_id ?? undefined,
+    classId: item.class_id ?? undefined,
+    eventId: item.event_id ?? undefined,
+    studentId: undefined,
+    lessonDate: item.lesson_date ?? undefined,
+    lessonTime: item.lesson_time ?? undefined,
+    tags: item.tags,
+    r2Bucket: item.r2_bucket,
+    r2Key: item.r2_key,
+    thumbnailKey: item.thumbnail_key ?? undefined,
+    mimeType: item.mime_type,
+    fileSize: item.file_size,
+    linkedGroupId: item.group_id ?? undefined,
+    linkedProductId: item.product_id ?? undefined,
+    linkedEventId: item.event_id ?? undefined,
+    localPreviewUrl: item.render_url ?? undefined,
+    visibility: item.visibility === "shop_public" ? "shop" : item.visibility === "event_public" ? "event" : item.visibility === "management_only" ? "management" : item.visibility === "staff_only" || item.visibility === "teacher_only" ? "staff" : item.visibility === "legacy_public" ? "archive" : "group",
+    createdAt: item.created_at
+  };
+}
+
+async function persistProduct(product: V6Product, academyId: string) {
+  const response = await fetch("/api/shop/products", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      academyId,
+      product: {
+        id: product.id,
+        title: product.title,
+        description: product.description,
+        category: product.category,
+        product_type: product.type,
+        price: product.price,
+        price_mode: product.priceMode,
+        inventory_status: product.inventoryStatus,
+        visibility: product.visibility,
+        image_media_ids: product.imageMediaIds,
+        featured_image_media_id: product.featuredImageMediaId ?? null,
+        status: product.active ? "active" : "inactive",
+        metadata: {
+          sizes: product.sizes ?? [],
+          colors: product.colors ?? [],
+          notes: product.notes ?? null,
+          pickupDeliveryNote: product.pickupDeliveryNote ?? null,
+          memberOnly: product.memberOnly ?? false
+        }
+      }
+    })
+  });
+
+  if (!response.ok) throw new Error("Product persistence failed.");
+}
+
+async function uploadMediaToR2(input: {
+  file: File;
+  user: V6User;
+  academyId: string;
+  title: string;
+  visibility: "group" | "shop_public" | "event_public";
+  groupId?: string;
+  classId?: string;
+  lessonDate?: string;
+  productId?: string;
+  eventId?: string;
+  tags?: string[];
+}) {
+  const mediaType = input.file.type.startsWith("video/") ? "video" : "image";
+  const createResponse = await fetch("/api/media/create-upload-url", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      academyId: input.academyId,
+      actorUserId: input.user.id,
+      actorName: input.user.name,
+      fileName: input.file.name,
+      mimeType: input.file.type,
+      fileSize: input.file.size,
+      mediaType,
+      visibility: input.visibility,
+      groupId: input.groupId,
+      classId: input.classId,
+      lessonDate: input.lessonDate,
+      productId: input.productId,
+      eventId: input.eventId,
+      tags: input.tags ?? []
+    })
+  });
+  const upload = (await createResponse.json()) as CreateUploadResponse | { ok: false; message?: string; reason?: string };
+  if (!createResponse.ok || upload.ok === false) throw new Error(upload.ok === false ? (upload.message ?? upload.reason ?? "Upload URL failed.") : "Upload URL failed.");
+
+  if (upload.mode === "local_demo") {
+    return {
+      media: {
+        id: upload.mediaItemId,
+        studioId: input.user.studioId,
+        academyId: input.academyId,
+        uploadedByUserId: input.user.id,
+        uploaderName: input.user.name,
+        title: input.title,
+        fileName: input.file.name,
+        mediaType,
+        groupId: input.groupId,
+        classId: input.classId,
+        linkedGroupId: input.groupId,
+        linkedProductId: input.productId,
+        linkedEventId: input.eventId,
+        lessonDate: input.lessonDate,
+        tags: input.tags,
+        r2Bucket: upload.bucket,
+        r2Key: upload.r2Key,
+        mimeType: input.file.type,
+        fileSize: input.file.size,
+        visibility: input.visibility === "shop_public" ? "shop" : input.visibility === "event_public" ? "event" : "group",
+        localPreviewUrl: URL.createObjectURL(input.file),
+        createdAt: new Date().toISOString()
+      } satisfies V6MediaItem,
+      persisted: false,
+      message: upload.reason
+    };
+  }
+
+  const putResponse = await fetch(upload.uploadUrl, {
+    method: upload.method,
+    headers: upload.headers,
+    body: input.file
+  });
+  if (!putResponse.ok) throw new Error("R2 upload failed.");
+
+  const completeResponse = await fetch("/api/media/complete-upload", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      id: upload.mediaItemId,
+      academyId: input.academyId,
+      actorUserId: input.user.id,
+      groupId: input.groupId,
+      classId: input.classId,
+      eventId: input.eventId,
+      productId: input.productId,
+      uploadedByUserId: input.user.id,
+      uploadedByName: input.user.name,
+      lessonDate: input.lessonDate,
+      tags: input.tags ?? [],
+      visibility: input.visibility,
+      r2Bucket: upload.bucket,
+      r2Key: upload.r2Key,
+      fileName: input.file.name,
+      mimeType: input.file.type,
+      fileSize: input.file.size,
+      mediaType,
+      status: "uploaded"
+    })
+  });
+  const complete = (await completeResponse.json()) as { ok: true; mediaItem: MediaApiItem } | { ok: false; message?: string; messageEn?: string };
+  if (!completeResponse.ok || complete.ok === false) throw new Error(complete.ok === false ? (complete.messageEn ?? complete.message ?? "Upload completion failed.") : "Upload completion failed.");
+
+  return { media: mapApiMediaToV6(complete.mediaItem, input.title), persisted: true, message: "uploaded" };
 }
 
 function toneForStyle(style?: string): Tone {
@@ -320,7 +536,7 @@ function Shell() {
   const home = screen === "home";
   const atmosphere =
     !home && (screen === "users" || screen === "system" || screen === "calendar") ? "management" :
-    !home && (screen === "database" || screen === "texts" || screen === "flags" || screen === "audit" || screen === "branding") ? "admin" :
+    !home && (screen === "database" || screen === "texts" || screen === "flags" || screen === "audit" || screen === "branding" || screen === "integrations") ? "admin" :
     home && tab === "shop" ? "shop" :
     home && tab === "more" && user.role === "super_admin" ? "admin" :
     home && tab === "more" && user.role === "management" ? "management" :
@@ -346,6 +562,7 @@ function Shell() {
           {!home && screen === "audit" ? <AuditScreen back={() => setScreen("home")} /> : null}
           {!home && screen === "system" ? <SystemScreen back={() => setScreen("home")} /> : null}
           {!home && screen === "branding" ? <BrandingScreen show={show} back={() => setScreen("home")} /> : null}
+          {!home && screen === "integrations" ? <IntegrationHealthScreen user={user} back={() => setScreen("home")} /> : null}
         </div>
       </AppShellFrame>
       <BottomNavDock tab={tab} unread={unread} onTab={(next) => { setScreen("home"); setTab(next); window.scrollTo({ top: 0 }); }} />
@@ -492,10 +709,10 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
           );
         })}
       </div>
-      <div className={v6Cx("sticky bottom-0 mx-0 flex gap-2 rounded-[28px] border p-2", v6Surface.elevated)}>
+      <SheetActions>
         <V6Button onClick={saveAttendance}>שמירת נוכחות</V6Button>
         <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
-      </div>
+      </SheetActions>
     </div>
   ) : null;
   return (
@@ -631,6 +848,9 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
   const [productPickupNote, setProductPickupNote] = useState("");
   const [productMemberOnly, setProductMemberOnly] = useState(false);
   const [productImageId, setProductImageId] = useState("");
+  const [pendingProductImageFile, setPendingProductImageFile] = useState<File | null>(null);
+  const [productImagePreviewUrl, setProductImagePreviewUrl] = useState("");
+  const [productSaving, setProductSaving] = useState(false);
   const productImageInput = useRef<HTMLInputElement>(null);
   const categories = uniqueBy(["הכול", "אביזרים", "כרטיסים", "פרטיים", "ביגוד"], (item) => item);
   const productCategories = uniqueBy(v6ProductCategories, (item) => item.trim());
@@ -657,6 +877,8 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
     setProductPickupNote(product?.pickupDeliveryNote ?? "");
     setProductMemberOnly(product?.memberOnly ?? (product?.visibility === "members"));
     setProductImageId(product?.featuredImageMediaId ?? product?.imageMediaIds[0] ?? "");
+    setPendingProductImageFile(null);
+    setProductImagePreviewUrl("");
     setActiveSheet(product ? { type: "edit-product", entityId: product.id, mode: "edit" } : { type: "add-product", entityId: nextId, mode: "add" });
   }
   function uploadProductImage(file?: File) {
@@ -665,16 +887,17 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
       show("אפשר לבחור תמונת מוצר בלבד");
       return;
     }
-    const mediaId = nextV6ClientId("media");
-    const media: V6MediaItem = { id: mediaId, studioId: user.studioId, uploadedByUserId: user.id, title: productTitle || "תמונת מוצר", fileName: file.name, mediaType: "image", linkedProductId: productId, visibility: "shop", localPreviewUrl: URL.createObjectURL(file), createdAt: new Date().toISOString() };
-    dispatch({ type: "save_media", actor: user, media });
-    setProductImageId(mediaId);
-    show("התמונה נשמרה למוצר");
+    if (productImagePreviewUrl) URL.revokeObjectURL(productImagePreviewUrl);
+    setPendingProductImageFile(file);
+    setProductImagePreviewUrl(URL.createObjectURL(file));
+    show("התמונה תעלה ל־R2 בשמירת המוצר");
   }
-  function saveProduct() {
-    const product: V6Product = {
+  async function saveProduct() {
+    const academyId = academyIdFor(user);
+    let product: V6Product = {
       id: productId || nextV6ClientId("prod"),
       studioId: user.studioId,
+      academyId,
       title: productTitle,
       description: productDescription,
       category: productCategory,
@@ -697,10 +920,42 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
       show(operation.reason ?? "לא ניתן לשמור מוצר");
       return;
     }
-    dispatch({ type: "save_product", actor: user, product });
-    setCategory(product.category.includes("שיעורים") ? "פרטיים" : product.category.includes("כרטיסים") ? "כרטיסים" : product.category);
-    setActiveSheet(null);
-    show("המוצר נשמר ומופיע בחנות");
+    setProductSaving(true);
+    try {
+      await persistProduct(product, academyId);
+      if (pendingProductImageFile) {
+        const uploaded = await uploadMediaToR2({
+          file: pendingProductImageFile,
+          user,
+          academyId,
+          title: product.title || "תמונת מוצר",
+          visibility: "shop_public",
+          productId: product.id,
+          tags: ["shop", product.category]
+        });
+        dispatch({ type: "save_media", actor: user, media: uploaded.media });
+        product = {
+          ...product,
+          imageMediaIds: [uploaded.media.id],
+          featuredImageMediaId: uploaded.media.id
+        };
+        if (uploaded.persisted) {
+          await persistProduct(product, academyId);
+        }
+        show(uploaded.persisted ? "המוצר והתמונה נשמרו ב־R2" : "המוצר נשמר מקומית; התמונה היא תצוגת דמו בלבד");
+      } else {
+        show("המוצר נשמר ומופיע בחנות");
+      }
+      dispatch({ type: "save_product", actor: user, product });
+      setCategory(product.category.includes("שיעורים") ? "פרטיים" : product.category.includes("כרטיסים") ? "כרטיסים" : product.category);
+      setPendingProductImageFile(null);
+      setProductImagePreviewUrl("");
+      setActiveSheet(null);
+    } catch (error) {
+      show(error instanceof Error ? error.message : "שמירת המוצר נכשלה");
+    } finally {
+      setProductSaving(false);
+    }
   }
   const productEditor = (
     <div className="space-y-4">
@@ -710,7 +965,7 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
         <SafeMeta as="p" className="mt-2 text-xs leading-relaxed text-white/48">שמירה מעדכנת את הנתונים, יומן הפעולות והחנות באותו רגע.</SafeMeta>
       </Surface>
       <div className="grid grid-cols-2 gap-2 [&>button]:w-full">
-        <V6Button onClick={saveProduct}>שמירת מוצר</V6Button>
+        <V6Button disabled={productSaving} onClick={() => void saveProduct()}>{productSaving ? "שומר…" : "שמירת מוצר"}</V6Button>
         <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
       </div>
       <FormField label="שם מוצר" value={productTitle} onChange={setProductTitle} />
@@ -737,12 +992,14 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
       <input ref={productImageInput} type="file" accept="image/*" className="hidden" onChange={(event) => uploadProductImage(event.target.files?.[0])} />
       <div className={v6Cx("space-y-2 rounded-[28px] border p-3", v6Surface.quiet)}>
         <div className="flex gap-2 [&>button]:flex-1"><V6Button variant="ghost" onClick={() => productImageInput.current?.click()}><Upload size={16} /> העלאת תמונה</V6Button></div>
+        {pendingProductImageFile ? <p className="text-start text-xs text-emerald-100/70">נבחרה תמונה להעלאה בשמירה: {pendingProductImageFile.name}</p> : null}
+        {productImagePreviewUrl ? <div className="h-28 rounded-[22px] bg-cover bg-center" style={{ backgroundImage: `url(${productImagePreviewUrl})` }} /> : null}
         {shopImages.length ? <label className="block text-start"><span className="text-[12px] font-bold text-white/50">בחירת תמונה קיימת</span><select value={productImageId} onChange={(e) => setProductImageId(e.target.value)} className="mt-2 min-h-[48px] w-full rounded-[18px] border border-transparent bg-black/24 px-3 text-white outline-none"><option value="" className="bg-zinc-950">ללא תמונה</option>{shopImages.map((item) => <option key={item.id} value={item.id} className="bg-zinc-950">{item.title}</option>)}</select></label> : <p className="text-start text-xs text-white/44">אין עדיין תמונות מוצר שמורות.</p>}
       </div>
-      <div className={v6Cx("sticky bottom-0 mx-0 flex gap-2 rounded-[28px] border p-2", v6Surface.elevated)}>
-        <V6Button onClick={saveProduct}>שמירת מוצר</V6Button>
+      <SheetActions>
+        <V6Button disabled={productSaving} onClick={() => void saveProduct()}>{productSaving ? "שומר…" : "שמירת מוצר"}</V6Button>
         <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
-      </div>
+      </SheetActions>
     </div>
   );
   return (
@@ -765,6 +1022,7 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
         </div>
       </OpenCluster>
       <V6SheetController activeSheet={activeSheet} title={productTitle || "מוצר חדש"} onClose={() => setActiveSheet(null)}>{productEditor}</V6SheetController>
+      {(user.permissions.manageShop || user.role === "super_admin") ? <ActionCard icon={Plus} title="הוספת מוצר" subtitle="ניהול מוצר ותמונות" tone="shop" onClick={() => openProductEditor()} /> : null}
       <div className="space-y-3">
         {featuredProduct ? <ProductCard product={featuredProduct} user={user} show={show} onPrivateLesson={() => openScreen("private_lessons")} onEdit={(user.permissions.manageShop || user.role === "super_admin") ? () => openProductEditor(featuredProduct) : undefined} variant="feature" /> : null}
         {supportingProducts.length ? (
@@ -773,7 +1031,6 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
           </div>
         ) : null}
       </div>
-      {(user.permissions.manageShop || user.role === "super_admin") ? <ActionCard icon={Plus} title="הוספת מוצר" subtitle="ניהול מוצר ותמונות" tone="shop" onClick={() => openProductEditor()} /> : null}
       <Surface tone="shop" className="space-y-3 p-4">
         <div className="flex items-center gap-2 text-start"><CreditCard className="shrink-0 text-yellow-100/70" size={17} /><span className="min-w-0 flex-1 text-xs font-medium text-white/38">תשלום מאובטח יופעל בצד שרת</span></div>
         <div className="grid grid-cols-1 gap-1.5 rounded-[20px] bg-black/18 p-1.5 text-center text-xs font-semibold text-white/56 shadow-[inset_0_1px_0_rgba(255,255,255,0.040)] sm:grid-cols-3">
@@ -789,7 +1046,7 @@ function More({ user, openScreen, openTab }: { user: V6User; openScreen: (screen
   const aiInsights = useMemo(() => selectV6AIInsightsForActor(db, user).slice(0, 1), [db, user]);
   const seenMoreTargets = new Set<string>();
   const sections = [
-    { title: "ניהול", items: user.role === "super_admin" ? [{ title: "מסד נתונים", subtitle: "ייצוא, ייבוא וגיבוי", icon: Database, tone: "admin" as Tone, screen: "database" as V6Screen }, { title: "טקסטים", subtitle: "תוכן שאפשר לערוך", icon: Sparkles, tone: "repertoire" as Tone, screen: "texts" as V6Screen }, { title: "אפשרויות", subtitle: "הפעלה וכיבוי", icon: Flag, tone: "admin" as Tone, screen: "flags" as V6Screen }, { title: "יומן פעולות", subtitle: "מה השתנה ומתי", icon: ClipboardList, tone: "management" as Tone, screen: "audit" as V6Screen }, { title: "מצב האפליקציה", subtitle: "פתיחה וסנכרון", icon: HeartPulse, tone: "studio" as Tone, screen: "system" as V6Screen }, { title: "מיתוג", subtitle: "שם, שפה ונראות סטודיו", icon: Settings, tone: "admin" as Tone, screen: "branding" as V6Screen }] : [] },
+    { title: "ניהול", items: user.role === "super_admin" ? [{ title: "מסד נתונים", subtitle: "ייצוא, ייבוא וגיבוי", icon: Database, tone: "admin" as Tone, screen: "database" as V6Screen }, { title: "טקסטים", subtitle: "תוכן שאפשר לערוך", icon: Sparkles, tone: "repertoire" as Tone, screen: "texts" as V6Screen }, { title: "אפשרויות", subtitle: "הפעלה וכיבוי", icon: Flag, tone: "admin" as Tone, screen: "flags" as V6Screen }, { title: "יומן פעולות", subtitle: "מה השתנה ומתי", icon: ClipboardList, tone: "management" as Tone, screen: "audit" as V6Screen }, { title: "מצב האפליקציה", subtitle: "פתיחה וסנכרון", icon: HeartPulse, tone: "studio" as Tone, screen: "system" as V6Screen }, { title: "חיבורים", subtitle: "Supabase, R2 ותשלומים", icon: Shield, tone: "admin" as Tone, screen: "integrations" as V6Screen }, { title: "מיתוג", subtitle: "שם, שפה ונראות סטודיו", icon: Settings, tone: "admin" as Tone, screen: "branding" as V6Screen }] : [] },
     { title: "הסטודיו", items: [{ title: "לוח שנה ותחרויות", subtitle: "אירועים, חזרות והכנות", icon: CalendarDays, tone: "management" as Tone, screen: "calendar" as V6Screen }, { title: "שיעורים פרטיים", subtitle: "בקשות, מועדים ותשלום", icon: Receipt, tone: "shop" as Tone, screen: "private_lessons" as V6Screen }, { title: "גלריה", subtitle: "תמונות, וידאו וחומרים", icon: ImagePlus, tone: "modern" as Tone, screen: "media" as V6Screen }, { title: "זיכרונות והישגים", subtitle: "רגעים יפים מהסטודיו", icon: Trophy, tone: "repertoire" as Tone, screen: "legacy" as V6Screen }] },
     { title: "חנות ותשלומים", items: [{ title: "בוטיק ותשלומים", subtitle: "מוצרים, כרטיסים ואמצעי תשלום", icon: ShoppingBag, tone: "shop" as Tone, tab: "shop" as V6Tab }] },
     { title: "כלים למורה", items: user.role === "teacher" || user.role === "management" || user.role === "super_admin" ? [{ title: "נוכחות וקבוצות", subtitle: "פעולות מהירות למורה", icon: School, tone: "studio" as Tone, screen: "system" as V6Screen }] : [] },
@@ -1000,11 +1257,11 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
         <div className="flex flex-wrap gap-2">{permissionLabels.map(([key, label]) => <button key={key} onClick={() => togglePermission(key)} className={v6Cx("rounded-full px-3 py-2 text-xs font-semibold", permissions[key] ? "bg-violet-100 text-zinc-950" : v6Control.chip)}>{label}</button>)}</div>
       </div>
       <FormField label={selected ? "סיסמה חדשה לאיפוס" : "סיסמה ראשונית"} value={password} onChange={setPassword} />
-      <div className={v6Cx("sticky bottom-0 mx-0 flex gap-2 rounded-[28px] border p-2", v6Surface.elevated)}>
+      <SheetActions>
         <V6Button onClick={() => { if (save()) setActiveSheet(null); }}>שמירה</V6Button>
         <V6Button variant="ghost" onClick={resetPassword}>איפוס</V6Button>
         <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
-      </div>
+      </SheetActions>
     </div>
   );
   return (
@@ -1132,33 +1389,108 @@ function MediaScreen({ user, show, back }: { user: V6User; show: (message: strin
   const [activeSheet, setActiveSheet] = useState<V6ActiveSheet | null>(null);
   const [title, setTitle] = useState("חומר חדש");
   const [groupId, setGroupId] = useState(user.groupIds[0] ?? db.groups[0]?.id ?? "");
+  const [mediaTarget, setMediaTarget] = useState<"group" | "event">("group");
+  const [eventId, setEventId] = useState(db.events[0]?.id ?? "");
+  const [uploading, setUploading] = useState(false);
+  const [groupFilter, setGroupFilter] = useState("all");
+  const [uploaderFilter, setUploaderFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("");
+  const [eventFilter, setEventFilter] = useState("all");
   const groups = user.role === "teacher" ? db.groups.filter((g) => user.groupIds.includes(g.id)) : db.groups;
-  function save(file?: File) {
-    const media: V6MediaItem = { id: nextV6ClientId("media"), studioId: user.studioId, uploadedByUserId: user.id, title, fileName: file?.name ?? "local-preview", mediaType: file?.type.startsWith("video/") ? "video" : "image", linkedGroupId: groupId, visibility: "group", localPreviewUrl: file ? URL.createObjectURL(file) : undefined, createdAt: new Date().toISOString() };
-    dispatch({ type: "save_media", actor: user, media });
-    setActiveSheet(null);
-    show("המדיה נשמרה");
+  const academyId = academyIdFor(user);
+  const actorRef = useRef(user);
+  const today = new Date().toISOString().slice(0, 10);
+  const media = selectV6MediaForActor(db, user).filter((item) => {
+    if (groupFilter !== "all" && (item.linkedGroupId ?? item.groupId) !== groupFilter) return false;
+    if (uploaderFilter !== "all" && item.uploadedByUserId !== uploaderFilter) return false;
+    if (dateFilter && item.lessonDate !== dateFilter) return false;
+    if (eventFilter !== "all" && (item.linkedEventId ?? item.eventId) !== eventFilter) return false;
+    return true;
+  });
+  const uploaderOptions = uniqueBy(media.map((item) => ({ id: item.uploadedByUserId, name: item.uploaderName ?? db.users.find((dbUser) => dbUser.id === item.uploadedByUserId)?.name ?? item.uploadedByUserId })), (item) => item.id);
+
+  useEffect(() => {
+    actorRef.current = user;
+  }, [user]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadMedia() {
+      try {
+        const response = await fetch(`/api/media/list?academyId=${encodeURIComponent(academyId)}`, { cache: "no-store" });
+        if (!response.ok) return;
+        const payload = (await response.json()) as { ok: true; mediaItems: MediaApiItem[] } | { ok: false };
+        if (!payload.ok || cancelled) return;
+        payload.mediaItems.forEach((item) => {
+          dispatch({ type: "save_media", actor: actorRef.current, media: mapApiMediaToV6(item) });
+        });
+      } catch {
+        // The local/demo gallery remains usable when production media listing is unavailable.
+      }
+    }
+    void loadMedia();
+    return () => {
+      cancelled = true;
+    };
+  }, [academyId, dispatch]);
+
+  async function save(file?: File) {
+    if (mediaTarget === "event" && !eventId) {
+      show("צריך לבחור אירוע לפני העלאת מדיה");
+      return;
+    }
+    if (!file) {
+      const media: V6MediaItem = { id: nextV6ClientId("media"), studioId: user.studioId, academyId, uploadedByUserId: user.id, uploaderName: user.name, title, fileName: "metadata-only", mediaType: "image", linkedGroupId: mediaTarget === "group" ? groupId : undefined, linkedEventId: mediaTarget === "event" ? eventId : undefined, visibility: mediaTarget === "event" ? "event" : "group", createdAt: new Date().toISOString() };
+      dispatch({ type: "save_media", actor: user, media });
+      setActiveSheet(null);
+      show("נשמרה מטאדאטה מקומית בלבד");
+      return;
+    }
+    setUploading(true);
+    try {
+      const lesson = db.lessons.find((item) => item.groupId === groupId);
+      const uploaded = await uploadMediaToR2({
+        file,
+        user,
+        academyId,
+        title,
+        visibility: mediaTarget === "event" ? "event_public" : "group",
+        groupId: mediaTarget === "group" ? groupId : undefined,
+        classId: mediaTarget === "group" ? (lesson?.id ?? groupId) : undefined,
+        lessonDate: mediaTarget === "group" ? today : undefined,
+        eventId: mediaTarget === "event" ? eventId : undefined,
+        tags: ["gallery", mediaTarget]
+      });
+      dispatch({ type: "save_media", actor: user, media: uploaded.media });
+      setActiveSheet(null);
+      show(uploaded.persisted ? "המדיה עלתה ל־R2 ונשמרה בגלריה" : "תצוגה מקומית בלבד; R2 לא מוגדר");
+    } catch (error) {
+      show(error instanceof Error ? error.message : "העלאת המדיה נכשלה");
+    } finally {
+      setUploading(false);
+    }
   }
-  const media = selectV6MediaForActor(db, user);
   const mediaEditor = (
     <div className="space-y-4">
       <Surface tone="modern" className="p-4">
         <p className={v6Cx(v6Type.kicker, "text-cyan-100/54")}>העלאת מדיה</p>
         <SafeTitle as="h3" className="mt-2 text-[19px] font-semibold tracking-[-0.040em]">{title || "חומר חדש"}</SafeTitle>
-        <SafeMeta as="p" className="mt-2 text-xs leading-relaxed text-white/48">נשמר במסד המקומי עם שיוך לקבוצה והרשאות צפייה.</SafeMeta>
+        <SafeMeta as="p" className="mt-2 text-xs leading-relaxed text-white/48">במצב אמיתי הקובץ עולה ל־R2 והמטאדאטה נשמרת ב־Supabase. בלי R2 מוצגת תצוגת דמו בלבד.</SafeMeta>
       </Surface>
       <FormField label="כותרת" value={title} onChange={setTitle} />
-      <label className="block text-start"><span className={v6Control.label}>קבוצה</span><select value={groupId} onChange={(e) => setGroupId(e.target.value)} className={v6Cx("mt-2", v6Control.field)}>{groups.map((g) => <option key={g.id} value={g.id} className="bg-zinc-950">{g.name}</option>)}</select></label>
-      <input ref={input} type="file" accept="image/*,video/*" className="hidden" onChange={(e) => save(e.target.files?.[0])} />
+      <label className="block text-start"><span className={v6Control.label}>יעד</span><select value={mediaTarget} onChange={(event) => setMediaTarget(event.target.value as "group" | "event")} className={v6Cx("mt-2", v6Control.field)}><option value="group" className="bg-zinc-950">מדיית שיעור / קבוצה</option><option value="event" className="bg-zinc-950">מדיית אירוע</option></select></label>
+      {mediaTarget === "group" ? <label className="block text-start"><span className={v6Control.label}>קבוצה</span><select value={groupId} onChange={(e) => setGroupId(e.target.value)} className={v6Cx("mt-2", v6Control.field)}>{groups.map((g) => <option key={g.id} value={g.id} className="bg-zinc-950">{g.name}</option>)}</select></label> : null}
+      {mediaTarget === "event" ? <label className="block text-start"><span className={v6Control.label}>אירוע</span><select value={eventId} onChange={(event) => setEventId(event.target.value)} className={v6Cx("mt-2", v6Control.field)}>{db.events.map((event) => <option key={event.id} value={event.id} className="bg-zinc-950">{event.title}</option>)}</select></label> : null}
+      <input ref={input} type="file" accept="image/*,video/*" className="hidden" onChange={(e) => void save(e.target.files?.[0])} />
       <div className="grid grid-cols-2 gap-2 [&>button]:w-full">
-        <V6Button onClick={() => input.current?.click()}><Upload size={16} /> בחירת קובץ</V6Button>
-        <V6Button variant="ghost" onClick={() => save()}>שמירת מטאדאטה</V6Button>
+        <V6Button disabled={uploading} onClick={() => input.current?.click()}><Upload size={16} /> {uploading ? "מעלה…" : "בחירת קובץ"}</V6Button>
+        <V6Button disabled={uploading} variant="ghost" onClick={() => void save()}>שמירת מטאדאטה</V6Button>
       </div>
-      <RtlText as="p" className="text-xs leading-relaxed text-white/44">ב־MVP נשמרת מטאדאטה ותצוגה מקומית. בפרודקשן הקבצים יעברו לאחסון מאובטח.</RtlText>
-      <div className={v6Cx("sticky bottom-0 mx-0 flex gap-2 rounded-[28px] border p-2", v6Surface.elevated)}>
-        <V6Button onClick={() => save()}>שמירת מטאדאטה</V6Button>
+      <RtlText as="p" className="text-xs leading-relaxed text-white/44">תצוגת דמו אינה נחשבת שמירה קבועה. שמירה אמיתית דורשת סשן אקדמיה מאומת ו־R2 מוגדרים בשרת.</RtlText>
+      <SheetActions>
+        <V6Button disabled={uploading} onClick={() => void save()}>שמירת מטאדאטה</V6Button>
         <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
-      </div>
+      </SheetActions>
     </div>
   );
   return (
@@ -1173,6 +1505,12 @@ function MediaScreen({ user, show, back }: { user: V6User; show: (message: strin
       </HeroSurface>
       <V6SheetController activeSheet={activeSheet} title="העלאת מדיה" onClose={() => setActiveSheet(null)}>{mediaEditor}</V6SheetController>
       <ActionCard icon={ImagePlus} title="העלאת מדיה" subtitle="תמונה, וידאו או מטאדאטה" tone="modern" onClick={() => setActiveSheet({ type: "upload-media", mode: "add" })} />
+      <OpenCluster tone="modern" className="grid gap-3 p-3 sm:grid-cols-4">
+        <label className="block text-start"><span className={v6Control.label}>קבוצה</span><select value={groupFilter} onChange={(event) => setGroupFilter(event.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כל הקבוצות</option>{db.groups.map((group) => <option key={group.id} value={group.id} className="bg-zinc-950">{group.name}</option>)}</select></label>
+        <label className="block text-start"><span className={v6Control.label}>אירוע</span><select value={eventFilter} onChange={(event) => setEventFilter(event.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כל האירועים</option>{db.events.map((event) => <option key={event.id} value={event.id} className="bg-zinc-950">{event.title}</option>)}</select></label>
+        <label className="block text-start"><span className={v6Control.label}>מעלה</span><select value={uploaderFilter} onChange={(event) => setUploaderFilter(event.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כולם</option>{uploaderOptions.map((item) => <option key={item.id} value={item.id} className="bg-zinc-950">{item.name}</option>)}</select></label>
+        <FormField label="תאריך שיעור" value={dateFilter} onChange={setDateFilter} type="date" />
+      </OpenCluster>
       <OpenCluster tone="modern" className="grid gap-3 p-3 sm:grid-cols-2">
         {selectV6GalleryCollectionsForActor(db, user).map((collection) => {
           const groupNames = db.groups.filter((group) => collection.groupIds.includes(group.id)).map((group) => group.name).join(", ");
@@ -1194,7 +1532,17 @@ function MediaScreen({ user, show, back }: { user: V6User; show: (message: strin
           );
         })}
       </OpenCluster>
-      {media.map((item) => <Surface key={item.id} tone="modern"><SafeTitle as="h2" className="font-bold">{item.title}</SafeTitle><SafeMeta as="p" className="mt-1 text-sm text-white/55">{item.fileName}</SafeMeta></Surface>)}
+      {media.map((item) => (
+        <Surface key={item.id} tone="modern" className="overflow-hidden p-0">
+          {item.localPreviewUrl ? (
+            item.mediaType === "video" ? <video src={item.localPreviewUrl} controls className="max-h-72 w-full bg-black object-contain" /> : <div role="img" aria-label={item.title} className="h-48 bg-cover bg-center" style={{ backgroundImage: `url(${item.localPreviewUrl})` }} />
+          ) : null}
+          <SurfaceContent className="p-4 text-start">
+            <SafeTitle as="h2" className="font-bold">{item.title}</SafeTitle>
+            <SafeMeta as="p" className="mt-1 text-sm text-white/55">{item.fileName} · {item.r2Key ? "R2" : "local/demo"}</SafeMeta>
+          </SurfaceContent>
+        </Surface>
+      ))}
     </div>
   );
 }
@@ -1343,6 +1691,79 @@ function SystemScreen({ back }: { back: () => void }) {
   const issues = selectV6SystemIssues(db);
   const health = computeV6ManagementHealth(db);
   return <div className="space-y-4"><BackHeader title="מצב האפליקציה" back={back} /><HeroSurface tone={issues.length ? "urgent" : "studio"} className="p-5"><V6StatusBadge tone={issues.length ? "urgent" : "success"}>{issues.length ? "דורש בדיקה" : "תקין"}</V6StatusBadge><SafeTitle as="h2" className="mt-4 text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">{health.summary}</SafeTitle><SafeMeta as="p" className="mt-4 text-sm leading-relaxed text-white/64">פתיחה, נתונים וסנכרון מוצגים כאן בצורה פשוטה.</SafeMeta></HeroSurface><OpenCluster tone={issues.length ? "urgent" : "studio"} className="grid gap-1 sm:grid-cols-3"><MiniSummary icon={Check} tone="studio" label="פתיחה" title="מיידית" meta={sync} /><MiniSummary icon={Database} tone="admin" label="גרסה" title={`V${db.version}`} meta="נתונים" /><MiniSummary icon={HeartPulse} tone={issues.length ? "urgent" : "modern"} label="מצב" title={issues.length ? `${issues.length} לבדיקה` : "תקין"} meta={issues.length ? "צריך לבדוק" : "ללא חסימות"} /></OpenCluster><Widget title="בדיקות" kicker="מעקב יומי" icon={HeartPulse} tone={issues.length ? "urgent" : "studio"}><div className="space-y-2">{issues.length ? issues.map((issue) => <V6FeedRow key={issue.id} icon={HeartPulse} title={issue.title} body={issue.body} meta={issue.severity === "critical" ? "חשוב" : "בדיקה"} tone={issue.severity === "critical" ? "urgent" : "management"} />) : <V6FeedRow icon={CheckCircle2} title="אין חסימות פעילות" body="האפליקציה מוכנה לפתיחה ושימוש יומי." meta="תקין" tone="studio" />}</div></Widget></div>;
+}
+
+function integrationTone(status: IntegrationHealthItem["statusHe"]): V6Tone {
+  if (status === "מחובר") return "success";
+  if (status === "בדיקה נכשלה") return "urgent";
+  if (status === "מצב בדיקה") return "shop";
+  if (status === "במעקב") return "management";
+  return "admin";
+}
+
+function IntegrationHealthScreen({ user, back }: { user: V6User; back: () => void }) {
+  const [report, setReport] = useState<IntegrationHealthReport | null>(null);
+  const [error, setError] = useState("");
+  const pushSupported = typeof window !== "undefined" && "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/integrations/health", {
+      headers: {
+        "x-lk-actor-role": user.role,
+        "x-lk-dev-health": process.env.NODE_ENV !== "production" ? "1" : "0"
+      }
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error("health_failed");
+        return res.json() as Promise<{ report: IntegrationHealthReport }>;
+      })
+      .then((data) => {
+        if (!cancelled) setReport(data.report);
+      })
+      .catch(() => {
+        if (!cancelled) setError("בדיקה נכשלה");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user.role]);
+
+  if (user.role !== "super_admin") {
+    return <div className="space-y-4"><BackHeader title="חיבורים" back={back} /><Surface tone="admin"><SafeMeta as="p" className="text-sm text-white/58">המסך זמין למנהל האפליקציה בלבד.</SafeMeta></Surface></div>;
+  }
+
+  const items = report?.items ?? [];
+
+  return (
+    <div className="space-y-4">
+      <BackHeader title="חיבורים" back={back} />
+      <HeroSurface tone="admin" className="min-h-[210px] p-5">
+        <V6StatusBadge tone={error ? "urgent" : "admin"}>{error || "בדיקה שקטה"}</V6StatusBadge>
+        <SafeTitle as="h2" className="mt-4 max-w-[19rem] text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">מצב החיבורים</SafeTitle>
+        <SafeMeta as="p" className="mt-4 max-w-[21rem] text-sm leading-relaxed text-white/62">תצוגה למנהל האפליקציה בלבד. אין כאן סודות, רק מצב חיבור פשוט.</SafeMeta>
+      </HeroSurface>
+      <OpenCluster tone="admin" className="space-y-2">
+        {items.length ? items.map((item) => (
+          <div key={item.id} className="lk-safe-row flex items-start justify-between gap-3 rounded-[26px] border border-white/[0.045] bg-white/[0.03] p-3 text-start">
+            <div className="min-w-0 flex-1">
+              <SafeTitle as="h3" className="text-[15px] font-semibold text-white/86">{item.labelHe}</SafeTitle>
+              <SafeMeta as="p" className="mt-1 text-xs leading-relaxed text-white/46">{item.detailHe}</SafeMeta>
+            </div>
+            <V6StatusBadge tone={integrationTone(item.statusHe)}>{item.statusHe}</V6StatusBadge>
+          </div>
+        )) : <V6FeedRow icon={HeartPulse} title={error || "בודק חיבורים"} body="הסטטוסים יופיעו כאן בעוד רגע." meta="בדיקה" tone={error ? "urgent" : "admin"} />}
+      </OpenCluster>
+      <Surface tone="admin" className="space-y-3 p-4">
+        <div className="flex items-center justify-between gap-3 text-start">
+          <SafeTitle as="h3" className="text-[15px] font-semibold text-white/86">Push בדפדפן הזה</SafeTitle>
+          <V6StatusBadge tone={pushSupported ? "success" : "admin"}>{pushSupported ? "מחובר" : "חסר"}</V6StatusBadge>
+        </div>
+        <SafeMeta as="p" className="text-xs leading-relaxed text-white/48">בקשת הרשאה תופעל רק מפעולה יזומה, לא בפתיחת האפליקציה.</SafeMeta>
+      </Surface>
+      {report?.latestErrors.length ? <Widget title="שגיאות אחרונות" kicker="חיבורים" icon={Shield} tone="urgent"><div className="space-y-2">{report.latestErrors.map((item) => <V6FeedRow key={item} icon={Shield} title="בדיקה נכשלה" body={item} meta="בדיקה" tone="urgent" />)}</div></Widget> : null}
+    </div>
+  );
 }
 
 export function LKStudentSpaceV6() {

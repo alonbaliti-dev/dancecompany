@@ -105,7 +105,7 @@ function SheetBody({
       ) : null}
 
       <div className="rounded-xl border border-amber-400/25 bg-amber-500/[0.08] px-3 py-2.5 text-right text-[12px] leading-relaxed text-amber-100/90">
-        מצב פיתוח מקומי בלבד — בסביבת production יש לאפס סיסמה דרך Supabase Auth / שרת מאובטח. סיסמאות אינן מוצגות בממשק.
+        מצב פיתוח מקומי בלבד — בסביבת production איפוס סיסמה מתבצע בשרת האקדמיה ונשמר כ-hash. סיסמאות אינן מוצגות בממשק.
       </div>
 
       {success ? (

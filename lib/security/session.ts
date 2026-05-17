@@ -1,10 +1,10 @@
 /**
  * Session model — mock client persistence.
  *
- * Production (Supabase Auth):
- * - Passwords handled only by Supabase Auth (`signInWithPassword`, `resetPasswordForEmail`).
- * - App loads `profiles` + permissions after `supabase.auth.getSession()`.
- * - Refresh via `onAuthStateChange`; short-lived JWT + httpOnly cookies when using SSR.
+ * Production:
+ * - Passwords are validated only by trusted server routes against hashed academy credentials.
+ * - App loads `users_profile` + permissions after `/api/auth/session`.
+ * - Session is an httpOnly, server-verifiable cookie.
  * - Never put `SUPABASE_SERVICE_ROLE_KEY` in the client bundle.
  */
 import { normalizePermissions } from "@/lib/permissions";
@@ -14,7 +14,7 @@ import type { AppSession } from "./types";
 export type { AppSession };
 
 const STORAGE_KEY = "lk_ss_session_v1";
-const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days — tune with Supabase session policy
+const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days — local demo only
 
 export function createSession(user: UserProfile, now = Date.now()): AppSession {
   return {

@@ -25,7 +25,7 @@ export function AppShellFrame({ user, studioName, onLogout, children, atmosphere
       <div className="pointer-events-none fixed inset-x-0 top-0 z-0 h-44 bg-[linear-gradient(180deg,rgba(255,247,223,0.052),transparent)]" />
       <div className="pointer-events-none fixed bottom-[-8rem] left-1/2 z-0 h-64 w-[min(88vw,410px)] -translate-x-1/2 rounded-t-full bg-[radial-gradient(ellipse_at_center,rgba(244,213,141,0.08),rgba(100,28,63,0.06)_42%,transparent_72%)] blur-sm" />
       <div
-        className="relative z-10 mx-auto w-full max-w-[430px] px-4 pb-[calc(10rem+env(safe-area-inset-bottom,0px))] pt-[calc(0.9rem+env(safe-area-inset-top,0px))] sm:px-5 md:max-w-5xl"
+        className="relative z-10 mx-auto w-full max-w-[430px] px-4 pb-[calc(13.5rem+env(safe-area-inset-bottom,0px))] pt-[calc(0.9rem+env(safe-area-inset-top,0px))] sm:px-5 md:max-w-5xl"
         style={{ minHeight: "var(--app-height)" }}
       >
         <div className={v6Cx("lk-safe-surface sticky top-[calc(0.55rem+env(safe-area-inset-top,0px))] z-40 mb-6 rounded-[32px] border px-3.5 py-2 text-start", v6Surface.base)}>
@@ -57,19 +57,19 @@ export function BottomNavDock({ tab, unread, onTab }: { tab: V6Tab; unread: numb
     { id: "more", label: "עוד", icon: Users }
   ];
   return (
-    <nav dir="rtl" aria-label="ניווט ראשי" className="fixed left-1/2 z-50 -translate-x-1/2" style={{ bottom: "max(0.62rem, env(safe-area-inset-bottom, 0px))", width: "min(calc(100vw - 24px), 398px)" }}>
-      <div className="lk-safe-surface relative grid w-full grid-cols-5 items-stretch gap-1 overflow-hidden rounded-[28px] border border-[rgba(244,213,141,0.075)] bg-[rgba(8,5,6,0.86)] p-1.5 shadow-[0_20px_58px_rgba(0,0,0,0.50),inset_0_1px_0_rgba(255,247,223,0.070)] backdrop-blur-2xl">
+    <nav dir="rtl" aria-label="ניווט ראשי" className="pointer-events-none fixed left-1/2 z-50 -translate-x-1/2" style={{ bottom: "max(0.62rem, env(safe-area-inset-bottom, 0px))", width: "min(calc(100vw - 24px), 398px)" }}>
+      <div className="lk-safe-surface pointer-events-auto relative grid w-full grid-cols-5 items-stretch gap-1 overflow-hidden rounded-[28px] border border-[rgba(244,213,141,0.10)] bg-[rgba(8,5,6,0.91)] p-1.5 shadow-[0_20px_58px_rgba(0,0,0,0.52),inset_0_1px_0_rgba(255,247,223,0.080)] backdrop-blur-2xl">
         <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/18 to-transparent" />
         {items.map((item) => {
           const active = tab === item.id;
           const Icon = item.icon;
           return (
-            <button key={item.id} type="button" aria-current={active ? "page" : undefined} onClick={() => onTab(item.id)} className={v6Cx("lk-safe-control relative flex min-h-[58px] min-w-0 flex-col items-center justify-center gap-1 rounded-[22px] px-1.5 py-1 text-[10px] font-semibold transition duration-200 active:scale-95", active ? "bg-[linear-gradient(180deg,rgba(244,213,141,0.15),rgba(255,247,223,0.046))] text-[#fff7df] shadow-[inset_0_1px_0_rgba(255,247,223,0.12)]" : "text-white/46 hover:text-white/66")}>
+            <button key={item.id} type="button" aria-current={active ? "page" : undefined} onClick={() => onTab(item.id)} className={v6Cx("lk-safe-control relative flex min-h-[58px] min-w-0 flex-col items-center justify-center gap-1 rounded-[22px] px-1.5 py-1 text-[10px] font-semibold transition duration-200 active:scale-95", active ? "bg-[linear-gradient(180deg,rgba(244,213,141,0.18),rgba(255,247,223,0.060))] text-[#fff7df] shadow-[inset_0_1px_0_rgba(255,247,223,0.14)]" : "text-white/62 hover:text-white/78")}>
               <span className={v6Cx("relative grid h-7 w-7 place-items-center rounded-full transition", active && "bg-[#f4d58d]/8")}>
                 <Icon size={15} strokeWidth={active ? 2.1 : 1.75} />
                 {item.id === "messages" && unread ? <BadgeCount value={unread > 9 ? "9+" : unread} label={`${unread} הודעות שלא נקראו`} className="absolute -left-2 -top-1 bg-rose-200 text-rose-950 shadow-[0_0_0_2px_rgba(8,5,6,0.86)]" /> : null}
               </span>
-              <span className={v6Cx("lk-safe-meta max-w-full text-center text-[10px] leading-tight tracking-[-0.01em]", active ? "text-white/92" : "text-white/50")}>{item.label}</span>
+              <span className={v6Cx("lk-safe-meta max-w-full text-center text-[10px] leading-tight tracking-[-0.01em]", active ? "text-white/94" : "text-white/66")}>{item.label}</span>
             </button>
           );
         })}

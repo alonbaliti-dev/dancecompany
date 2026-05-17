@@ -34,7 +34,7 @@
   --color-velvet-purple: #3d1027;
 
   --lk-card-radius: 2.25rem;
-  --lk-nav-height: 4.75rem;
+  --lk-nav-height: 5.5rem;
   --lk-safe-inner-padding: clamp(0.625rem, 2.4vw, 0.95rem);
   --lk-safe-control-padding: clamp(0.7rem, 2.8vw, 1rem);
   --lk-safe-line-height: 1.42;
@@ -82,7 +82,9 @@
   }
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -127,6 +129,17 @@ svg {
   max-width: 100%;
 }
 
+main,
+section,
+article,
+aside,
+header,
+footer,
+nav {
+  min-width: 0;
+  max-width: 100%;
+}
+
 /* iOS Safari fill-available fallback */
 @supports (-webkit-touch-callout: none) {
   html {
@@ -152,7 +165,7 @@ button,
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   scroll-margin-top: 1rem;
-  scroll-margin-bottom: calc(var(--nav-offset) + 2.5rem);
+  scroll-margin-bottom: calc(var(--nav-offset) + 7rem);
 }
 
 a,
@@ -160,7 +173,7 @@ input,
 select,
 textarea {
   scroll-margin-top: 1rem;
-  scroll-margin-bottom: calc(var(--nav-offset) + 2.5rem);
+  scroll-margin-bottom: calc(var(--nav-offset) + 7rem);
 }
 
 input,
@@ -478,6 +491,7 @@ textarea {
   position: relative;
   isolation: isolate;
   overflow-wrap: anywhere;
+  background-clip: padding-box;
 }
 
 .lk-safe-content {
@@ -485,8 +499,15 @@ textarea {
   z-index: 1;
   box-sizing: border-box;
   min-width: 0;
+  width: 100%;
   max-width: 100%;
   overflow-wrap: anywhere;
+}
+
+.lk-safe-surface :where(.flex, .grid),
+.lk-safe-content :where(.flex, .grid) {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .lk-safe-row,
@@ -500,7 +521,7 @@ textarea {
   max-width: 100%;
   white-space: normal;
   overflow-wrap: anywhere;
-  word-break: normal;
+  word-break: break-word;
   hyphens: auto;
   line-height: var(--lk-safe-line-height);
 }
@@ -510,8 +531,8 @@ textarea {
   max-width: 100%;
   white-space: normal;
   overflow-wrap: anywhere;
-  text-wrap: balance;
-  word-break: normal;
+  text-wrap: pretty;
+  word-break: break-word;
   hyphens: auto;
   line-height: max(1.18em, 1.18);
 }
@@ -521,7 +542,7 @@ textarea {
   max-width: 100%;
   white-space: normal;
   overflow-wrap: anywhere;
-  word-break: normal;
+  word-break: break-word;
   hyphens: auto;
   line-height: max(1.38em, 1.38);
 }
@@ -560,6 +581,12 @@ textarea {
   white-space: normal;
   overflow-wrap: anywhere;
   line-height: 1.32;
+  text-wrap: pretty;
+}
+
+.lk-safe-control,
+.lk-safe-control > * {
+  min-width: 0;
 }
 
 .lk-safe-surface button,
@@ -659,6 +686,22 @@ textarea {
 /* Sheets above nav chrome */
 .sheet-layer {
   z-index: 70;
+}
+
+.lk-sheet-scroll {
+  scroll-padding-bottom: calc(6rem + var(--safe-bottom) + var(--keyboard-inset, 0px));
+  -webkit-overflow-scrolling: touch;
+}
+
+.lk-sheet-actions {
+  margin-bottom: calc(-0.25rem + var(--keyboard-inset, 0px));
+  background-color: rgba(9, 6, 8, 0.92);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+}
+
+.lk-sheet-actions > * {
+  flex: 1 1 8.5rem;
 }
 
 /* Sync badge — visible but never intercepts taps */

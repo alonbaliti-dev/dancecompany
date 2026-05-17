@@ -47,6 +47,10 @@ function validateTargets(context: AIRequestContext): AIContextValidationResult |
     return { ok: false, code: "ai_forbidden_studio_target", message: "AI target studio is outside the current user studio.", status: 403 };
   }
 
+  if (!includesOnly(targetEntityIds.academyIds, [context.academyId ?? currentUser.activeAcademyId ?? currentUser.academyId ?? currentUser.studioId])) {
+    return { ok: false, code: "ai_forbidden_academy_target", message: "AI target academy is outside the current academy scope.", status: 403 };
+  }
+
   if (currentUser.role === "super_admin" || currentUser.role === "management") return null;
 
   if (allowedScope === "self") {
@@ -80,6 +84,7 @@ export function validateAIRequestContext(value: unknown): AIContextValidationRes
   const currentUser = value.currentUser as AIRequestContext["currentUser"];
   const role = value.role;
   const studioId = value.studioId;
+  const academyId = typeof value.academyId === "string" ? value.academyId : currentUser.activeAcademyId ?? currentUser.academyId ?? currentUser.studioId;
   const allowedScope = value.allowedScope;
   const targetEntityIds = parseTargetEntityIds(value.targetEntityIds);
 
@@ -106,6 +111,10 @@ export function validateAIRequestContext(value: unknown): AIContextValidationRes
     return { ok: false, code: "ai_studio_mismatch", message: "AI request studio does not match the current user.", status: 403 };
   }
 
+  if (currentUser.role !== "super_admin" && currentUser.academyIds?.length && !currentUser.academyIds.includes(academyId)) {
+    return { ok: false, code: "ai_academy_denied", message: "AI request academy is not assigned to the current user.", status: 403 };
+  }
+
   if (!roleScopes[currentUser.role]?.includes(allowedScope as AIScope)) {
     return { ok: false, code: "ai_scope_denied", message: "AI scope is not allowed for the current user role.", status: 403 };
   }
@@ -114,7 +123,7 @@ export function validateAIRequestContext(value: unknown): AIContextValidationRes
     return { ok: false, code: "ai_targets_required", message: "AI requests require explicit target entity IDs.", status: 400 };
   }
 
-  const context = { currentUser, role: currentUser.role, studioId: currentUser.studioId, allowedScope: allowedScope as AIScope, targetEntityIds };
+  const context = { currentUser, role: currentUser.role, studioId: currentUser.studioId, academyId, allowedScope: allowedScope as AIScope, targetEntityIds };
   return validateTargets(context) ?? { ok: true, context };
 }
 

@@ -1,6 +1,7 @@
 # Deployment QA
 
 Use this checklist before promoting a Vercel deployment. `develop` is for Preview verification only; Production must remain tied to `main`.
+For the first LK Studio production release, complete this checklist together with `docs/PHASE_8_PRODUCTION_LAUNCH.md`.
 
 ## Vercel Smoke-Test Workflow
 
@@ -15,6 +16,7 @@ Use this checklist before promoting a Vercel deployment. `develop` is for Previe
 - [ ] `npm run lint` passes locally or in CI.
 - [ ] `npm run typecheck` passes locally or in CI.
 - [ ] `npm run build` passes locally or in CI.
+- [ ] Phase 8 launch blockers are reviewed before any public rollout.
 - [ ] No app code depends on hardcoded `localhost` URLs for production behavior.
 - [ ] No mock secrets, real API keys, service role keys, private tokens, or credentials are committed.
 - [ ] No server-side provider keys are exposed with a `NEXT_PUBLIC_` prefix.
@@ -30,10 +32,12 @@ Use this checklist before promoting a Vercel deployment. `develop` is for Previe
 
 - [ ] Production Branch is set to `main` in Vercel Project Settings.
 - [ ] Preview deployments are enabled for `develop` and pull request branches.
+- [ ] Preview and Production use separate Supabase/R2 resources or an explicitly approved safe staging setup.
 - [ ] `NEXT_PUBLIC_APP_ENV` matches the target environment.
 - [ ] `NEXT_PUBLIC_ENABLE_DB_SYNC` is intentionally set for the environment.
 - [ ] Server-only secrets do not use the `NEXT_PUBLIC_` prefix.
 - [ ] AI provider keys and database service keys are marked sensitive in Vercel.
+- [ ] `PAYMENT_SANDBOX=true` remains set until live charging receives a separate approval.
 - [ ] Any changed environment variable was followed by a fresh deployment.
 
 ## Supabase/Firebase Connectivity
@@ -120,3 +124,4 @@ vercel promote <deployment-url-or-id>
 - [ ] Confirm login, role routing, mobile navigation, and at least one critical form flow.
 - [ ] Review Vercel runtime logs for errors during the first smoke-test session.
 - [ ] Document any deferred issue with owner, severity, and follow-up date.
+- [ ] Begin rollout slowly: internal, management, teachers, selected parents/students, then wider academy only after blockers are clear.

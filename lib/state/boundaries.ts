@@ -3,7 +3,7 @@
  *
  * | Layer | Location | Persistence | Production |
  * |-------|----------|-------------|------------|
- * | Session user | PlatformContext / page | localStorage + Supabase Auth | JWT session |
+ * | Session user | PlatformContext / page | localStorage + academy app session | httpOnly cookie |
  * | Studio tasks/updates | StudioDataContext | memory → Supabase | Realtime optional |
  * | Comms | CommunicationContext | memory → Supabase | Realtime channels |
  * | Shop cart | ShopContext | session | Server cart |

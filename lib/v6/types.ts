@@ -12,7 +12,8 @@ export type V6Screen =
   | "flags"
   | "audit"
   | "system"
-  | "branding";
+  | "branding"
+  | "integrations";
 
 export type V6Permissions = {
   manageUsers: boolean;

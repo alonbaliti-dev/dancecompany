@@ -17,6 +17,12 @@ This plan prepares LK Student Space for Supabase without starting a destructive 
 
 Preserve the local MVP while adding production-shaped contracts. Do not rename every `studioId` at once. In production schema, `academy_id` is the canonical tenant key; during transition, existing `studioId` maps to `academyId`.
 
+## Phase 2 Local Foundation
+
+Phase 2 adds local migration files under `supabase/migrations/`, typed clients in `lib/supabase/`, academy-scope helpers in `lib/security/academy-scope.ts`, and repository foundations in `lib/repositories/`. These files are intentionally local-only until a Supabase project is reviewed and migration execution is approved.
+
+`AUTH_MODE=local_demo` keeps the current local login. `AUTH_MODE=supabase` prepares email/password Supabase Auth and profile lookup through `users_profile` and `user_roles`, but it does not remove or replace the existing local login.
+
 ## Core Tables
 
 Production tables should include `academy_id` on every tenant-scoped row:
@@ -66,6 +72,8 @@ RLS must be enabled on exposed tables. Policies should enforce:
 - Adult students do not require parent-linked access.
 
 Authorization data should live in trusted membership tables or app metadata, not user-editable metadata.
+
+The Phase 2 migration enables RLS on all initial public tables. Only active academy and branding records have public read policies for branded login discovery; tenant tables are locked down pending production policy review.
 
 ## Media Metadata
 

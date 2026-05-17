@@ -1,3 +1,5 @@
+import "server-only";
+
 import { sanitizeMediaFileName } from "@/lib/domains/media/media-repository";
 
 export const R2_MEDIA_BUCKET_FALLBACK = "academy-media";

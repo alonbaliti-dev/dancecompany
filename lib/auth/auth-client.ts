@@ -25,7 +25,7 @@ const MIN_LEN = 6;
 /**
  * Mock sign-in.
  *
- * Production: `supabase.auth.signInWithPassword({ phone, password })` — passwords never touch app state.
+ * Production: POST to `/api/auth/phone-login` — password validation stays server-side and passwords never touch app state.
  * Profile + permissions loaded from `profiles` table after auth session is established.
  */
 export function signInWithPhonePassword(phoneRaw: string, passwordRaw: string): SignInResult {
@@ -54,7 +54,7 @@ export function signInWithPhonePassword(phoneRaw: string, passwordRaw: string): 
 }
 
 /**
- * Placeholder — production: `supabase.auth.resetPasswordForEmail` or SMS OTP flow.
+ * Placeholder — production: management/Super Admin reset route or SMS OTP flow.
  */
 export function requestPasswordReset(phoneRaw: string): ForgotPasswordResult {
   const phone = normalizeIsraeliMobile(phoneRaw.trim());
@@ -77,7 +77,7 @@ export function requestPasswordReset(phoneRaw: string): ForgotPasswordResult {
 
 /**
  * Mock password change.
- * Production: Supabase `updateUser({ password })` + audit log via server route.
+ * Production: server reset route updates a hashed academy credential and writes an audit entry.
  */
 export function changePasswordForUser(params: {
   user: UserProfile;

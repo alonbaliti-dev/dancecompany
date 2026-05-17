@@ -4,6 +4,7 @@ import { selectAIPrompt } from "@/lib/ai/ai-prompts";
 import { checkAIRateLimit } from "@/lib/ai/ai-rate-limit";
 import { aiLocalMvpContextNotice, validateAIRequestContext } from "@/lib/ai/ai-request-context";
 import { rejectAIPublishIntent, validateAISafety } from "@/lib/ai/ai-safety";
+import { requireProductionSession } from "@/lib/security/production-hardening";
 import type { AIActionType, AITargetModule } from "@/lib/ai/ai-types";
 import {
   AIProviderConfigError,
@@ -26,8 +27,17 @@ const allowedActionTypes = new Set<AIActionType>([
   "draft_task",
   "draft_parent_update",
   "draft_teacher_feedback",
+  "draft_attendance_follow_up",
+  "draft_event_announcement",
+  "draft_reminder",
+  "draft_summary",
   "draft_shop_description",
   "draft_event_reminder",
+  "practice_recommendation",
+  "engagement_recommendation",
+  "event_readiness_summary",
+  "media_organization_suggestion",
+  "academy_health_summary",
   "analysis"
 ]);
 const allowedTargetModules = new Set<AITargetModule>([
@@ -38,9 +48,13 @@ const allowedTargetModules = new Set<AITargetModule>([
   "messages",
   "notifications",
   "tasks",
+  "attendance",
+  "practice",
+  "engagement",
   "shop",
   "events",
   "media",
+  "gallery",
   "private_lessons",
   "system"
 ]);
@@ -118,6 +132,11 @@ function jsonNoStore(body: unknown, init?: ResponseInit) {
 }
 
 export async function POST(request: Request) {
+  const gate = await requireProductionSession(request, "ai.complete");
+  if (gate.ok === false) {
+    return jsonNoStore({ error: gate.error, message: gate.message }, { status: gate.status });
+  }
+
   let body: AICompleteBody;
 
   try {
@@ -231,7 +250,9 @@ export async function POST(request: Request) {
       provider: result.provider,
       actionType,
       targetModule,
-      approvalStatus: safetyResult.suggestion.draft.status
+      approvalStatus: safetyResult.suggestion.draft.status,
+      promptType: promptSelection?.ok ? promptSelection.key : optionalString(body.promptKey),
+      suggestionId: safetyResult.suggestion.draft.id
     });
 
     return jsonNoStore(
@@ -288,7 +309,9 @@ export async function POST(request: Request) {
             provider: "mock",
             actionType,
             targetModule,
-            approvalStatus: safetyResult.suggestion.draft.status
+            approvalStatus: safetyResult.suggestion.draft.status,
+            promptType: optionalString(body.promptKey),
+            suggestionId: safetyResult.suggestion.draft.id
           }),
           rateLimit,
           retryable: true,

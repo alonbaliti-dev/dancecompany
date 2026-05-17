@@ -6,6 +6,10 @@ const userFacingActions = new Set<AIActionType>([
   "draft_task",
   "draft_parent_update",
   "draft_teacher_feedback",
+  "draft_attendance_follow_up",
+  "draft_event_announcement",
+  "draft_reminder",
+  "draft_summary",
   "draft_shop_description",
   "draft_event_reminder"
 ]);
@@ -24,6 +28,7 @@ export function createAIDraft(input: {
   content: string;
   actorUserId: string;
   studioId: string;
+  academyId?: string;
   createdAt?: string;
 }): AIDraft {
   const requiresApproval = isUserFacingAIAction(input.actionType);
@@ -38,12 +43,23 @@ export function createAIDraft(input: {
     content: input.content,
     createdByUserId: input.actorUserId,
     studioId: input.studioId,
+    academyId: input.academyId,
     createdAt: input.createdAt ?? new Date().toISOString()
   };
 }
 
-export function markAIDraftApproved(draft: AIDraft, approved: boolean): AIDraft {
-  return { ...draft, status: approved ? "approved" : "rejected" };
+export function markAIDraftApproved(
+  draft: AIDraft,
+  approved: boolean,
+  review?: { reviewedByUserId?: string; reviewedAt?: string; rejectionReason?: string }
+): AIDraft {
+  return {
+    ...draft,
+    status: approved ? "approved" : "rejected",
+    reviewedByUserId: review?.reviewedByUserId,
+    reviewedAt: review?.reviewedAt ?? new Date().toISOString(),
+    rejectionReason: approved ? undefined : review?.rejectionReason
+  };
 }
 
 export function assertHumanApprovalBeforePublish(draft: AIDraft) {

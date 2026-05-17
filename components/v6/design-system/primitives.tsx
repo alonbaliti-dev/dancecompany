@@ -23,7 +23,7 @@ export function BidiNumber({ children, className }: { children: ReactNode; class
 }
 
 export function SurfaceContent({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={v6Cx(v6Safe.content, className)}>{children}</div>;
+  return <div className={v6Cx(v6Safe.content, "w-full", className)}>{children}</div>;
 }
 
 export function SafeTitle({ children, className, as: Component = "h2" }: { children: ReactNode; className?: string; as?: ElementType }) {
@@ -186,7 +186,7 @@ export function ActionPill({ icon: Icon, title, subtitle, tone = "studio", onCli
 }
 
 export function StatusBadge({ children, tone = "studio" }: { children: ReactNode; tone?: V6Tone }) {
-  return <span dir="auto" className={v6Cx("bidi-plain mx-0.5 inline-flex min-h-7 max-w-full min-w-0 items-center rounded-full border border-white/[0.035] px-3 py-1.5 text-[11px] font-semibold shadow-[inset_0_1px_0_rgba(255,247,223,0.036)]", v6Safe.control, v6Tone[tone].soft, v6Tone[tone].text)}>{children}</span>;
+  return <span dir="auto" className={v6Cx("bidi-plain mx-0.5 inline-flex min-h-7 max-w-full min-w-0 items-center justify-center rounded-full border border-white/[0.035] px-3 py-1.5 text-center text-[11px] font-semibold shadow-[inset_0_1px_0_rgba(255,247,223,0.036)]", v6Safe.control, v6Tone[tone].soft, v6Tone[tone].text)}>{children}</span>;
 }
 
 export function Button({ children, onClick, variant = "primary", disabled, type = "button" }: { children: ReactNode; onClick?: () => void; variant?: "primary" | "ghost" | "danger"; disabled?: boolean; type?: "button" | "submit" }) {
@@ -194,6 +194,14 @@ export function Button({ children, onClick, variant = "primary", disabled, type 
     <button dir="rtl" type={type} disabled={disabled} onClick={onClick} className={v6Cx("lk-safe-control inline-flex min-h-12 max-w-full min-w-0 items-center justify-center gap-1.5 rounded-[24px] px-5 py-2.5 text-center text-sm font-semibold tracking-[-0.016em] transition duration-200 active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-45", variant === "primary" && "bg-[linear-gradient(135deg,#fff9ea,#f4d58d_56%,#d7b56d)] text-zinc-950 shadow-[0_14px_34px_rgba(244,213,141,0.14),inset_0_1px_0_rgba(255,255,255,0.62)]", variant === "ghost" && "border border-[rgba(244,213,141,0.070)] bg-white/[0.036] text-white/82 shadow-[inset_0_1px_0_rgba(255,247,223,0.046)]", variant === "danger" && "border border-rose-100/[0.055] bg-[#b72f3d]/12 text-rose-50 shadow-[inset_0_1px_0_rgba(255,247,223,0.042)]")}>
       {children}
     </button>
+  );
+}
+
+export function SheetActions({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={v6Cx("lk-sheet-actions sticky bottom-0 z-20 -mx-1 mt-2 flex flex-wrap gap-2 rounded-[28px] border p-2", v6Surface.elevated, className)}>
+      {children}
+    </div>
   );
 }
 
@@ -260,7 +268,8 @@ export function BottomSheet({ title, children, onClose }: { title: string; child
         alignItems: "flex-end",
         justifyContent: "center",
         background: "radial-gradient(ellipse at 50% 100%, rgba(244,213,141,0.08), transparent 44%), rgba(0,0,0,0.70)",
-        paddingTop: "calc(env(safe-area-inset-top, 0px) + 12px)"
+        paddingTop: "calc(env(safe-area-inset-top, 0px) + 12px)",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)"
       }}
       className="px-0 pb-0 backdrop-blur-lg md:p-6"
     >
@@ -272,14 +281,14 @@ export function BottomSheet({ title, children, onClose }: { title: string; child
         aria-label={title}
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
-        style={{ zIndex: 1, height: "min(720px, calc(100dvh - env(safe-area-inset-top, 0px) - 12px))", insetInline: 0, bottom: 0 }}
+        style={{ zIndex: 1, height: "min(720px, calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 12px))", insetInline: 0, bottom: 0 }}
         className={v6Cx(v6Safe.surface, "relative flex w-full max-w-[430px] flex-col overflow-hidden rounded-t-[40px] border outline-none md:max-w-[760px] md:rounded-[40px]", v6Surface.floating)}
       >
         <div className="sticky top-0 z-10 flex flex-wrap items-start gap-3 bg-[#080506]/88 px-5 py-4 shadow-[inset_0_-1px_0_rgba(244,213,141,0.08)] backdrop-blur-2xl">
           <SafeTitle as="h2" className="min-w-0 flex-1 text-start text-xl font-semibold tracking-[-0.035em]">{title}</SafeTitle>
           <Button variant="ghost" onClick={onClose}>סגירה</Button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 pb-[calc(5rem+env(safe-area-inset-bottom,0px))]">{children}</div>
+        <div className="lk-sheet-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px)+var(--keyboard-inset,0px))]">{children}</div>
       </div>
     </div>
   );

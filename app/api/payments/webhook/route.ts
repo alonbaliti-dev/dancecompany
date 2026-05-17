@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { handlePaymentWebhookEvent } from "@/lib/payments/payment-service";
+import { paymentStatusUpdateFromTransaction, updatePaymentTransactionStatus, updateShopOrderPaymentStatus } from "@/lib/payments/repository";
 import { parseSafeWebhookPayload, verifyWebhookSignature } from "@/lib/payments/processor-adapters";
 
 /**
@@ -49,6 +50,10 @@ export async function POST(request: Request) {
   if (!transaction) {
     return NextResponse.json({ error: "transaction_not_found" }, { status: 404 });
   }
+
+  const statusUpdate = paymentStatusUpdateFromTransaction(transaction);
+  await updatePaymentTransactionStatus(statusUpdate);
+  await updateShopOrderPaymentStatus(statusUpdate);
 
   return NextResponse.json({ ok: true, transaction });
 }

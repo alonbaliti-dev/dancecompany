@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createPaymentIntentOnServer, recordPaymentAudit } from "@/lib/payments/payment-service";
+import { requireProductionSession } from "@/lib/security/production-hardening";
 import type { CreatePaymentIntentRequest } from "@/lib/payments/types";
 
 /**
@@ -8,6 +9,11 @@ import type { CreatePaymentIntentRequest } from "@/lib/payments/types";
  * Backwards-compatible alias for `/api/payments/create-session`.
  */
 export async function POST(request: Request) {
+  const gate = await requireProductionSession(request, "payments.create_session");
+  if (gate.ok === false) {
+    return NextResponse.json({ error: gate.error, message: gate.message }, { status: gate.status });
+  }
+
   let body: CreatePaymentIntentRequest;
   try {
     body = (await request.json()) as CreatePaymentIntentRequest;
@@ -17,6 +23,11 @@ export async function POST(request: Request) {
 
   if (!body?.studioId || !body?.orderId || !body?.userId || !body?.provider || body.currency !== "ILS") {
     return NextResponse.json({ error: "missing_fields" }, { status: 400 });
+  }
+
+  if (gate.mode === "verified_session") {
+    body.studioId = gate.session.academyId;
+    body.userId = gate.session.profile.id;
   }
 
   try {

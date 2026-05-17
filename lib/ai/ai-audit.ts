@@ -6,13 +6,17 @@ export type AIAuditEvent = {
   actorUserId: string;
   actorRole: AIRequestContext["role"];
   studioId: string;
+  academyId?: string;
   provider: AIProviderId | "mock";
   actionType: AIActionType;
   targetModule: AITargetModule;
   targetEntityIds: AIRequestContext["targetEntityIds"];
+  promptType?: string;
+  suggestionId?: string;
   approved: boolean;
   published: boolean;
   approvalStatus: AIApprovalStatus;
+  decision?: "suggested" | "approved" | "rejected" | "published";
   createdAt: string;
   sanitized: true;
 };
@@ -33,6 +37,8 @@ export function buildAIAuditEvent(input: {
   actionType: AIActionType;
   targetModule: AITargetModule;
   approvalStatus: AIApprovalStatus;
+  promptType?: string;
+  suggestionId?: string;
   published?: boolean;
   createdAt?: string;
 }): AIAuditEvent {
@@ -41,13 +47,23 @@ export function buildAIAuditEvent(input: {
     actorUserId: input.context.currentUser.id,
     actorRole: input.context.currentUser.role,
     studioId: input.context.studioId,
+    academyId: input.context.academyId,
     provider: input.provider,
     actionType: input.actionType,
     targetModule: input.targetModule,
     targetEntityIds: limitTargets(input.context.targetEntityIds),
+    promptType: input.promptType,
+    suggestionId: input.suggestionId,
     approved: input.approvalStatus === "approved" || input.approvalStatus === "published",
     published: Boolean(input.published),
     approvalStatus: input.approvalStatus,
+    decision: input.published
+      ? "published"
+      : input.approvalStatus === "approved"
+        ? "approved"
+        : input.approvalStatus === "rejected"
+          ? "rejected"
+          : "suggested",
     createdAt: input.createdAt ?? new Date().toISOString(),
     sanitized: true
   };

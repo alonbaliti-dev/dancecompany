@@ -33,7 +33,15 @@ academy-media/
     thumbnails/
 ```
 
-The local helper `buildR2MediaKey()` in `lib/r2/media-storage.ts` prepares keys in this shape. The placeholder signed-upload route is `app/api/media/r2/signed-upload/route.ts`.
+The local helper `buildR2MediaKey()` in `lib/r2/media-storage.ts` and the Phase 2 helper `buildR2ObjectKey()` in `lib/r2/signed-upload.ts` prepare keys in this shape. New upload flows should use `/api/media/create-upload-url`, `/api/media/complete-upload` and `/api/media/list`. The older `app/api/media/r2/signed-upload/route.ts` remains as a compatibility placeholder.
+
+Phase 10 adds inert multi-academy media contracts in `lib/platform/multi-academy.ts`. Future gallery listing, signed-download and archive tools should verify object keys with the active academy prefix before returning URLs or metadata:
+
+```text
+academies/{academyId}/...
+```
+
+No user-driven request should list or infer media outside the active academy prefix. Super Admin repair/export tools may inspect another academy only after explicit academy selection and audit.
 
 ## Metadata
 
@@ -60,6 +68,8 @@ Supabase/Postgres media metadata must store:
 - `fileSize`
 - `mediaType`
 - `createdAt`
+
+Phase 2 `media_items` also stores `product_id`, `uploaded_by_name`, `status`, `updated_at` and the production visibility enum: `group`, `group_parents`, `teacher_only`, `staff_only`, `management_only`, `shop_public`, `event_public`, `legacy_public`.
 
 Search and filtering must support academy, group, age group, dance style, teacher/uploader, lesson date/time, event, competition, annual show, tag, media type and upload history.
 
@@ -127,17 +137,18 @@ CLOUDFLARE_R2_PUBLIC_BASE_URL=
 
 ## Current Local Foundation
 
-This task does not fully migrate the backend. The current route validates request shape and env presence, generates the intended R2 key and returns:
+This task does not fully migrate the backend. The Phase 2 routes validate request shape and academy scope, generate the intended R2 key and return:
 
-- `unconfigured` when R2 env vars are missing
-- `signing_not_implemented` when env vars exist but the production signer has not been wired
+- `local_demo` when R2 env vars are missing
+- a short-lived signed `PUT` URL when server-only R2 env vars are configured
+- metadata-only completion through the repository layer when Supabase is unavailable
 
 This keeps the local MVP safe while documenting the exact next backend integration point.
 
 ## Production Work Remaining
 
-- Add a server-only S3-compatible signing client.
-- Add Supabase media metadata migrations and RLS.
+- Harden production permission checks around every upload context.
+- Review Supabase media metadata RLS against real academy memberships.
 - Add academy membership and media visibility policies.
 - Add upload completion confirmation and orphan cleanup.
 - Add thumbnail generation and video processing.

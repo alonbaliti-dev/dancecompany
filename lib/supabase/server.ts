@@ -1,13 +1,14 @@
 import "server-only";
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "./types";
 
 type ServerSupabaseEnvKey = "NEXT_PUBLIC_SUPABASE_URL" | "NEXT_PUBLIC_SUPABASE_ANON_KEY" | "SUPABASE_SERVICE_ROLE_KEY";
 
 export type SupabaseServerClientStatus =
   | {
       enabled: true;
-      client: SupabaseClient;
+      client: SupabaseClient<Database>;
       url: string;
       keyType: "anon" | "service_role";
       serviceRoleAvailable: boolean;
@@ -21,7 +22,7 @@ export type SupabaseServerClientStatus =
 
 type ServerClientCacheKey = "anon" | "service_role";
 
-const serverClients: Partial<Record<ServerClientCacheKey, SupabaseClient>> = {};
+const serverClients: Partial<Record<ServerClientCacheKey, SupabaseClient<Database>>> = {};
 
 function serverSupabaseEnv(preferServiceRole: boolean) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
@@ -45,15 +46,15 @@ export function getSupabaseServerClient(options: { preferServiceRole?: boolean }
     return {
       enabled: false,
       reason: options.preferServiceRole
-        ? "Supabase service-role client is not configured. Server media writes will use dev-only metadata fallback."
-        : "Supabase server client is not configured. Server media reads will use dev-only metadata fallback.",
+        ? "Supabase service-role client is not configured. Production writes and academy profile binding are unavailable."
+        : "Supabase server client is not configured. Academy session reads are unavailable.",
       missingEnv,
       serviceRoleAvailable: false
     };
   }
 
   if (!serverClients[keyType]) {
-    serverClients[keyType] = createClient(url, key, {
+    serverClients[keyType] = createClient<Database>(url, key, {
       auth: {
         persistSession: false,
         autoRefreshToken: false,

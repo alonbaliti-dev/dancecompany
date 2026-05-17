@@ -65,6 +65,8 @@ Every durable production record must carry `academyId` or the current compatibil
 
 No academy can query, mutate or infer another academy's data. Super Admin can switch/view across academies; management is scoped to its own academy.
 
+Phase 2 adds `lib/security/academy-scope.ts` as the repository contract for this rule. Repository calls must receive an explicit `academyId` scope, and global reads are reserved for Super Admin context only. The Supabase migration uses `academy_id` as the database tenant key.
+
 ## Roles
 
 The role structure remains:
@@ -99,6 +101,16 @@ Target routing:
 - authenticated user context for returning users
 
 For now, the default academy is `lk-studio`. Each academy login can have its own logo, academy name, background, accent colors, welcome copy, approved media highlights and future PWA assets. This gives every academy an isolated identity on the same OS foundation.
+
+Phase 2 prepares `/academy/[slug]/login` as a branded login shell. It loads active academy branding when Supabase is configured and falls back to the local LK Studio academy without removing the existing local login.
+
+## Phase 10 Expansion Foundation
+
+Phase 10 adds a dedicated expansion plan in `docs/PHASE_10_MULTI_ACADEMY_EXPANSION.md` and inert typed contracts in `lib/platform/multi-academy.ts`.
+
+The new contracts prepare Super Admin-only academy onboarding, branding drafts, feature packages, academy role defaults, media isolation helpers, analytics contracts, support tool contracts, scaling rules, billing preparation, switching contracts and template presets. They do not wire a new runtime UI, public signup, provider call, migration or SaaS billing enforcement.
+
+Expansion remains controlled: LK Studio stays the first active academy, local/demo fallback stays available, and new academies should enter through reviewed Super Admin setup, pilot QA and explicit activation.
 
 ## Core Sections
 

@@ -5,7 +5,7 @@ import { normalizeIsraeliMobile } from "./phone";
  * LOCAL / DEV ONLY credential row.
  *
  * NEVER store plain passwords in frontend JSON or `/database` in production.
- * Production must use Supabase Auth or a secure backend — passwords never touch client state.
+ * Production must use trusted server-side academy auth (`auth_credentials`) — passwords never touch client state.
  */
 export type LocalAuthCredential = {
   userId: string;

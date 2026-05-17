@@ -1,10 +1,10 @@
 /**
  * Auth service — mock implementation.
  *
- * Supabase Auth (production):
- * - `supabase.auth.signInWithPassword({ phone, password })`
- * - Session from `supabase.auth.getSession()` / `onAuthStateChange`
- * - Profile from `profiles` joined with permissions — never store password in profile row
+ * Production:
+ * - POST phone/password to `/api/auth/phone-login`
+ * - Server validates hashed academy credentials and issues an httpOnly app session
+ * - Profile from `users_profile` joined with permissions — never store password in profile row
  */
 import type { UserProfile } from "@/lib/types";
 import {
@@ -57,7 +57,7 @@ export const authService = {
   },
 
   async getSession(): Promise<UserProfile | null> {
-    // Supabase: const { data } = await supabase.auth.getSession(); then load profile
+    // Production: call `/api/auth/session`, then hydrate profile/academy context.
     return this.restoreUserFromSession();
   }
 };
