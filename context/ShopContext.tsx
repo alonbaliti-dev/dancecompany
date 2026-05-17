@@ -239,6 +239,11 @@ export function ShopProvider({
 
       const orderId = newId("ord");
       const description = `LK Shop · ${cart.length} פריטים`;
+      const checkoutType = cart.every((line) => line.product.category === "event_ticket")
+        ? "event_ticket"
+        : cart.every((line) => line.product.category === "workshop")
+          ? "workshop_camp"
+          : "shop";
 
       const intent = await createPaymentIntent({
         studioId,
@@ -249,6 +254,15 @@ export function ShopProvider({
         currency: "ILS",
         description,
         returnUrl: typeof window !== "undefined" ? `${window.location.origin}/?shop=orders` : "/",
+        checkoutDraft: {
+          type: checkoutType,
+          items: cart.map((line) => ({
+            productId: line.productId,
+            quantity: line.quantity,
+            size: line.size,
+            color: line.color
+          }))
+        },
         walletSession:
           provider === "apple_pay"
             ? { platform: "apple_pay" }

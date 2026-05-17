@@ -6,15 +6,17 @@ import type { PaymentProviderPlugin } from "./types";
  */
 export const bitProvider: PaymentProviderPlugin = {
   id: "bit",
-  preferredPsp: ["bit_official"],
+  preferredPsp: ["tranzila", "cardcom", "grow_meshulam"],
   async createIntentOnServer(req) {
     const now = new Date().toISOString();
     const transaction = {
       id: `pay_${Date.now().toString(36)}`,
+      academyId: req.academyId ?? req.studioId,
       studioId: req.studioId,
       orderId: req.orderId,
       userId: req.userId,
       provider: "bit" as const,
+      method: "bit" as const,
       amount: req.amount,
       currency: req.currency,
       status: "pending" as const,
@@ -26,7 +28,7 @@ export const bitProvider: PaymentProviderPlugin = {
     return {
       transaction,
       redirectUrl: `bit://pay?request=${transaction.id}&amount=${req.amount}`,
-      pollUrl: `/api/payments/verify?transactionId=${transaction.id}`
+      pollUrl: `/api/payments/status?transactionId=${transaction.id}&academyId=${encodeURIComponent(req.academyId ?? req.studioId)}`
     };
   }
 };

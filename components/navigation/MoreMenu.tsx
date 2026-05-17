@@ -156,7 +156,7 @@ export function MoreMenu({
 
       {studioTeacher ? (
         <MenuSection title="כלים למורה" tone="teacher">
-          <MenuRow title="מרכז מורה" subtitle="היום בכיתה" icon={School} tone="teacher" onPress={() => onOpenStack("teacher")} />
+          <MenuRow title="למורה" subtitle="היום בכיתה" icon={School} tone="teacher" onPress={() => onOpenStack("teacher")} />
           <MenuRow title="נוכחות בשיעור" subtitle="סימון מהיר" icon={Users} onPress={() => onOpenStack("attendance")} />
           <MenuRow title="תיקים דיגיטליים" subtitle="הערות לתלמידים" icon={ClipboardCheck} onPress={() => onOpenStack("files")} />
           <MenuRow title="מצב חזרה" subtitle="הופעה וסדר במה" icon={Mic2} tone="competition" onPress={() => onOpenStack("rehearsal_mode")} />
@@ -165,7 +165,7 @@ export function MoreMenu({
 
       {studioMgmt ? (
         <MenuSection title="ניהול סטודיו" tone="management">
-          <MenuRow title="לוח בקרה" subtitle="מבט תפעולי" icon={LayoutDashboard} onPress={() => onOpenStack("management")} />
+          <MenuRow title="ניהול" subtitle="מה דורש תשומת לב" icon={LayoutDashboard} onPress={() => onOpenStack("management")} />
           <MenuRow title="ניהול משתמשים" subtitle="תלמידים, הורים, מורים" icon={Users} onPress={() => onOpenStack("users")} />
           {flagRow("reports", effectiveFlags, "דוחות", "נוכחות ומעורבות", BarChart3, "reports", onOpenStack, "achievement")}
           <MenuRow title="הגדרות סטודיו" subtitle="פרטים ומדיניות" icon={Settings} onPress={() => onOpenStack("studio_settings")} />
@@ -173,12 +173,12 @@ export function MoreMenu({
       ) : null}
 
       {platformAdmin ? (
-        <MenuSection title="מערכת · Super Admin">
+        <MenuSection title="ניהול האפליקציה">
           <p className="mb-2 px-1 text-right text-[10px] font-medium tracking-wide text-violet-200/70">{PLATFORM_OWNER_BADGE}</p>
-          <MenuRow title="מרכז שליטה" subtitle="מסד נתונים, ייצוא וייבוא" icon={Database} onPress={() => onOpenStack("super_admin_hub")} />
-          <MenuRow title="מרכז בעלות" subtitle="סטודיואים ותכונות" icon={Crown} onPress={() => onOpenStack("creator_dashboard")} />
-          <MenuRow title="ניהול תכונות" subtitle="הפעלה לפי סטודיו" icon={Flag} onPress={() => onOpenStack("feature_flags")} />
-          <MenuRow title="סטטוס מערכת" subtitle="בריאות וסנכרון" icon={Shield} onPress={() => onOpenStack("system_status")} />
+          <MenuRow title="ניהול ראשי" subtitle="מסד נתונים, ייצוא וייבוא" icon={Database} onPress={() => onOpenStack("super_admin_hub")} />
+          <MenuRow title="סטודיואים ותכונות" subtitle="ניהול והפעלה" icon={Crown} onPress={() => onOpenStack("creator_dashboard")} />
+          <MenuRow title="אפשרויות" subtitle="הפעלה לפי סטודיו" icon={Flag} onPress={() => onOpenStack("feature_flags")} />
+          <MenuRow title="מצב האפליקציה" subtitle="פתיחה וסנכרון" icon={Shield} onPress={() => onOpenStack("system_status")} />
           <MenuRow title="עריכת טקסטים" subtitle="תוויות בממשק" icon={Sparkles} onPress={() => onOpenStack("text_editor")} />
           <MenuRow title="סטודיואים" subtitle="מיתוג והפעלה" icon={Building2} onPress={() => onOpenStack("studios_admin")} />
         </MenuSection>

@@ -95,7 +95,7 @@ export function CommandPalette({
       );
     }
 
-    rows.push({ id: "dash", title: "דשבורד", sub: "מרכז יומי", jump: { type: "main", target: "dashboard" }, hay: "דשבורד dashboard" });
+    rows.push({ id: "dash", title: "בית", sub: "היום שלך", jump: { type: "main", target: "dashboard" }, hay: "בית home dashboard" });
 
     if (!ql) return rows.slice(0, 14);
     return rows.filter((r) => r.hay.includes(ql)).slice(0, 20);

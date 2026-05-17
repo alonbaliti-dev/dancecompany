@@ -5,7 +5,7 @@ export const roleLabel: Record<V2Role, string> = {
   parent: "הורה",
   teacher: "מורה",
   management: "הנהלה",
-  super_admin: "מנהל מערכת"
+  super_admin: "מנהל האפליקציה"
 };
 
 export const permissionLabel: Record<V2PermissionKey, string> = {
@@ -14,13 +14,13 @@ export const permissionLabel: Record<V2PermissionKey, string> = {
   edit_permissions: "עריכת הרשאות",
   export_import_db: "ייצוא/ייבוא מסד",
   edit_text: "עריכת טקסטים",
-  view_audit: "צפייה באודיט",
-  manage_feature_flags: "ניהול פיצ׳רים",
+  view_audit: "צפייה ביומן פעולות",
+  manage_feature_flags: "ניהול אפשרויות",
   manage_studio: "ניהול סטודיו",
   manage_attendance: "ניהול נוכחות",
   manage_shop: "ניהול חנות",
   manage_private_lessons: "ניהול שיעורים פרטיים",
-  teacher_dashboard: "דשבורד מורה"
+  teacher_dashboard: "לוח מורה"
 };
 
 export function can(user: V2User | null | undefined, key: V2PermissionKey): boolean {

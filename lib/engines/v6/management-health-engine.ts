@@ -23,6 +23,6 @@ export function computeV6ManagementHealth(db: V6Database): V6ManagementHealth {
     attendanceIssues,
     privateLessonBottlenecks,
     eventAttention,
-    summary: urgentCount ? "יש כמה נקודות שדורשות טיפול היום" : "הסטודיו נראה בשליטה כרגע"
+    summary: urgentCount ? "יש כמה נקודות שדורשות טיפול היום" : "הכול רגוע בסטודיו כרגע"
   };
 }

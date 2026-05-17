@@ -9,7 +9,7 @@ export type PaymentProviderPlugin = {
   /** Target PSP for backend wiring (Stripe, Tranzila, Bit API, …) */
   preferredPsp: PaymentPspId[];
   /**
-   * SERVER ONLY — called from `/api/payments/create-intent`.
+   * SERVER ONLY — called from `/api/payments/create-session`.
    * Must not accept raw card numbers.
    */
   createIntentOnServer: (req: CreatePaymentIntentRequest) => Promise<CreatePaymentIntentResponse>;

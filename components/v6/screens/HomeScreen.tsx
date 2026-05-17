@@ -1,16 +1,16 @@
 "use client";
 
-import { useMemo, type ElementType } from "react";
-import { Bell, CalendarDays, Check, ClipboardList, ImagePlus, MessageCircle, Receipt, Shield, Sparkles } from "lucide-react";
+import { type ElementType } from "react";
+import { Bell, CalendarDays, Check, ClipboardList, ImagePlus, MessageCircle, Receipt, Shield, Sparkles, Trophy } from "lucide-react";
 import { useV6 } from "@/lib/v6/AppProvider";
 import { roleLabel } from "@/lib/v6/seed";
 import type { V6Role, V6Screen, V6Tab, V6User } from "@/lib/v6/types";
 import { selectV6LessonsForActor, selectV6AttendanceForActor, selectV6AttendanceRate } from "@/lib/domains/attendance/selectors";
 import { selectV6UnreadCount, selectV6NotificationsForActor, selectV6MessagesForActor } from "@/lib/domains/messages/selectors";
 import { selectV6PrivateLessonsForActor } from "@/lib/domains/private-lessons/selectors";
-import { selectV6AIInsightsForActor } from "@/lib/domains/ai/selectors";
+import { selectV6UpcomingEvents } from "@/lib/domains/events/selectors";
 import { computeV6AttendanceRisks, computeV6EventReadiness, computeV6ManagementHealth, computeV6PrivateLessonCoordination } from "@/lib/engines/v6";
-import { ActionPill, AISuggestionStack, BidiNumber, Button, EditorialSection, FeedRow, HeroSurface, RtlText, StatusBadge, Widget, v6Cx, v6Tone, type V6Tone } from "@/components/v6/design-system";
+import { ActionPill, BidiNumber, Button, FeedRow, HeroSurface, InlineMetric, OpenCluster, RtlText, SafeMeta, SafeTitle, StatusBadge, Widget, v6Cx, v6Tone, v6Type, type V6Tone } from "@/components/v6/design-system";
 
 type HomeAction = {
   icon: ElementType;
@@ -29,28 +29,26 @@ function roleTone(role: V6Role): V6Tone {
 }
 
 function roleHomeCopy(user: V6User) {
-  if (user.role === "teacher") return { title: "החזרה מתחילה בשקט", subtitle: "השיעור הבא, הנוכחות והקבוצה כבר מסודרים סביב פעולה אחת.", cue: "סימן למורה", action: "פתיחת שיעור" };
-  if (user.role === "management") return { title: "מה דורש החלטה עכשיו", subtitle: "רק הסיכונים והבקשות שצריכים יד הנהלה עולים קדימה.", cue: "פיקוד סטודיו", action: "סקירת מצב" };
-  if (user.role === "super_admin") return { title: "בריאות המוצר לפני הכול", subtitle: "אודיט, מסד והרשאות מוצגים כמו קוקפיט מוצרי רגוע.", cue: "קוקפיט מערכת", action: "פתיחת בריאות" };
-  if (user.role === "parent") return { title: "הילד נראה, היום רגוע", subtitle: "השיעור הבא, הודעות חשובות ותשלום קרוב בלי עומס.", cue: "שקט להורה", action: "מה קורה היום" };
-  return { title: "רגע לפני שנכנסים לסטודיו", subtitle: "השיעור הבא, ההתקדמות והעדכון החשוב מתכנסים לנקודת התחלה אחת.", cue: "מאחורי הקלעים", action: "התחלת היום" };
+  if (user.role === "teacher") return { title: "היום בסטודיו", subtitle: "השיעור הבא, נוכחות ועדכוני הקבוצה במקום אחד.", cue: "לוח מורה", action: "פתיחת שיעור" };
+  if (user.role === "management") return { title: "מה צריך טיפול היום", subtitle: "עדכונים, נוכחות ותיאומים שמבקשים החלטה.", cue: "ניהול יומי", action: "סקירת מצב" };
+  if (user.role === "super_admin") return { title: "מצב האפליקציה", subtitle: "נתונים, הרשאות וכלים חשובים במקום ברור.", cue: "ניהול האפליקציה", action: "פתיחת מצב" };
+  if (user.role === "parent") return { title: "מה קורה היום", subtitle: "השיעור הבא, הודעות חשובות ותיאומים קרובים.", cue: "עדכון להורה", action: "פתיחת היום" };
+  return { title: "היום שלך בסטודיו", subtitle: "השיעור הבא, עדכונים והתקדמות אישית במקום אחד.", cue: "לוח תלמידה", action: "התחלת היום" };
 }
 
-function Metric({ icon: Icon, tone, value, label, trend }: { icon: ElementType; tone: V6Tone; value: string; label: string; trend: string }) {
+function SignalLine({ icon: Icon, tone, value, label, trend }: { icon: ElementType; tone: V6Tone; value: string; label: string; trend: string }) {
   return (
-    <div dir="rtl" className="min-w-0 rounded-[24px] border border-[rgba(255,255,255,0.040)] bg-white/[0.032] px-3 py-3 text-start shadow-[inset_0_1px_0_rgba(255,255,255,0.040)]">
-      <div className="flex items-center gap-2">
-        <span className={v6Cx("grid h-8 w-8 shrink-0 place-items-center rounded-[14px]", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={14} /></span>
-        <span className="min-w-0 flex-1 truncate text-[1.08rem] font-semibold tracking-[-0.04em] text-white/90"><BidiNumber>{value}</BidiNumber></span>
+    <div dir="rtl" className="lk-safe-row flex items-start gap-3 border-b border-[#f4d58d]/[0.045] py-3 last:border-b-0">
+      <span className={v6Cx("mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={13} strokeWidth={1.9} /></span>
+      <div className="min-w-0 flex-1 text-start">
+        <div className="flex flex-wrap items-baseline gap-2">
+          <span className="shrink-0 text-[1.18rem] font-semibold leading-tight tracking-[-0.050em] text-white/88"><BidiNumber>{value}</BidiNumber></span>
+          <SafeMeta as="p" className="min-w-0 flex-1 text-[12px] font-semibold text-white/58">{label}</SafeMeta>
+        </div>
+        <SafeMeta as="p" className="mt-1 text-[11px] text-white/38">{trend}</SafeMeta>
       </div>
-      <RtlText as="p" className="mt-2 truncate text-[11px] font-semibold text-white/56">{label}</RtlText>
-      <RtlText as="p" className="mt-0.5 line-clamp-2 text-[10px] leading-tight text-white/40">{trend}</RtlText>
     </div>
   );
-}
-
-function ProgressRing({ value }: { value: number }) {
-  return <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full text-[10px] font-semibold text-white/88" style={{ background: `conic-gradient(rgba(236,253,245,.88) ${value * 3.6}deg, rgba(255,255,255,.10) 0)` }}><span className="grid h-10 w-10 place-items-center rounded-full bg-zinc-950/92 shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]"><BidiNumber>{value}%</BidiNumber></span></div>;
 }
 
 export function HomeScreen({ user, openScreen, openTab }: { user: V6User; openScreen: (screen: V6Screen) => void; openTab: (tab: V6Tab) => void }) {
@@ -58,12 +56,15 @@ export function HomeScreen({ user, openScreen, openTab }: { user: V6User; openSc
   const lessons = selectV6LessonsForActor(db, user);
   const next = lessons[0];
   const attendance = selectV6AttendanceForActor(db, user);
-  const attendanceRate = selectV6AttendanceRate(db, user) || (user.role === "student" ? 78 : 92);
+  const countedAttendance = attendance.filter((item) => item.status !== "excused");
+  const hasAttendance = countedAttendance.length > 0;
+  const attendanceRate = selectV6AttendanceRate(db, user);
   const unread = selectV6UnreadCount(db, user);
   const notifications = selectV6NotificationsForActor(db, user);
   const messages = selectV6MessagesForActor(db, user);
   const privateLessons = selectV6PrivateLessonsForActor(db, user);
-  const aiInsights = useMemo(() => selectV6AIInsightsForActor(db, user).slice(0, 3), [db, user]);
+  const events = selectV6UpcomingEvents(db, user);
+  const nextEvent = events[0];
   const managementHealth = computeV6ManagementHealth(db);
   const coordination = computeV6PrivateLessonCoordination(db);
   const attendanceRisks = computeV6AttendanceRisks(db);
@@ -73,71 +74,87 @@ export function HomeScreen({ user, openScreen, openTab }: { user: V6User; openSc
   const primaryGroup = db.groups.find((group) => user.groupIds.includes(group.id));
   const tasks = db.tasks.filter((task) => user.role === "management" || user.role === "super_admin" || user.groupIds.includes(task.groupId));
   const actions: HomeAction[] = [
-    user.permissions.manageMedia || user.role === "super_admin" || user.role === "teacher" ? { icon: ImagePlus, title: "מדיה", subtitle: "העלאה", tone: "modern", onClick: () => openScreen("media") } : null,
-    { icon: MessageCircle, title: "הודעות", subtitle: "קבוצה", tone: "studio", onClick: () => openTab("messages") },
-    { icon: Receipt, title: "פרטי", subtitle: "שיעור", tone: "shop", onClick: () => openScreen("private_lessons") },
-    user.permissions.manageUsers || user.role === "super_admin" ? { icon: Shield, title: "משתמשים", subtitle: "ניהול", tone: "management", onClick: () => openScreen("users") } : null
+    { icon: CalendarDays, title: "לוח שנה", subtitle: nextEvent ? `${nextEvent.title} · ${nextEvent.date}` : "אירועים וחזרות", tone: "management", onClick: () => openScreen("calendar") },
+    { icon: MessageCircle, title: "הודעות", subtitle: unread ? `${unread} שלא נקראו` : "עדכוני קבוצה", tone: "studio", onClick: () => openTab("messages") },
+    { icon: Receipt, title: "שיעורים פרטיים", subtitle: "בקשות ותיאומים", tone: "shop", onClick: () => openScreen("private_lessons") },
+    user.permissions.manageMedia || user.role === "super_admin" || user.role === "teacher" ? { icon: ImagePlus, title: "גלריה", subtitle: "תמונות וסרטונים", tone: "modern", onClick: () => openScreen("media") } : null,
+    { icon: Trophy, title: "זיכרונות", subtitle: "הישגים ורגעים יפים", tone: "repertoire", onClick: () => openScreen("legacy") },
+    user.permissions.manageUsers || user.role === "super_admin" ? { icon: Shield, title: "משתמשים", subtitle: "ניהול והרשאות", tone: "management", onClick: () => openScreen("users") } : null
   ].filter(Boolean) as HomeAction[];
   const feed = [
     ...notifications.slice(0, 2).map((item) => ({ id: item.id, icon: Bell, title: item.title, body: item.body, meta: item.readBy.includes(user.id) ? "נקרא" : "חדש", tone: item.readBy.includes(user.id) ? "studio" as V6Tone : "urgent" as V6Tone })),
     ...messages.slice(0, 1).map((item) => ({ id: item.id, icon: MessageCircle, title: item.title, body: item.body, meta: "סטודיו", tone: "modern" as V6Tone })),
-    ...tasks.slice(0, 1).map((item) => ({ id: item.id, icon: ClipboardList, title: item.title, body: "משימה פתוחה לפי קבוצה והרשאות", meta: "משימה", tone: "repertoire" as V6Tone }))
+    ...tasks.slice(0, 1).map((item) => ({ id: item.id, icon: ClipboardList, title: item.title, body: "משימה פתוחה לקבוצה שלך.", meta: "משימה", tone: "repertoire" as V6Tone })),
+    ...events.slice(0, 1).map((item) => ({ id: item.id, icon: CalendarDays, title: item.title, body: item.parentInstructions ?? item.adultInstructions ?? "אירוע קרוב בלוח הסטודיו.", meta: item.date, tone: item.status === "needs_attention" ? "urgent" as V6Tone : "management" as V6Tone }))
   ].slice(0, 4);
   const operational = user.role === "management" || user.role === "super_admin" || user.role === "teacher";
-  const primaryAction = user.role === "super_admin" ? () => openScreen("system") : user.role === "management" ? () => openScreen("users") : next ? () => openTab("lessons") : () => openScreen("private_lessons");
+  const primaryAction = user.role === "super_admin" ? () => openScreen("system") : user.role === "management" ? () => openScreen("calendar") : next ? () => openTab("lessons") : nextEvent ? () => openScreen("calendar") : () => openScreen("private_lessons");
 
   return (
     <div className="space-y-4">
-      <HeroSurface tone={tone} className="min-h-[342px] px-5 py-5">
-        <div className="pointer-events-none absolute left-6 bottom-9 h-20 w-20 rounded-[30px] border border-white/[0.045] bg-black/12" />
-        <div className="relative flex items-start gap-4">
-          <div className="min-w-0 flex-1 text-start">
-            <div className="flex flex-wrap items-center justify-start gap-2">
-              <StatusBadge tone={tone}>{roleLabel[user.role]}</StatusBadge>
-              {primaryGroup ? <RtlText as="span" className="text-[11px] font-medium text-white/48">{primaryGroup.name}</RtlText> : null}
+      <HeroSurface tone={tone} className="px-5 py-6">
+        <div className="relative">
+          <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-start">
+            <div className="min-w-0 flex-1 text-start">
+              <div className="lk-safe-badge-group">
+                <StatusBadge tone={tone}>{roleLabel[user.role]}</StatusBadge>
+                {primaryGroup ? <RtlText as="span" className={v6Type.metadata}>{primaryGroup.name}</RtlText> : null}
+              </div>
+              <p className={v6Cx("mt-6", v6Type.kicker)}>{copy.cue}</p>
+              <SafeTitle as="h1" className="mt-2 max-w-[19rem] text-[clamp(2.0rem,8.8vw,2.8rem)] font-semibold leading-[1.04] tracking-[-0.058em] text-white">{copy.title}</SafeTitle>
             </div>
-            <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.28em] text-white/38">{copy.cue}</p>
-            <h1 className="mt-1 max-w-[19rem] text-[clamp(2.48rem,12vw,3.62rem)] font-semibold leading-[0.84] tracking-[-0.095em] text-white">{copy.title}</h1>
-            <RtlText as="p" className="mt-4 max-w-[19rem] text-[13px] leading-relaxed text-white/68">שלום, {user.name.split(" ")[0]} · {copy.subtitle}</RtlText>
+            <div className="lk-safe-surface w-full max-w-full rounded-[24px] border border-white/[0.045] bg-black/[0.14] px-3 py-2.5 text-center shadow-[inset_0_1px_0_rgba(255,247,223,0.045)] sm:w-auto sm:min-w-[6.5rem] sm:shrink">
+              <p className="lk-safe-meta text-[10px] font-semibold text-white/42">נוכחות</p>
+              <p className="mt-1 break-words text-[17px] font-semibold leading-tight text-white/88">{hasAttendance ? <><BidiNumber>{attendanceRate}</BidiNumber>%</> : "—"}</p>
+            </div>
           </div>
-          <ProgressRing value={attendanceRate} />
+
+          <div className="mt-6 max-w-[22rem] text-start">
+            <RtlText as="p" className={v6Cx(v6Type.statement)}>שלום {user.name.split(" ")[0]}</RtlText>
+            <SafeMeta as="p" className="mt-2 text-[15px] leading-relaxed text-white/64">{copy.subtitle}</SafeMeta>
+            <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+              <Button onClick={primaryAction}>{next ? `${next.title} · ${next.time}` : nextEvent ? nextEvent.title : user.role === "super_admin" ? "מצב האפליקציה" : "קביעת שיעור פרטי"}</Button>
+              <Button variant="ghost" onClick={() => openTab("messages")}>{unread ? <><BidiNumber>{unread}</BidiNumber> עדכונים</> : "הודעות"}</Button>
+            </div>
+          </div>
         </div>
-        <div className="relative mt-8 rounded-[28px] border border-[rgba(255,255,255,0.044)] bg-black/22 p-3 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.045)]">
-          <div className="flex items-center gap-2 px-1 pb-2.5 text-start">
-            <span className="min-w-0 flex-1 text-[12px] font-semibold text-white/58">{copy.action}</span>
-            <RtlText as="span" className="shrink-0 text-[10px] font-semibold text-white/42">{next ? next.weekday : "היום"}</RtlText>
-          </div>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] [&>button]:w-full">
-            <Button onClick={primaryAction}>{next ? `${next.title} · ${next.time}` : user.role === "super_admin" ? "בריאות מערכת" : "קביעת שיעור פרטי"}</Button>
-            <Button variant="ghost" onClick={() => openTab("messages")}>{unread ? <><BidiNumber>{unread}</BidiNumber> עדכונים</> : "הודעות"}</Button>
-          </div>
+
+        <div className="relative mt-5 rounded-[30px] bg-black/[0.10] p-2 shadow-[inset_0_1px_0_rgba(255,247,223,0.024)]">
+          <div className="grid gap-2 sm:grid-cols-2">{actions.map((action) => <ActionPill key={action.title} {...action} />)}</div>
         </div>
       </HeroSurface>
 
-      <section className="overflow-hidden rounded-[28px] border border-[rgba(255,255,255,0.034)] bg-white/[0.024] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.034)]">
-        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">{actions.map((action) => <ActionPill key={action.title} {...action} />)}</div>
-      </section>
-
       {operational ? (
-        <Widget title={user.role === "super_admin" ? "בריאות מערכת" : "דברים לטיפול"} kicker="פיקוד יומי" icon={Sparkles} tone={user.role === "super_admin" ? "admin" : "management"}>
-          <div className="grid grid-cols-2 gap-2">
-            <Metric icon={Bell} tone={managementHealth.urgentCount ? "urgent" : "studio"} value={`${managementHealth.urgentCount}`} label="דחופים" trend={managementHealth.summary} />
-            <Metric icon={ClipboardList} tone="management" value={`${attendanceRisks.length}`} label="נוכחות" trend="סיכונים פעילים" />
-            <Metric icon={Receipt} tone="shop" value={`${coordination.needsAttention}`} label="פרטיים" trend="דורשים תיאום" />
-            <Metric icon={Sparkles} tone="repertoire" value={eventReadiness ? `${eventReadiness.score}%` : "—"} label="אירוע" trend={eventReadiness?.nextAction ?? "אין אירוע"} />
+        <OpenCluster tone={user.role === "super_admin" ? "admin" : "management"} className="px-5 py-4">
+          <div className="mb-2 flex flex-wrap items-end gap-3 px-1">
+            <div className="min-w-0 flex-1 text-start">
+              <p className={v6Type.kicker}>מה חשוב היום</p>
+              <SafeTitle as="h2" className="mt-1 text-[18px] font-semibold tracking-[-0.040em] text-white/86">{user.role === "super_admin" ? "מצב האפליקציה" : "דברים לטיפול"}</SafeTitle>
+            </div>
+            <Sparkles className="text-[#f4d58d]/55" size={17} strokeWidth={1.8} />
           </div>
-        </Widget>
+          <div className="divide-y divide-[#f4d58d]/[0.045]">
+            <SignalLine icon={Bell} tone={managementHealth.urgentCount ? "urgent" : "studio"} value={`${managementHealth.urgentCount}`} label="דחופים" trend={managementHealth.summary} />
+            <SignalLine icon={ClipboardList} tone="management" value={`${attendanceRisks.length}`} label="נוכחות" trend="צריך לשים לב" />
+            <SignalLine icon={Receipt} tone="shop" value={`${coordination.needsAttention}`} label="פרטיים" trend="דורשים תיאום" />
+            <SignalLine icon={Sparkles} tone="repertoire" value={eventReadiness ? `${eventReadiness.score}%` : "—"} label="אירוע" trend={eventReadiness?.nextAction ?? "אין אירוע"} />
+          </div>
+        </OpenCluster>
       ) : null}
 
-      <section className="grid gap-3 md:grid-cols-[1fr_1fr]">
+      <section>
         <Widget title="מה קורה עכשיו" kicker="פעילות ועדכונים" icon={Bell} tone={unread ? "urgent" : "modern"}>
+          <div className="mb-4 grid grid-cols-2 gap-2 px-1 sm:grid-cols-4">
+            <InlineMetric tone={tone} label="נוכחות" value={hasAttendance ? <><BidiNumber>{attendanceRate}</BidiNumber>%</> : "—"} meta={hasAttendance ? "נתון קיים" : "טרם נמדד"} />
+            <InlineMetric tone={unread ? "urgent" : "modern"} label="עדכונים" value={<BidiNumber>{unread}</BidiNumber>} meta={unread ? "לקריאה" : "אין חדש"} />
+            <InlineMetric tone="shop" label="פרטיים" value={<BidiNumber>{privateLessons.length}</BidiNumber>} meta="תיאומים" />
+            <InlineMetric tone="repertoire" label="אירועים" value={<BidiNumber>{events.length}</BidiNumber>} meta="קרובים" />
+          </div>
           <div className="space-y-2">
             {feed.length ? feed.map((item) => <FeedRow key={item.id} {...item} />) : <FeedRow icon={Check} title="הכול שקט" body="אין עדכונים שמבקשים תשומת לב כרגע." meta="רגוע" tone={tone} />}
           </div>
         </Widget>
       </section>
-
-      {aiInsights.length ? <AISuggestionStack insights={aiInsights} /> : null}
     </div>
   );
 }

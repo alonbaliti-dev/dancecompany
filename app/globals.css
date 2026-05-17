@@ -5,16 +5,16 @@
 :root {
   color-scheme: dark;
 
-  --bg-canvas: #050304;
-  --bg-card: #10080b;
-  --bg-elevated: #171014;
-  --bg-glass: rgba(16, 8, 11, 0.84);
-  --border-subtle: rgba(255, 255, 255, 0.085);
-  --border-accent: rgba(215, 181, 109, 0.28);
+  --bg-canvas: #030203;
+  --bg-card: #0d0709;
+  --bg-elevated: #151014;
+  --bg-glass: rgba(11, 6, 8, 0.82);
+  --border-subtle: rgba(244, 213, 141, 0.07);
+  --border-accent: rgba(244, 213, 141, 0.26);
 
-  --text-primary: rgba(255, 255, 255, 0.92);
-  --text-secondary: rgba(255, 255, 255, 0.55);
-  --text-muted: rgba(255, 255, 255, 0.38);
+  --text-primary: rgba(255, 255, 255, 0.91);
+  --text-secondary: rgba(255, 255, 255, 0.58);
+  --text-muted: rgba(255, 255, 255, 0.39);
 
   --color-accent: #d7b56d;
   --color-accent-dim: rgba(215, 181, 109, 0.14);
@@ -33,10 +33,13 @@
   --color-royal-blue: #2563eb;
   --color-velvet-purple: #3d1027;
 
-  --lk-card-radius: 2rem;
-  --lk-nav-height: 4.45rem;
+  --lk-card-radius: 2.25rem;
+  --lk-nav-height: 4.75rem;
+  --lk-safe-inner-padding: clamp(0.625rem, 2.4vw, 0.95rem);
+  --lk-safe-control-padding: clamp(0.7rem, 2.8vw, 1rem);
+  --lk-safe-line-height: 1.42;
 
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Arial, sans-serif;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -107,7 +110,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   touch-action: manipulation;
-  letter-spacing: -0.01em;
+  font-family: var(--font-sans);
+  letter-spacing: -0.014em;
+  font-feature-settings: "kern" 1;
 }
 
 html,
@@ -344,20 +349,23 @@ textarea {
 /* Premium ambient canvas — Apple Fitness–inspired depth */
 .app-canvas-glow {
   background:
-    radial-gradient(ellipse 95% 55% at 50% -18%, rgba(244, 213, 141, 0.13), transparent 52%),
-    radial-gradient(ellipse 50% 42% at 92% 12%, rgba(100, 28, 63, 0.16), transparent 48%),
-    radial-gradient(ellipse 48% 38% at 4% 52%, rgba(139, 92, 246, 0.09), transparent 50%),
-    radial-gradient(ellipse 40% 30% at 70% 88%, rgba(16, 185, 129, 0.07), transparent 45%),
+    radial-gradient(ellipse 105% 55% at 50% -18%, rgba(244, 213, 141, 0.15), transparent 54%),
+    radial-gradient(ellipse 52% 42% at 92% 12%, rgba(100, 28, 63, 0.18), transparent 50%),
+    radial-gradient(ellipse 48% 38% at 4% 52%, rgba(139, 92, 246, 0.08), transparent 52%),
+    radial-gradient(ellipse 40% 30% at 70% 88%, rgba(16, 185, 129, 0.065), transparent 46%),
     var(--bg-canvas);
 }
 
 .lk-card {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
   border-radius: var(--lk-card-radius);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 48%, rgba(0, 0, 0, 0.12) 100%);
+  border: 1px solid rgba(244, 213, 141, 0.07);
+  background: linear-gradient(155deg, rgba(255, 247, 223, 0.048) 0%, rgba(255, 255, 255, 0.014) 52%, rgba(0, 0, 0, 0.16) 100%);
   box-shadow:
-    0 20px 48px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    0 24px 68px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 247, 223, 0.055);
 }
 
 .lk-card-press {
@@ -370,12 +378,12 @@ textarea {
 }
 
 .lk-login-panel {
-  border-radius: 1.625rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(12, 12, 16, 0.92) 100%);
+  border-radius: 2.375rem;
+  border: 1px solid rgba(244, 213, 141, 0.105);
+  background: linear-gradient(155deg, rgba(255, 247, 223, 0.10) 0%, rgba(12, 7, 9, 0.92) 100%);
   box-shadow:
-    0 32px 80px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 38px 104px rgba(0, 0, 0, 0.58),
+    inset 0 1px 0 rgba(255, 247, 223, 0.11);
 }
 
 .lk-shop-hero {
@@ -396,13 +404,13 @@ textarea {
 .premium-hero {
   position: relative;
   overflow: hidden;
-  border-radius: 1.625rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2.5rem;
+  border: 1px solid rgba(244, 213, 141, 0.10);
   padding: 1.35rem 1.25rem;
   text-align: right;
   box-shadow:
-    0 24px 64px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 40px 110px rgba(0, 0, 0, 0.54),
+    inset 0 1px 0 rgba(255, 247, 223, 0.08);
 }
 
 .premium-hero::before {
@@ -463,9 +471,118 @@ textarea {
   padding-bottom: calc(var(--nav-offset) + 1.15rem);
 }
 
+.lk-safe-surface {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  position: relative;
+  isolation: isolate;
+  overflow-wrap: anywhere;
+}
+
+.lk-safe-content {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.lk-safe-row,
+.lk-safe-row > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.lk-safe-text {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+  line-height: var(--lk-safe-line-height);
+}
+
+.lk-safe-title {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+  word-break: normal;
+  hyphens: auto;
+  line-height: max(1.18em, 1.18);
+}
+
+.lk-safe-meta {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+  line-height: max(1.38em, 1.38);
+}
+
+.lk-safe-action-zone {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .lk-text-balance {
   overflow-wrap: anywhere;
   text-wrap: pretty;
+}
+
+.lk-hebrew-text {
+  line-height: max(1.42em, 1.42);
+  overflow-wrap: anywhere;
+  letter-spacing: -0.018em;
+}
+
+.lk-safe-badge-group {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.lk-safe-control {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.32;
+}
+
+.lk-safe-surface button,
+.lk-safe-row button,
+.lk-safe-content button {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.truncate,
+[class*="line-clamp-"],
+.lk-safe-text.truncate,
+.lk-safe-title.truncate,
+.lk-safe-meta.truncate {
+  display: block !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  -webkit-box-orient: initial !important;
+  -webkit-line-clamp: unset !important;
+  line-clamp: unset !important;
 }
 
 .bidi-plain {

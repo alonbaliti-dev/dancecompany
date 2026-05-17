@@ -67,12 +67,12 @@ export function AttendanceScreen({ user }: { user: UserProfile }) {
 
   return (
     <div className="space-y-10 pb-6">
-      <Header title="נוכחות חכמה" subtitle="סימון נוכחות מהיר לפי שיעור." />
+      <Header title="נוכחות" subtitle="סימון מהיר לפי שיעור." />
 
       {user.permissions.isManagement ? (
         <section className="space-y-3">
           <SectionEyebrow>הנהלה</SectionEyebrow>
-          <SectionTitle className="mt-0.5">מבט מערכתי</SectionTitle>
+          <SectionTitle className="mt-0.5">מבט כללי</SectionTitle>
           <div className="mt-3 space-y-3">
             <Card animated={false}>
               <p className="text-right text-sm font-semibold text-white">קבוצות עם נוכחות נמוכה</p>

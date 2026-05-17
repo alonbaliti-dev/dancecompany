@@ -106,6 +106,10 @@ export function dedupeTeacherGroupAssignments(users: V6User[], groups: V6Group[]
   }));
   const normalizedGroups = dedupeById(groups).map((group) => ({
     ...group,
+    yearlyEventIds: compactUnique(group.yearlyEventIds ?? []),
+    galleryCollectionIds: compactUnique(group.galleryCollectionIds ?? []),
+    taskIds: compactUnique(group.taskIds ?? []),
+    attendanceLessonIds: compactUnique(group.attendanceLessonIds ?? []),
     teacherIds: compactUnique(normalizedUsers.filter((user) => (user.role === "teacher" || user.role === "management") && user.groupIds.includes(group.id)).map((user) => user.id)),
     studentIds: compactUnique(normalizedUsers.filter((user) => user.role === "student" && user.groupIds.includes(group.id)).map((user) => user.id))
   }));
@@ -145,12 +149,14 @@ function dedupeMedia(media: V6MediaItem[]) {
     item.fileName,
     item.mediaType,
     item.linkedGroupId ?? "",
-    item.linkedProductId ?? ""
+    item.linkedProductId ?? "",
+    item.linkedEventId ?? "",
+    item.linkedGalleryCollectionId ?? ""
   ].join(":"));
 }
 
 export function normalizeV6Database(db: V6Database): V6Database {
-  const usersById = dedupeById(db.users).map((user) => ({
+  const usersById = dedupeById(db.users ?? []).map((user) => ({
     ...user,
     name: user.name.trim(),
     phone: user.phone.trim(),
@@ -160,25 +166,37 @@ export function normalizeV6Database(db: V6Database): V6Database {
     danceStyleIds: compactUnique(user.danceStyleIds ?? [])
   }));
   const usersWithLinks = dedupeParentStudentLinks(usersById);
-  const { users, groups } = dedupeTeacherGroupAssignments(usersWithLinks, db.groups);
+  const { users, groups } = dedupeTeacherGroupAssignments(usersWithLinks, db.groups ?? []);
   return {
     ...db,
     version: 6,
-    studios: dedupeById(db.studios),
+    studios: dedupeById(db.studios ?? []),
+    academies: dedupeById(db.academies ?? db.studios ?? []),
     users,
-    credentials: dedupeByCompositeKey(db.credentials.map((credential) => ({ ...credential, id: credential.userId })), (credential) => credential.userId).map(({ id: _id, ...credential }) => credential),
+    credentials: dedupeByCompositeKey((db.credentials ?? []).map((credential) => ({ ...credential, id: credential.userId })), (credential) => credential.userId).map(({ id: _id, ...credential }) => credential),
+    ageGroups: dedupeById(db.ageGroups ?? []).sort((a, b) => a.sortOrder - b.sortOrder),
     groups,
-    lessons: dedupeById(db.lessons),
-    messages: dedupeById(db.messages),
-    notifications: dedupeNotifications(db.notifications),
-    products: dedupeShopProducts(db.products),
-    privateLessons: dedupeById(db.privateLessons),
-    media: dedupeMedia(db.media),
-    attendance: dedupeAttendance(db.attendance),
-    tasks: dedupeById(db.tasks),
-    events: dedupeById(db.events),
-    achievements: dedupeById(db.achievements),
-    auditLog: dedupeById(db.auditLog).slice(0, 300)
+    danceStyles: dedupeById(db.danceStyles ?? []).sort((a, b) => a.name.localeCompare(b.name, "he")),
+    lessons: dedupeById(db.lessons ?? []),
+    messages: dedupeById(db.messages ?? []),
+    notifications: dedupeNotifications(db.notifications ?? []),
+    products: dedupeShopProducts(db.products ?? []),
+    privateLessons: dedupeById(db.privateLessons ?? []),
+    media: dedupeMedia(db.media ?? []),
+    attendance: dedupeAttendance(db.attendance ?? []),
+    tasks: dedupeById(db.tasks ?? []),
+    events: dedupeById(db.events ?? []).sort((a, b) => `${a.date} ${a.startTime ?? ""}`.localeCompare(`${b.date} ${b.startTime ?? ""}`, "he", { numeric: true })),
+    eventParticipants: dedupeById(db.eventParticipants ?? []),
+    eventGroups: dedupeById(db.eventGroups ?? []),
+    eventChecklists: dedupeById(db.eventChecklists ?? []),
+    eventMedia: dedupeById(db.eventMedia ?? []),
+    galleryCollections: dedupeById(db.galleryCollections ?? []),
+    galleryItems: dedupeById(db.galleryItems ?? []),
+    achievements: dedupeById(db.achievements ?? []),
+    legacyEntries: dedupeById(db.legacyEntries ?? []),
+    showReadiness: dedupeById(db.showReadiness ?? []),
+    competitionResults: dedupeById(db.competitionResults ?? []),
+    auditLog: dedupeById(db.auditLog ?? []).slice(0, 300)
   };
 }
 
@@ -188,12 +206,15 @@ export function mergeV6Database(base: V6Database, incoming: V6Database): V6Datab
     ...incoming,
     version: 6,
     studios: dedupeById([...base.studios, ...(incoming.studios ?? [])]),
+    academies: dedupeById([...(base.academies ?? base.studios), ...(incoming.academies ?? incoming.studios ?? [])]),
     users: dedupeById([...base.users, ...(incoming.users ?? [])]),
     credentials: dedupeByCompositeKey(
       [...base.credentials, ...(incoming.credentials ?? [])].map((credential) => ({ ...credential, id: credential.userId })),
       (credential) => credential.userId
     ).map(({ id: _id, ...credential }) => credential),
+    ageGroups: dedupeById([...base.ageGroups, ...(incoming.ageGroups ?? [])]),
     groups: dedupeById([...base.groups, ...(incoming.groups ?? [])]),
+    danceStyles: dedupeById([...base.danceStyles, ...(incoming.danceStyles ?? [])]),
     lessons: dedupeById([...base.lessons, ...(incoming.lessons ?? [])]),
     messages: dedupeById([...base.messages, ...(incoming.messages ?? [])]),
     notifications: dedupeById([...base.notifications, ...(incoming.notifications ?? [])]),
@@ -203,7 +224,16 @@ export function mergeV6Database(base: V6Database, incoming: V6Database): V6Datab
     attendance: dedupeById([...base.attendance, ...(incoming.attendance ?? [])]),
     tasks: dedupeById([...base.tasks, ...(incoming.tasks ?? [])]),
     events: dedupeById([...base.events, ...(incoming.events ?? [])]),
+    eventParticipants: dedupeById([...base.eventParticipants, ...(incoming.eventParticipants ?? [])]),
+    eventGroups: dedupeById([...base.eventGroups, ...(incoming.eventGroups ?? [])]),
+    eventChecklists: dedupeById([...base.eventChecklists, ...(incoming.eventChecklists ?? [])]),
+    eventMedia: dedupeById([...base.eventMedia, ...(incoming.eventMedia ?? [])]),
+    galleryCollections: dedupeById([...base.galleryCollections, ...(incoming.galleryCollections ?? [])]),
+    galleryItems: dedupeById([...base.galleryItems, ...(incoming.galleryItems ?? [])]),
     achievements: dedupeById([...base.achievements, ...(incoming.achievements ?? [])]),
+    legacyEntries: dedupeById([...base.legacyEntries, ...(incoming.legacyEntries ?? [])]),
+    showReadiness: dedupeById([...base.showReadiness, ...(incoming.showReadiness ?? [])]),
+    competitionResults: dedupeById([...base.competitionResults, ...(incoming.competitionResults ?? [])]),
     auditLog: dedupeById([...base.auditLog, ...(incoming.auditLog ?? [])]).slice(0, 300),
     editableTexts: { ...base.editableTexts, ...(incoming.editableTexts ?? {}) },
     aiPrompts: { ...base.aiPrompts, ...(incoming.aiPrompts ?? {}) },

@@ -438,7 +438,7 @@ function Shell() {
 
 function BottomNav({ tab, unreadCount, onTab }: { tab: V2Tab; unreadCount: number; onTab: (tab: V2Tab) => void }) {
   const items: Array<{ id: V2Tab; label: string; icon: React.ElementType }> = [
-    { id: "dashboard", label: "דשבורד", icon: Sparkles },
+    { id: "dashboard", label: "בית", icon: Sparkles },
     { id: "lessons", label: "שיעורים", icon: CalendarDays },
     { id: "messages", label: "הודעות", icon: MessageCircle },
     { id: "shop", label: "חנות", icon: ShoppingBag },
@@ -491,7 +491,7 @@ function Dashboard({ user, openScreen }: { user: V2User; openScreen: (screen: V2
   const attendanceValue = user.role === "management" || user.role === "super_admin" ? 92 : user.role === "teacher" ? 86 : 74;
   const heroTitle =
     user.role === "super_admin"
-      ? "שליטה שקטה על הפלטפורמה"
+      ? "ניהול שקט וברור"
       : user.role === "management"
         ? "תמונת מצב ניהולית"
         : user.role === "teacher"
@@ -502,7 +502,7 @@ function Dashboard({ user, openScreen }: { user: V2User; openScreen: (screen: V2
   return (
     <div className="space-y-3.5">
       <Header
-        title="דשבורד"
+        title="בית"
         subtitle={nextClass ? `הבא: ${nextClass.title} · ${nextClass.weekday} ${nextClass.time}` : "תמונת מצב קצרה וברורה להיום."}
       />
       <section className="grid min-w-0 gap-3 lg:grid-cols-[1.1fr_0.9fr]">
@@ -530,9 +530,9 @@ function Dashboard({ user, openScreen }: { user: V2User; openScreen: (screen: V2
         </div>
       </section>
       <section className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
-        {canAccessTeacherDashboard(user) ? <ActionCard title="דשבורד מורה" subtitle="שיעורים, בקשות ופעולות מהירות" icon={School} tone="studio" onClick={() => openScreen("teacher")} /> : null}
-        {canAccessManagement(user) ? <ActionCard title="ניהול סטודיו" subtitle="משתמשים, קבוצות ותפעול" icon={Shield} tone="management" onClick={() => openScreen("management")} /> : null}
-        {canAccessSuperAdmin(user) ? <ActionCard title="מנהל מערכת" subtitle="מסד, הרשאות ויומן פעולות" icon={Database} tone="admin" onClick={() => openScreen("super_admin")} /> : null}
+        {canAccessTeacherDashboard(user) ? <ActionCard title="לוח מורה" subtitle="שיעורים, בקשות ופעולות מהירות" icon={School} tone="studio" onClick={() => openScreen("teacher")} /> : null}
+        {canAccessManagement(user) ? <ActionCard title="ניהול סטודיו" subtitle="משתמשים, קבוצות וניהול יומי" icon={Shield} tone="management" onClick={() => openScreen("management")} /> : null}
+        {canAccessSuperAdmin(user) ? <ActionCard title="ניהול האפליקציה" subtitle="נתונים, הרשאות ויומן פעולות" icon={Database} tone="admin" onClick={() => openScreen("super_admin")} /> : null}
         <ActionCard title="שיעורים פרטיים" subtitle={`${lessons.length} בקשות פעילות`} icon={Receipt} tone="shop" onClick={() => openScreen("private_lessons")} />
         {canAccessTeacherDashboard(user) ? <ActionCard title="מדיה וקבוצות" subtitle="תמונות, וידאו וגלריה" icon={ImagePlus} tone="modern" onClick={() => openScreen("media_library")} /> : null}
       </section>
@@ -926,22 +926,22 @@ function More({ user, openScreen }: { user: V2User; openScreen: (screen: V2Scree
     {
       title: "כלים למורה",
       items: canAccessTeacherDashboard(user)
-        ? [{ title: "דשבורד מורה", subtitle: "מהיר ותפעולי", icon: School, tone: "studio" as PremiumTone, screen: "teacher" as V2Screen }]
+        ? [{ title: "לוח מורה", subtitle: "מהיר וברור", icon: School, tone: "studio" as PremiumTone, screen: "teacher" as V2Screen }]
         : []
     },
     {
       title: "ניהול",
       items: canAccessManagement(user)
         ? [
-            { title: "ניהול סטודיו", subtitle: "משתמשים ותפעול", icon: Shield, tone: "management" as PremiumTone, screen: "management" as V2Screen },
+            { title: "ניהול סטודיו", subtitle: "משתמשים וניהול יומי", icon: Shield, tone: "management" as PremiumTone, screen: "management" as V2Screen },
             { title: "ניהול מוצרים", subtitle: "מוצרים, תמונות ומלאי", icon: ShoppingBag, tone: "shop" as PremiumTone, screen: "product_management" as V2Screen }
           ]
         : []
     },
     {
-      title: "מערכת",
+      title: "ניהול האפליקציה",
       items: canAccessSuperAdmin(user)
-        ? [{ title: "מנהל מערכת", subtitle: "מסד, הרשאות ויומן פעולות", icon: Database, tone: "admin" as PremiumTone, screen: "super_admin" as V2Screen }]
+        ? [{ title: "ניהול האפליקציה", subtitle: "נתונים, הרשאות ויומן פעולות", icon: Database, tone: "admin" as PremiumTone, screen: "super_admin" as V2Screen }]
         : []
     }
   ].filter((section) => section.items.length);
@@ -978,7 +978,7 @@ function TeacherDashboard({ user, show, onBack }: { user: V2User; show: (message
   return (
     <div className="space-y-3.5">
       <Back onBack={onBack} />
-      <Header title="דשבורד מורה" subtitle="מבט מהיר לשיעורים, תלמידים ובקשות פרטיות." />
+      <Header title="לוח מורה" subtitle="מבט מהיר לשיעורים, תלמידים ובקשות פרטיות." />
       <div className="grid gap-3 md:grid-cols-3">
         <MetricCard label="שיעורים" value={classes.length} icon={CalendarDays} tone="studio" />
         <MetricCard label="בקשות פרטיות" value={requests.length} icon={Receipt} tone="shop" />
@@ -1029,7 +1029,7 @@ function ManagementDashboard({ user, openScreen, onBack }: { user: V2User; openS
   return (
     <div className="space-y-3.5">
       <Back onBack={onBack} />
-      <Header title="ניהול סטודיו" subtitle="מבט מנהלים נקי: אנשים, קבוצות, חנות ותפעול יום-יומי." />
+      <Header title="ניהול סטודיו" subtitle="מבט נקי: אנשים, קבוצות, חנות ומשימות יום־יומיות." />
       <div className="grid gap-3 md:grid-cols-4">
         <MetricCard label="תלמידים" value={studioUsers.filter((u) => u.role === "student").length} icon={UserRound} tone="hiphop" />
         <MetricCard label="מורים" value={studioUsers.filter((u) => u.role === "teacher").length} icon={School} tone="studio" />
@@ -1048,16 +1048,16 @@ function SuperAdminHub({ user, openScreen, onBack }: { user: V2User; openScreen:
   return (
     <div className="space-y-3.5">
       <Back onBack={onBack} />
-      <Header title="מנהל מערכת" subtitle="אלון בליטי · שליטה רגועה במסד, הרשאות, טקסטים ואודיט." />
+      <Header title="ניהול האפליקציה" subtitle="אלון בליטי · נתונים, הרשאות, טקסטים ויומן פעולות." />
       <div className="grid gap-3 md:grid-cols-2">
         <ActionCard title="ניהול משתמשים" subtitle="כל התפקידים וההרשאות" icon={Users} tone="admin" onClick={() => openScreen("users")} />
-        <ActionCard title="ספריית מדיה" subtitle="מטאדאטה, נראות וקישורים" icon={ImagePlus} tone="modern" onClick={() => openScreen("media_library")} />
+        <ActionCard title="ספריית מדיה" subtitle="פרטים, נראות וקישורים" icon={ImagePlus} tone="modern" onClick={() => openScreen("media_library")} />
         <ActionCard title="ניהול מוצרים" subtitle="חנות, תמונות ומלאי" icon={ShoppingBag} tone="shop" onClick={() => openScreen("product_management")} />
         <ActionCard title="ייצוא / ייבוא מסד" subtitle="גיבוי והחלפת מסד" icon={Database} tone="admin" onClick={() => openScreen("database")} />
         <ActionCard title="עריכת טקסטים" subtitle="טקסטים מהמסד" icon={Sparkles} tone="repertoire" onClick={() => openScreen("texts")} />
         <ActionCard title="יומן פעולות" subtitle="פעולות רגישות" icon={ClipboardList} tone="management" onClick={() => openScreen("audit")} />
-        <ActionCard title="ניהול יכולות" subtitle="ניהול יכולות" icon={Flag} tone="admin" onClick={() => openScreen("flags")} />
-        {can(user, "manage_private_lessons") ? <ActionCard title="שיעורים פרטיים" subtitle="תהליך מסחרי מקצה לקצה" icon={Receipt} tone="shop" onClick={() => openScreen("private_lessons")} /> : null}
+        <ActionCard title="אפשרויות" subtitle="הפעלה וכיבוי" icon={Flag} tone="admin" onClick={() => openScreen("flags")} />
+        {can(user, "manage_private_lessons") ? <ActionCard title="שיעורים פרטיים" subtitle="בקשות, תיאום ותשלום" icon={Receipt} tone="shop" onClick={() => openScreen("private_lessons")} /> : null}
       </div>
     </div>
   );
@@ -1325,7 +1325,7 @@ function DatabaseTools({ actor, show, onBack }: { actor: V2User; show: (message:
       <Header title="מסד נתונים" subtitle="ייצוא וייבוא למסד. האפליקציה נפתחת מיד גם אם הייבוא נכשל." />
       <div className="grid gap-3 md:grid-cols-3">
         <MetricCard label="משתמשים" value={db.users.length} icon={Users} tone="management" />
-        <MetricCard label="אודיט" value={db.auditLog.length} icon={ClipboardList} tone="admin" />
+        <MetricCard label="יומן" value={db.auditLog.length} icon={ClipboardList} tone="admin" />
         <MetricCard label="גרסה" value={db.version} icon={Database} tone="studio" />
       </div>
       <div className={cardClass("space-y-3")}>
@@ -1451,7 +1451,7 @@ function MediaLibraryScreen({ user, show, onBack }: { user: V2User; show: (messa
       <Back onBack={onBack} />
       <Header
         title="ספריית מדיה"
-        subtitle="תמונות ווידאו לקבוצות, חנות ותפעול הסטודיו. הקבצים עצמם נשמרים כתצוגה מקומית בשלב זה."
+        subtitle="תמונות ווידאו לקבוצות ולחנות. הקבצים עצמם נשמרים כתצוגה מקומית בשלב זה."
         action={<Button onClick={() => setUploadOpen(true)}>העלאת מדיה</Button>}
       />
       <MediaLibrary

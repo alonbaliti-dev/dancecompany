@@ -60,7 +60,7 @@ export function DatabaseLoadDiagnostics({
       className="fixed bottom-3 left-3 z-[9999] max-w-sm rounded-2xl border border-amber-500/25 bg-[#0c0c0e]/95 p-3 text-right text-[11px] text-white/70 shadow-xl backdrop-blur-md"
       dir="rtl"
     >
-      <p className="mb-2 font-medium text-amber-200/90">אבחון מסד (פיתוח)</p>
+      <p className="mb-2 font-medium text-amber-200/90">בדיקת נתונים (פיתוח)</p>
       <dl className="space-y-1">
         <div className="flex justify-between gap-3">
           <dt className="text-white/45">שרת</dt>

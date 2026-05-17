@@ -8,8 +8,10 @@ export function sortByHebrewName<T extends { name: string }>(items: T[]) {
 }
 
 export function sortGroupsByAgeAndStyle(db: V6Database) {
+  const ageOrder = new Map(db.ageGroups.map((ageGroup) => [ageGroup.id, ageGroup.sortOrder]));
   return dedupeById(db.groups).sort((a, b) => {
-    const ageCompare = (a.ageGroup ?? "").localeCompare(b.ageGroup ?? "", "he", { numeric: true });
+    const ageCompare = (ageOrder.get(a.ageGroupId ?? "") ?? 999) - (ageOrder.get(b.ageGroupId ?? "") ?? 999)
+      || (a.ageGroup ?? "").localeCompare(b.ageGroup ?? "", "he", { numeric: true });
     if (ageCompare) return ageCompare;
     const styleCompare = (a.danceStyle ?? a.style).localeCompare(b.danceStyle ?? b.style, "he");
     if (styleCompare) return styleCompare;

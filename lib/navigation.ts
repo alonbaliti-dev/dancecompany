@@ -12,7 +12,7 @@ const NAV_LABEL_KEYS: Record<string, string> = {
 
 /** Fixed five tabs — shop is a primary destination. */
 export const MAIN_NAV_TABS: MainTabDefinition[] = [
-  { id: "dashboard", label: "דשבורד", icon: LayoutDashboard },
+  { id: "dashboard", label: "בית", icon: LayoutDashboard },
   { id: "lessons", label: "שיעורים", icon: School },
   { id: "messages", label: "הודעות", icon: MessageCircle, badgeKey: "messages" },
   { id: "shop", label: "חנות", icon: ShoppingBag },
@@ -20,7 +20,7 @@ export const MAIN_NAV_TABS: MainTabDefinition[] = [
 ];
 
 export const MAIN_TAB_LABELS: Record<string, string> = {
-  dashboard: "דשבורד",
+  dashboard: "בית",
   lessons: "שיעורים",
   messages: "הודעות",
   shop: "חנות",

@@ -44,7 +44,7 @@ export function getRoleHeaderLines(
   }
 
   if (tier === "management") {
-    return { primary: ROLE_LABEL.management, secondary: studio ? studio : "משתמשים, דוחות ותפעול" };
+    return { primary: ROLE_LABEL.management, secondary: studio ? studio : "משתמשים, דוחות וניהול" };
   }
   if (tier === "teacher") {
     return { primary: ROLE_LABEL.teacher, secondary: "שיעורים, משימות וקבוצות" };

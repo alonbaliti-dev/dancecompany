@@ -6,7 +6,7 @@ import { Card, Header, cx } from "./ui";
 export function RiskCenterScreen() {
   const { riskAlerts, user } = useStudioOS();
   if (!user.permissions.isTeacher && !user.permissions.isManagement) {
-    return <Header title="מרכז סיכונים" subtitle="לצוות בלבד" />;
+    return <Header title="לתשומת לב" subtitle="לצוות בלבד" />;
   }
 
   return (

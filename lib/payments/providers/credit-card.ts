@@ -4,21 +4,22 @@ import type { PaymentProviderPlugin } from "./types";
  * Credit card — server-side tokenization only.
  *
  * Future backends (pick one per studio):
- * - Stripe PaymentIntents + Elements (hosted fields)
  * - Tranzila / Cardcom / Hyp hosted page redirect
  * - Meshulam / Grow Israeli aggregators
  */
 export const creditCardProvider: PaymentProviderPlugin = {
   id: "credit_card",
-  preferredPsp: ["stripe", "tranzila", "cardcom", "hyp", "meshulam", "grow"],
+  preferredPsp: ["tranzila", "cardcom", "grow_meshulam"],
   async createIntentOnServer(req) {
     const now = new Date().toISOString();
     const transaction = {
       id: `pay_${Date.now().toString(36)}`,
+      academyId: req.academyId ?? req.studioId,
       studioId: req.studioId,
       orderId: req.orderId,
       userId: req.userId,
       provider: "credit_card" as const,
+      method: "credit_card" as const,
       amount: req.amount,
       currency: req.currency,
       status: "pending" as const,

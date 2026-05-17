@@ -116,9 +116,9 @@ export function DashboardScreen({
           onClick={() => onOpenStack("super_admin_hub")}
           className="lk-card lk-card-press w-full p-4 text-right"
         >
-          <p className="premium-section-label">מנהל על</p>
-          <p className="mt-1 text-lg font-semibold text-white">סטטוס מערכת ומסד נתונים</p>
-          <p className="mt-1 text-sm text-white/45">ייצוא, ייבוא, משתמשים, דגלי תכונות ויומן ביקורת</p>
+          <p className="premium-section-label">ניהול האפליקציה</p>
+          <p className="mt-1 text-lg font-semibold text-white">מצב האפליקציה והנתונים</p>
+          <p className="mt-1 text-sm text-white/45">ייצוא, ייבוא, משתמשים, אפשרויות ויומן פעולות</p>
         </button>
       ) : null}
 
@@ -183,7 +183,7 @@ export function DashboardScreen({
             <p className="mt-0.5 text-sm text-white/45">
               {metrics.messages.unreadCount > 0
                 ? `${metrics.messages.unreadCount} הודעות · ${metrics.tasks.overdue} משימות באיחור`
-                : "הכול בשליטה היום"}
+                : "הכול רגוע היום"}
             </p>
           </div>
           {metrics.role === "student" ? (

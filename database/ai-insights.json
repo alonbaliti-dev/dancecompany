@@ -23,8 +23,8 @@
     "id": "ai_seed_management",
     "studioId": "studio_lk",
     "audience": "management",
-    "title": "בריאות סטודיו",
-    "body": "הצעה בלבד: שיעורים פרטיים פתוחים ומדיה חדשה דורשים מעקב השבוע.",
+    "title": "מה דורש תשומת לב",
+    "body": "הצעה בלבד: שיעורים פרטיים פתוחים וגלריה חדשה דורשים מעקב השבוע.",
     "riskLevel": "medium",
     "requiresApproval": true,
     "createdAt": "2026-05-16T09:00:00.000Z"
@@ -33,8 +33,8 @@
     "id": "ai_seed_admin",
     "studioId": "studio_lk",
     "audience": "super_admin",
-    "title": "בדיקת מערכת",
-    "body": "הצעה בלבד: לבדוק ייבוא/ייצוא, הרשאות מדיה ודגלי פיצ׳רים לפני פיילוט.",
+    "title": "בדיקת האפליקציה",
+    "body": "הצעה בלבד: לבדוק ייבוא/ייצוא, הרשאות גלריה ואפשרויות פעילות לפני פיילוט.",
     "riskLevel": "low",
     "requiresApproval": true,
     "createdAt": "2026-05-16T09:00:00.000Z"

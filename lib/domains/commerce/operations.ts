@@ -115,6 +115,42 @@ export function buildUpdateOrderPaymentMutation(
   };
 }
 
+export function buildMarkManualOfficePaymentMutation(
+  actor: UserProfile,
+  order: ShopOrder,
+  input: { method: "office_cash" | "bank_transfer" | "office_credit_terminal"; note?: string }
+): DomainMutationInput | null {
+  if (!canManageShopOrder(actor, order)) return null;
+  return {
+    actor,
+    guard: guard(true),
+    mutate: (db) => ({
+      ...db,
+      shopOrders: db.shopOrders.map((o) =>
+        o.id === order.id
+          ? {
+              ...o,
+              paymentStatus: "paid",
+              paymentMethod: input.method === "bank_transfer" ? "bank_transfer" : "credit_card"
+            }
+          : o
+      )
+    }),
+    audit: {
+      action: `תשלום ידני אושר: ${input.method}`,
+      targetType: "shop_order",
+      targetId: order.id,
+      severity: "info"
+    },
+    activity: {
+      kind: "shop_order",
+      messageHe: `תשלום ידני אושר להזמנה ${order.id}`,
+      relatedType: "shop_order",
+      relatedId: order.id
+    }
+  };
+}
+
 export function buildUpdateOrderFulfillmentMutation(
   actor: UserProfile,
   order: ShopOrder,

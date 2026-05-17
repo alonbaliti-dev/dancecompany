@@ -94,7 +94,7 @@ export function ManagementStudioPanel({ user }: { user: UserProfile }) {
 
   return (
     <div className="space-y-8 pb-2">
-      <Header title="ניהול משימות ועדכונים" subtitle="רמת סטודיו — יצירה, מעקב ואנליטיקה." />
+      <Header title="משימות ועדכונים" subtitle="יצירה ומעקב לכל הסטודיו." />
 
       <div className="grid grid-cols-2 gap-3">
         <GhostButton className="!flex !min-h-[3.5rem] !flex-col !items-center !justify-center !gap-1" onClick={() => setSheet("studioTask")}>
@@ -108,7 +108,7 @@ export function ManagementStudioPanel({ user }: { user: UserProfile }) {
       </div>
 
       <section className="space-y-3">
-        <SectionEyebrow>אנליטיקה</SectionEyebrow>
+        <SectionEyebrow>מעקב</SectionEyebrow>
         <SectionTitle className="mt-0.5">משימות שיצרו מורים</SectionTitle>
         <div className="mt-3 space-y-3">
           {byTeacher.map(({ teacher, count, avg }) => (
@@ -117,7 +117,7 @@ export function ManagementStudioPanel({ user }: { user: UserProfile }) {
                 <BarChart3 className="shrink-0 text-emerald-300/70" size={20} />
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-white">{teacher.name}</p>
-                  <p className="mt-1 text-[12px] text-white/42">{count} משימות במערכת</p>
+                  <p className="mt-1 text-[12px] text-white/42">{count} משימות באפליקציה</p>
                 </div>
                 <span className="text-lg font-semibold tabular-nums text-emerald-200/90">{avg}%</span>
               </div>
@@ -165,7 +165,7 @@ export function ManagementStudioPanel({ user }: { user: UserProfile }) {
       </section>
 
       <section className="space-y-3">
-        <SectionTitle>התראות מערכת</SectionTitle>
+        <SectionTitle>לתשומת לב</SectionTitle>
         <div className="space-y-3">
           {alerts.map((a) => (
             <Card key={a.id} animated={false}>

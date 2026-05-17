@@ -3,11 +3,11 @@
  *
  * ARCHITECTURE (production):
  *   Frontend (this app)
- *     → POST /api/payments/create-intent  (no card data)
- *     → PSP / wallet UI (Stripe Elements, Apple Pay, Bit app)
+ *     → POST /api/payments/create-session (no card data, amount resolved server-side)
+ *     → PSP / wallet UI (Tranzila/Cardcom/Grow hosted page or wallet app)
  *     → POST /api/payments/webhook        (PSP confirms)
  *     → DB: orders + payment_transactions
- *     → GET  /api/payments/verify         (optional poll for Bit/PayBox)
+ *     → GET  /api/payments/status         (optional poll for Bit/PayBox)
  *
  * NEVER store or transmit full card numbers from React state.
  */
@@ -15,6 +15,7 @@
 import type {
   CreatePaymentIntentRequest,
   CreatePaymentIntentResponse,
+  ManualOfficePaymentRequest,
   PaymentAuditAction,
   PaymentAuditEntry,
   PaymentProvider,
@@ -24,6 +25,12 @@ import type {
   VerifyPaymentRequest
 } from "./types";
 import { getPaymentProvider } from "./providers";
+import {
+  assertServerPaymentConfig,
+  buildProviderHostedSession,
+  getPaymentProviderConfig
+} from "./processor-adapters";
+import { resolvePaymentOrderDraft } from "./order-resolution";
 
 function newId(prefix: string) {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
@@ -39,6 +46,10 @@ export function listPaymentAuditsForOrder(orderId: string): PaymentAuditEntry[] 
 
 export function getStoredTransaction(id: string): PaymentTransaction | undefined {
   return transactionStore.get(id);
+}
+
+export function getStoredTransactionByOrder(orderId: string, academyId?: string): PaymentTransaction | undefined {
+  return [...transactionStore.values()].find((tx) => tx.orderId === orderId && (!academyId || tx.academyId === academyId));
 }
 
 export function recordPaymentAudit(input: {
@@ -81,8 +92,48 @@ export function persistTransaction(tx: PaymentTransaction): PaymentTransaction {
 export async function createPaymentIntentOnServer(
   req: CreatePaymentIntentRequest
 ): Promise<CreatePaymentIntentResponse> {
+  const resolved = resolvePaymentOrderDraft(req);
+  if ("error" in resolved) {
+    throw new Error(resolved.error);
+  }
+  if (req.amount && req.amount !== resolved.draft.amount) {
+    throw new Error("client_amount_mismatch");
+  }
+
+  const configResult = assertServerPaymentConfig(getPaymentProviderConfig(resolved.draft.academyId));
+  if ("error" in configResult) {
+    throw new Error(configResult.error);
+  }
+  if (!configResult.config.enabledMethods.includes(req.provider)) {
+    throw new Error("payment_method_not_enabled");
+  }
+
+  const serverRequest: CreatePaymentIntentRequest = {
+    ...req,
+    academyId: resolved.draft.academyId,
+    amount: resolved.draft.amount,
+    currency: resolved.draft.currency,
+    description: resolved.draft.description
+  };
+
   const plugin = getPaymentProvider(req.provider);
-  const result = await plugin.createIntentOnServer(req);
+  const providerResult = await plugin.createIntentOnServer(serverRequest);
+  const hostedSession = buildProviderHostedSession(serverRequest, configResult.config);
+  const transaction: PaymentTransaction = {
+    ...providerResult.transaction,
+    academyId: resolved.draft.academyId,
+    studioId: req.studioId,
+    amount: resolved.draft.amount,
+    currency: resolved.draft.currency,
+    processorProvider: configResult.config.provider,
+    method: req.provider,
+    metadata: resolved.draft.safeMetadata,
+    providerReference: `${configResult.config.provider}_${providerResult.transaction.id}`
+  };
+  const result: CreatePaymentIntentResponse = {
+    transaction,
+    ...hostedSession
+  };
   persistTransaction(result.transaction);
   return result;
 }
@@ -95,7 +146,7 @@ export async function createPaymentIntent(
 ): Promise<CreatePaymentIntentResponse> {
   if (typeof window !== "undefined") {
     try {
-      const res = await fetch("/api/payments/create-intent", {
+      const res = await fetch("/api/payments/create-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(req)
@@ -105,8 +156,9 @@ export async function createPaymentIntent(
         persistTransaction(data.transaction);
         return data;
       }
+      throw new Error((await res.json().catch(() => ({ error: "payment_create_failed" }))).error);
     } catch {
-      /* fall through to server-side simulation for offline demo */
+      throw new Error("payment_create_failed");
     }
   }
   return createPaymentIntentOnServer(req);
@@ -121,6 +173,7 @@ export async function handlePaymentWebhookEvent(event: {
   providerReference: string;
   status: PaymentStatus;
   orderId: string;
+  rawWebhookSafeMetadata?: PaymentTransaction["rawWebhookSafeMetadata"];
 }): Promise<PaymentTransaction | null> {
   const tx = [...transactionStore.values()].find(
     (t) => t.orderId === event.orderId || t.providerReference === event.providerReference
@@ -129,6 +182,8 @@ export async function handlePaymentWebhookEvent(event: {
   const updated: PaymentTransaction = {
     ...tx,
     status: event.status,
+    providerTransactionId: event.providerReference,
+    rawWebhookSafeMetadata: event.rawWebhookSafeMetadata,
     updatedAt: new Date().toISOString()
   };
   persistTransaction(updated);
@@ -160,20 +215,6 @@ export async function verifyPayment(req: VerifyPaymentRequest): Promise<PaymentT
   }
   const tx = transactionStore.get(req.transactionId);
   if (!tx || tx.studioId !== req.studioId) return null;
-  if (tx.status === "pending" && (tx.provider === "bit" || tx.provider === "paybox")) {
-    const updated = { ...tx, status: "paid" as const, updatedAt: new Date().toISOString() };
-    persistTransaction(updated);
-    recordPaymentAudit({
-      studioId: tx.studioId,
-      orderId: tx.orderId,
-      transactionId: tx.id,
-      action: "payment_paid",
-      actorUserId: "system",
-      actorName: "אימות תשלום",
-      note: "demo_verify"
-    });
-    return updated;
-  }
   return tx;
 }
 
@@ -193,6 +234,40 @@ export async function refundPayment(req: RefundPaymentRequest): Promise<PaymentT
   return updated;
 }
 
+export function markManualOfficePayment(req: ManualOfficePaymentRequest): PaymentTransaction {
+  const now = new Date().toISOString();
+  const transaction: PaymentTransaction = {
+    id: newId("pay_manual"),
+    academyId: req.academyId,
+    studioId: req.academyId,
+    orderId: req.orderId,
+    userId: req.actorUserId,
+    provider: "credit_card",
+    method: "credit_card",
+    amount: 0,
+    currency: "ILS",
+    status: "paid",
+    providerReference: `manual_${req.method}_${req.orderId}`,
+    metadata: {
+      manualMethod: req.method,
+      note: req.note ?? ""
+    },
+    createdAt: now,
+    updatedAt: now
+  };
+  persistTransaction(transaction);
+  recordPaymentAudit({
+    studioId: req.academyId,
+    orderId: req.orderId,
+    transactionId: transaction.id,
+    action: "payment_manual_status_changed",
+    actorUserId: req.actorUserId,
+    actorName: req.actorName,
+    note: req.method
+  });
+  return transaction;
+}
+
 /** Map payment status → shop order payment status (subset). */
 export function shopPaymentStatusFromTransaction(status: PaymentStatus): import("@/lib/types").ShopPaymentStatus {
   if (status === "paid") return "paid";
@@ -210,7 +285,9 @@ export const paymentService = {
   refundPayment,
   handlePaymentWebhookEvent,
   getStoredTransaction,
+  getStoredTransactionByOrder,
   listPaymentAuditsForOrder,
   recordPaymentAudit,
+  markManualOfficePayment,
   shopPaymentStatusFromTransaction
 };

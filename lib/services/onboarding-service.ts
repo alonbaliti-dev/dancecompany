@@ -24,7 +24,7 @@ const STEPS: Record<UserType, Omit<RoleOnboardingStep, "completed">[]> = {
   ],
   super_admin: [
     { id: "sa_db", titleHe: "מסד נתונים", descriptionHe: "גיבוי וייצוא", stackTarget: "backup_restore" },
-    { id: "sa_hub", titleHe: "מרכז שליטה", descriptionHe: "סטודיואים ותכונות", stackTarget: "super_admin_hub" },
+    { id: "sa_hub", titleHe: "ניהול ראשי", descriptionHe: "סטודיואים ואפשרויות", stackTarget: "super_admin_hub" },
     { id: "sa_audit", titleHe: "ביקורת", descriptionHe: "יומן פעילות", stackTarget: "platform_audit" }
   ]
 };

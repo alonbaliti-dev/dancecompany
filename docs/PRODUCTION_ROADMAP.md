@@ -1,6 +1,6 @@
 # LK Student Space — V6 to Production Roadmap
 
-This roadmap defines how LK Student Space should evolve from the current V6 MVP into a production-grade operating system for dance academies. It is intentionally product-aware and implementation-focused: every phase explains what we need, why it matters, how to build it, what complexity it adds, and what the experience should feel like.
+This roadmap defines how LK Student Space should evolve from the current V6 MVP into a production-grade multi-academy operating system for dance academies and performing arts schools. It is intentionally product-aware and implementation-focused: every phase explains what we need, why it matters, how to build it, what complexity it adds, and what the experience should feel like.
 
 LK Student Space is not a generic dashboard, school portal, WhatsApp replacement, or admin panel. It should become a premium, calm, intelligent, emotionally connected operating system for dance academies. The core promise is simple:
 
@@ -14,10 +14,31 @@ Target stack:
 - Supabase for production database and realtime capabilities
 - Vercel for deployment, previews, and production hosting
 - Supabase Auth for authentication and role-aware sessions
+- Cloudflare R2 for production media storage with signed URLs
 - Firebase Cloud Messaging or OneSignal for push notifications
 - OpenAI API and Claude API for the AI production layer
 
 Current V6 local JSON should be treated as an MVP/prototype layer. Production requires careful migration of storage, authentication, media, notifications, payments, and AI without breaking the calm user experience.
+
+## Platform Standard
+
+LK Student Space is not a single-studio prototype. It is becoming a premium, emotionally intelligent, Hebrew RTL-native, mobile-first operating system for dance academies and performing arts schools.
+
+Authoritative platform facts:
+
+- Platform owner and global Super Admin: Alon Baliti / אלון בליטי.
+- Current active academy: LK Studio by Liat Kaplinski, כפר ויתקין, ישראל.
+- Every academy gets isolated identity, users, branding, permissions, media and experience on the same intelligent OS foundation.
+- The local MVP keeps `studioId`; production treats `academyId` as the canonical tenant key.
+
+Product standard:
+
+- Would a real academy confidently use this tomorrow?
+- Does every role see what matters now and the next action?
+- Is the UI calm, elegant, clear and safe at 390px?
+- Are permissions, audit and academy isolation respected?
+
+Avoid internal jargon in user-facing copy. Use simple Hebrew and avoid terms such as cockpit, diagnostics, orchestration and operational intelligence.
 
 ## 1. PRODUCT NORTH STAR
 

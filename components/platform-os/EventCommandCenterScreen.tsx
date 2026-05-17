@@ -25,8 +25,8 @@ export function EventCommandCenterScreen({ user }: { user: UserProfile }) {
   if (!event || !mode) {
     return (
       <div className={screenClass}>
-        <Header title="מרכז מופע" subtitle="מצב תפעול לאירועים ומופע שנתי" />
-        <p className="text-right text-sm text-white/45">אין אירוע פעיל לתפעול.</p>
+        <Header title="מופע" subtitle="הכנות ועדכונים לאירועים" />
+        <p className="text-right text-sm text-white/45">אין אירוע פעיל כרגע.</p>
       </div>
     );
   }
@@ -36,7 +36,7 @@ export function EventCommandCenterScreen({ user }: { user: UserProfile }) {
 
   return (
     <div className={screenClass}>
-      <Header title="מרכז מופע" subtitle={event.title} />
+      <Header title="מופע" subtitle={event.title} />
       <select
         value={eventId}
         onChange={(e) => setEventId(e.target.value)}

@@ -87,7 +87,7 @@ export function ReportsScreen() {
           <BookOpen className="text-white/35" size={22} />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-white">עדכונים חשובים שלא נקראו</p>
-            <p className="mt-1 text-xs text-white/40">כולל דחיפות גבוהה במערכת העדכונים</p>
+            <p className="mt-1 text-xs text-white/40">כולל עדכונים חשובים במיוחד</p>
           </div>
           <span className="text-xl font-semibold tabular-nums text-amber-200/90">{reports.unreadImportantUpdates}</span>
         </div>

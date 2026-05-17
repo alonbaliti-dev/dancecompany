@@ -236,7 +236,7 @@ function reducer(state: State, action: Action): State {
     case "update_text":
       return { ...state, db: withAudit({ ...state.db, editableTexts: { ...state.db.editableTexts, [action.key]: action.value } }, auditEntry(action.actor, "עדכון טקסט", action.key)) };
     case "update_flags":
-      return { ...state, db: withAudit({ ...state.db, featureFlags: { ...state.db.featureFlags, ...action.flags } }, auditEntry(action.actor, "עדכון פיצ׳רים", "feature_flags")) };
+      return { ...state, db: withAudit({ ...state.db, featureFlags: { ...state.db.featureFlags, ...action.flags } }, auditEntry(action.actor, "עדכון אפשרויות", "feature_flags")) };
     default:
       return state;
   }

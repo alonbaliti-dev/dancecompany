@@ -21,7 +21,7 @@ export function CreatorDashboardScreen({ onNavigate }: { onNavigate: (s: StackTa
 
   return (
     <div className={screenClass}>
-      <Header title={`מרכז ${PLATFORM_OWNER_NAME}`} subtitle="בעלות פלטפורמה · סטודיואים, הרשאות, תכונות, טקסטים גלובליים, אנליטיקה ויומני ביקורת." />
+      <Header title={`ניהול · ${PLATFORM_OWNER_NAME}`} subtitle="סטודיואים, הרשאות, תכונות, טקסטים ויומן פעולות במקום אחד." />
       <p className="-mt-4 rounded-2xl border border-violet-400/20 bg-violet-500/[0.08] px-4 py-2.5 text-right text-[11px] font-medium tracking-wide text-violet-100/85">
         {PLATFORM_OWNER_BADGE}
       </p>
@@ -29,7 +29,7 @@ export function CreatorDashboardScreen({ onNavigate }: { onNavigate: (s: StackTa
         <StatCard label="סטודיואים" value={studios.length} sub={`${active} פעילים`} />
         <StatCard label="משתמשים" value={users} sub="בכל הסטודיואים" />
         <StatCard label="אחסון" value={`${platformBilling.storageGb} GB`} />
-        <StatCard label="תשלום פלטפורמה" value={`₪${platformBilling.monthlyPriceNis}`} sub={platformBilling.paymentStatus === "paid" ? "שולם" : "ממתין"} />
+        <StatCard label="תשלום חודשי" value={`₪${platformBilling.monthlyPriceNis}`} sub={platformBilling.paymentStatus === "paid" ? "שולם" : "ממתין"} />
         {shop.canViewPlatformAnalytics ? (
           <>
             <StatCard label="הזמנות חנות" value={shopOrderCount} sub="כל הסטודיואים (מוק)" />
@@ -40,15 +40,15 @@ export function CreatorDashboardScreen({ onNavigate }: { onNavigate: (s: StackTa
       <div>
         <SectionEyebrow>פעולות מהירות</SectionEyebrow>
         <div className="mt-3 space-y-2">
-          <ActionRow title="מרכז שליטה מלא" subtitle="מסד נתונים, שלמות, חנות, מיתוג" icon={Database} onPress={() => onNavigate("super_admin_hub")} />
+          <ActionRow title="ניהול ראשי" subtitle="מסד נתונים, חנות ומיתוג" icon={Database} onPress={() => onNavigate("super_admin_hub")} />
           <ActionRow title="סטודיואים" icon={Building2} onPress={() => onNavigate("studios_admin")} />
-          <ActionRow title="ניהול תכונות" icon={Flag} onPress={() => onNavigate("feature_flags")} />
+          <ActionRow title="אפשרויות" icon={Flag} onPress={() => onNavigate("feature_flags")} />
           <ActionRow title="יומן ביקורת" icon={Shield} onPress={() => onNavigate("platform_audit")} />
-          <ActionRow title="עדכוני מערכת" icon={FileText} onPress={() => onNavigate("system_updates")} />
-          <ActionRow title="רענון גרסה" subtitle="טעינה מחדש של נתוני המערכת" icon={RefreshCw} onPress={forceRefreshMock} />
+          <ActionRow title="עדכוני אפליקציה" icon={FileText} onPress={() => onNavigate("system_updates")} />
+          <ActionRow title="רענון גרסה" subtitle="טעינה מחדש של הנתונים" icon={RefreshCw} onPress={forceRefreshMock} />
           {canEdit ? (
             <>
-              <ActionRow title="מצב עריכת טקסטים" subtitle="עריכה גלובלית של כותרות וכפתורים" icon={Pencil} onPress={() => onNavigate("text_editor")} />
+              <ActionRow title="עריכת טקסטים" subtitle="כותרות וכפתורים באפליקציה" icon={Pencil} onPress={() => onNavigate("text_editor")} />
               <button
                 type="button"
                 onClick={() => setTextEditMode(!textEditMode)}

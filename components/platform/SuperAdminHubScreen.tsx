@@ -26,8 +26,8 @@ export function SuperAdminHubScreen({ onNavigate }: { onNavigate: (s: StackTabId
   return (
     <div className={screenClass}>
       <Header
-        title={`מרכז שליטה · ${PLATFORM_OWNER_NAME}`}
-        subtitle="מסד נתונים, תוכן, הרשאות, חנות וביקורת — כל השינויים נשמרים ב-/database."
+        title={`ניהול ראשי · ${PLATFORM_OWNER_NAME}`}
+        subtitle="מסד נתונים, תוכן, הרשאות, חנות ויומן פעולות במקום אחד."
       />
       <p className="-mt-4 rounded-2xl border border-violet-400/20 bg-violet-500/[0.08] px-4 py-2.5 text-right text-[11px] font-medium tracking-wide text-violet-100/85">
         {PLATFORM_OWNER_BADGE}
@@ -42,13 +42,13 @@ export function SuperAdminHubScreen({ onNavigate }: { onNavigate: (s: StackTabId
       </div>
 
       <div>
-        <SectionEyebrow>ניהול פלטפורמה</SectionEyebrow>
+        <SectionEyebrow>ניהול האפליקציה</SectionEyebrow>
         <div className="mt-3 space-y-2">
           <ActionRow title="גיבוי ושחזור" icon={Database} onPress={() => onNavigate("backup_restore")} />
-          <ActionRow title="סטטוס מערכת" icon={Shield} onPress={() => onNavigate("system_status")} />
-          <ActionRow title="פעילות פלטפורמה" icon={Flag} onPress={() => onNavigate("activity_feed")} />
+          <ActionRow title="מצב האפליקציה" icon={Shield} onPress={() => onNavigate("system_status")} />
+          <ActionRow title="פעילות אחרונה" icon={Flag} onPress={() => onNavigate("activity_feed")} />
           <ActionRow title="סטודיואים" icon={Building2} onPress={() => onNavigate("studios_admin")} />
-          <ActionRow title="ניהול תכונות" icon={Flag} onPress={() => onNavigate("feature_flags")} />
+          <ActionRow title="אפשרויות" icon={Flag} onPress={() => onNavigate("feature_flags")} />
           <ActionRow title="מיתוג" icon={Pencil} onPress={() => onNavigate("branding_editor")} />
           <ActionRow title="עריכת טקסטים" icon={Pencil} onPress={() => onNavigate("text_editor")} />
           <ActionRow title="יומן ביקורת" icon={Shield} onPress={() => onNavigate("platform_audit")} />
@@ -73,7 +73,7 @@ export function SuperAdminHubScreen({ onNavigate }: { onNavigate: (s: StackTabId
       <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
         <div className="flex items-center gap-2 text-violet-200/80">
           <Database size={18} />
-          <SectionEyebrow>מסד נתונים</SectionEyebrow>
+          <SectionEyebrow>נתונים</SectionEyebrow>
         </div>
         <DatabaseToolsPanel />
       </div>
@@ -94,7 +94,7 @@ export function SuperAdminHubScreen({ onNavigate }: { onNavigate: (s: StackTabId
       ) : null}
 
       <p className="text-center text-[10px] text-white/30">
-        אחסון פלטפורמה: {platformBilling.storageGb} GB · סכימה v{settings.databaseSchemaVersion}
+        אחסון: {platformBilling.storageGb} GB · גרסת נתונים v{settings.databaseSchemaVersion}
       </p>
     </div>
   );

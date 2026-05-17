@@ -10,7 +10,7 @@ export function SystemUpdatesScreen() {
 
   return (
     <div className={screenClass}>
-      <Header title="עדכוני מערכת" subtitle="גרסה, שחרורים ותחזוקה." />
+      <Header title="עדכוני אפליקציה" subtitle="גרסה, שינויים ותחזוקה." />
       <Card animated={false}>
         <p className="text-sm text-white/45">גרסה מותקנת</p>
         <p className="mt-1 text-xl font-semibold text-white">{APP_VERSION.current}</p>

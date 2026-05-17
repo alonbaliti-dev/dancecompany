@@ -4,11 +4,11 @@
     "key": "nav.dashboard",
     "scope": "global",
     "module": "navigation",
-    "label": "טאב דשבורד",
-    "he": "דשבורד",
-    "en": "Dashboard",
-    "defaultHe": "דשבורד",
-    "defaultEn": "Dashboard"
+    "label": "טאב בית",
+    "he": "בית",
+    "en": "Home",
+    "defaultHe": "בית",
+    "defaultEn": "Home"
   },
   {
     "id": "copy_nav_lessons",

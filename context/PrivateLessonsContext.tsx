@@ -550,6 +550,8 @@ export function PrivateLessonsProvider({ user, children }: { user: UserProfile; 
       if (normalizedMethod === "bank_transfer") {
         paymentStatus = "pending";
       } else {
+        // Production payment opens only after a teacher suggests a slot and the student selects it.
+        return null;
         const provider = shopMethodToProvider(normalizedMethod);
         if (!provider) return null;
 
@@ -562,6 +564,13 @@ export function PrivateLessonsProvider({ user, children }: { user: UserProfile; 
           currency: "ILS",
           description: `שיעור פרטי · ${req.teacherName} · ${req.durationMinutes} דק׳`,
           returnUrl: typeof window !== "undefined" ? `${window.location.origin}/?shop=private` : "/",
+          checkoutDraft: {
+            type: "private_lesson",
+            requestId,
+            selectedSlotId: req.selectedSlotId,
+            teacherId: req.teacherId,
+            durationMinutes: req.durationMinutes
+          },
           walletSession:
             provider === "apple_pay"
               ? { platform: "apple_pay" }
@@ -595,16 +604,7 @@ export function PrivateLessonsProvider({ user, children }: { user: UserProfile; 
       const fresh = getRequest(requestId);
       if (!fresh) return null;
 
-      if (paymentStatus === "paid") {
-        finalizeReservation(
-          { ...fresh, selectedSlotId: req.selectedSlotId, paymentMethod: normalizedMethod },
-          "paid",
-          normalizedMethod,
-          paymentTransactionId
-        );
-      } else {
-        patchRequest(requestId, { paymentStatus, paymentTransactionId, paymentMethod: normalizedMethod });
-      }
+      patchRequest(requestId, { paymentStatus, paymentTransactionId, paymentMethod: normalizedMethod });
 
       return getRequest(requestId) ?? null;
     },

@@ -1,12 +1,14 @@
 # LK Student Space
 
-LK Student Space is a premium mobile-first operating system for dance academies. It combines studio communication, lessons, attendance, private lessons, shop, media, management operations, Super Admin controls, and a governed AI assistance layer in a Hebrew RTL experience.
+LK Student Space is a premium mobile-first operating system for dance academies and performing arts schools. It combines academy-aware communication, lessons, attendance, private lessons, shop, media, events, management operations, Super Admin controls, and a governed AI assistance layer in a Hebrew RTL experience.
 
 ## V6 Philosophy
 
 V6 is the clean production foundation. The product should feel like a calm, high-end native app: centered on mobile, compact, role-aware, database-driven, operationally useful, and safe by design.
 
-The current local JSON database is the MVP/prototype data layer. Production is intended to move toward Supabase DB, Supabase Auth, secure storage, Vercel hosting, Firebase Cloud Messaging or OneSignal notifications, and server-side OpenAI/Claude APIs.
+The current local JSON database is the MVP/prototype data layer. Production is intended to move toward Supabase Postgres/Auth/Realtime, Cloudflare R2 signed media storage, Vercel hosting, Firebase Cloud Messaging or OneSignal notifications, and server-side OpenAI/Claude APIs.
+
+The platform owner and global Super Admin is Alon Baliti / אלון בליטי. The first active academy is LK Studio by Liat Kaplinski in כפר ויתקין, ישראל. The local V6 model keeps `studioId` as the current academy scope and introduces `academyId` as the forward production naming.
 
 ## Target Stack
 
@@ -14,6 +16,7 @@ The current local JSON database is the MVP/prototype data layer. Production is i
 - Frontend: Next.js, Tailwind CSS, shadcn/ui
 - Backend and DB: Supabase
 - Auth: Supabase Auth
+- Media: Cloudflare R2 with signed URLs and Supabase metadata
 - Hosting: Vercel
 - Notifications: Firebase Cloud Messaging or OneSignal
 - AI: OpenAI API and Claude API, server-side only
@@ -54,8 +57,13 @@ Required or planned variables include:
 - `AI_DEFAULT_MODEL`
 - `NEXT_PUBLIC_APP_ENV`
 - `NEXT_PUBLIC_ENABLE_DB_SYNC`
+- `CLOUDFLARE_R2_ACCOUNT_ID` server-only
+- `CLOUDFLARE_R2_ACCESS_KEY_ID` server-only
+- `CLOUDFLARE_R2_SECRET_ACCESS_KEY` server-only
+- `CLOUDFLARE_R2_BUCKET`
+- `CLOUDFLARE_R2_PUBLIC_BASE_URL`
 
-Never expose service role keys or AI provider keys with a `NEXT_PUBLIC_` prefix.
+Never expose service role keys, R2 secrets, payment secrets, or AI provider keys with a `NEXT_PUBLIC_` prefix.
 
 ## Architecture Overview
 
@@ -64,6 +72,7 @@ Never expose service role keys or AI provider keys with a `NEXT_PUBLIC_` prefix.
 - `components/v6/design-system/` contains shared V6 shell, surfaces, buttons, fields, sheets, AI suggestion primitives, and tokens.
 - `components/v6/screens/` contains extracted role-aware V6 screens.
 - `lib/v6/` contains V6 app state, seed database and core types.
+- `lib/r2/` contains the Cloudflare R2 media storage foundation and safe placeholder signing helpers.
 - `lib/domains/` contains domain selectors, guards, operations, notifications and audit helpers.
 - `lib/engines/v6/` contains operational intelligence such as attendance risk, event readiness, management health, media visibility and audit summaries.
 - `lib/ai/` contains AI agents, provider abstraction, safety, permissions and prompt governance.
@@ -79,3 +88,7 @@ Never expose service role keys or AI provider keys with a `NEXT_PUBLIC_` prefix.
 - `CONTRIBUTING.md`
 - `PRODUCT_BRIEF.md`
 - `RUN_AND_DEPLOY.md`
+- `docs/MULTI_ACADEMY_ARCHITECTURE.md`
+- `docs/CLOUDFLARE_R2_MEDIA_ARCHITECTURE.md`
+- `docs/SUPABASE_MIGRATION_PLAN.md`
+- `docs/PRODUCTION_ROADMAP.md`

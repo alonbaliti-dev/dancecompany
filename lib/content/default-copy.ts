@@ -22,7 +22,7 @@ function row(
 
 /** Canonical copy registry — Super Admin can override via EditableTextProvider. */
 export const DEFAULT_EDITABLE_COPY: EditableText[] = [
-  row("nav.dashboard", "navigation", "טאב דשבורד", "דשבורד", "Dashboard"),
+  row("nav.dashboard", "navigation", "טאב בית", "בית", "Home"),
   row("nav.lessons", "navigation", "טאב שיעורים", "שיעורים", "Lessons"),
   row("nav.messages", "navigation", "טאב הודעות", "הודעות", "Messages"),
   row("nav.shop", "navigation", "טאב חנות", "חנות", "Shop"),

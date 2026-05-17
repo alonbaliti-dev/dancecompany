@@ -16,13 +16,13 @@ export function SystemStatusScreen() {
 
   const rows = [
     { label: "גרסת אפליקציה", value: s.appVersion },
-    { label: "מצב מסד נתונים", value: s.databaseStatus },
+    { label: "מצב הנתונים", value: s.databaseStatus },
     { label: "אחסון", value: `${s.storageUsedMb} / ${s.storageLimitMb} MB` },
     { label: "העלאות שנכשלו", value: String(s.failedUploads) },
     { label: "קישורי מדיה שבורים", value: String(s.brokenMediaLinks) },
     { label: "תשלומים", value: s.paymentProviderStatus },
     { label: "התראות", value: s.notificationDeliveryStatus },
-    { label: "תור סנכרון", value: String(s.syncQueuePending) },
+    { label: "ממתין לסנכרון", value: String(s.syncQueuePending) },
     {
       label: "גיבוי אחרון",
       value: s.lastBackupAt ? new Date(s.lastBackupAt).toLocaleString("he-IL") : "—"
@@ -32,7 +32,7 @@ export function SystemStatusScreen() {
 
   return (
     <div className={screenClass}>
-      <Header title="סטטוס מערכת" subtitle="בריאות פלטפורמה — גיבוי, אחסון, סנכרון ותשלומים" />
+      <Header title="מצב האפליקציה" subtitle="גיבוי, אחסון, סנכרון ותשלומים" />
       <ul className="space-y-2">
         {rows.map((r) => (
           <li
@@ -44,7 +44,7 @@ export function SystemStatusScreen() {
           </li>
         ))}
       </ul>
-      <SectionEyebrow>יומן שגיאות</SectionEyebrow>
+      <SectionEyebrow>שגיאות אחרונות</SectionEyebrow>
       <p className="text-right text-xs text-white/40">
         {s.lastError ?? "אין שגיאות מתועדות (מצב הדגמה)."}
       </p>
