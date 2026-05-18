@@ -77,9 +77,9 @@ export function IconLabelRow({ icon: Icon, title, subtitle, tone = "studio", tra
 
 export function Surface({ children, tone = "studio", className }: { children: ReactNode; tone?: V6Tone; className?: string }) {
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[34px] border p-5", v6Surface.base, className)}>
-      <div className={v6Cx("pointer-events-none absolute -right-20 -top-20 z-0 h-44 w-44 rounded-full opacity-10 blur-3xl", v6Tone[tone].beam)} />
-      <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/18 to-transparent" />
+    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[22px] border p-3.5", v6Surface.base, className)}>
+      <div className={v6Cx("pointer-events-none absolute -right-14 -top-14 z-0 h-28 w-28 rounded-full opacity-6 blur-3xl", v6Tone[tone].beam)} />
+      <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/14 to-transparent" />
       <SurfaceContent>{children}</SurfaceContent>
     </section>
   );
@@ -87,10 +87,8 @@ export function Surface({ children, tone = "studio", className }: { children: Re
 
 export function HeroSurface({ children, tone = "studio", className }: { children: ReactNode; tone?: V6Tone; className?: string }) {
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[42px] border border-[rgba(244,213,141,0.118)] bg-gradient-to-br px-5 py-6 text-start shadow-[0_42px_120px_rgba(0,0,0,0.54),0_16px_70px_rgba(244,213,141,0.055),inset_0_1px_0_rgba(255,247,223,0.095)] sm:px-7 sm:py-7", v6Tone[tone].grad, v6Visual.texture, v6Visual.heroOrnaments, className)}>
-      <div className={v6Cx("pointer-events-none absolute right-6 top-0 z-0 h-52 w-24 rotate-12 rounded-full opacity-16 blur-3xl", v6Tone[tone].beam)} />
-      <div className={v6Cx("pointer-events-none absolute inset-y-0 left-0 z-0 w-1/2 opacity-20 mix-blend-screen", v6Visual.stageBeam)} />
-      <div className={v6Cx("pointer-events-none absolute bottom-0 left-8 z-0 h-24 w-36 rounded-t-full opacity-36", v6Visual.stageFloor)} />
+    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[24px] border border-[rgba(244,213,141,0.085)] bg-gradient-to-br px-3.5 py-3.5 text-start shadow-[0_12px_36px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,247,223,0.060)] sm:px-4 sm:py-4", v6Tone[tone].grad, v6Visual.texture, className)}>
+      <div className={v6Cx("pointer-events-none absolute -left-10 -top-14 z-0 h-28 w-28 rounded-full opacity-8 blur-3xl", v6Tone[tone].beam)} />
       <SurfaceContent>{children}</SurfaceContent>
     </section>
   );
@@ -98,10 +96,10 @@ export function HeroSurface({ children, tone = "studio", className }: { children
 
 export function EditorialSection({ title, kicker, tone = "studio", children, className }: { title: string; kicker?: string; tone?: V6Tone; children: ReactNode; className?: string }) {
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[36px] border p-4 sm:p-5", v6Surface.editorial, className)}>
-      <div className={v6Cx("pointer-events-none absolute -left-20 top-0 z-0 h-32 w-32 rounded-full opacity-7 blur-3xl", v6Tone[tone].beam)} />
+    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[22px] border p-3.5", v6Surface.editorial, className)}>
+      <div className={v6Cx("pointer-events-none absolute -left-16 top-0 z-0 h-24 w-24 rounded-full opacity-6 blur-3xl", v6Tone[tone].beam)} />
       <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/10 to-transparent" />
-      <SurfaceContent className="mb-4 flex items-center justify-start gap-2 px-1 text-start">
+      <SurfaceContent className="mb-2.5 flex items-center justify-start gap-2 px-1 text-start">
         <div>
           {kicker ? <p className={v6Type.kicker}>{kicker}</p> : null}
           <SafeTitle as="h2" className={v6Cx(kicker && "mt-1.5", v6Type.sectionTitle)}>{title}</SafeTitle>
@@ -114,8 +112,8 @@ export function EditorialSection({ title, kicker, tone = "studio", children, cla
 
 export function OpenCluster({ children, tone = "studio", className }: { children: ReactNode; tone?: V6Tone; className?: string }) {
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[38px] border px-4 py-4 sm:px-5", v6Surface.open, className)}>
-      <div className={v6Cx("pointer-events-none absolute -right-20 top-3 z-0 h-36 w-36 rounded-full opacity-7 blur-3xl", v6Tone[tone].beam)} />
+    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[22px] border px-3.5 py-3", v6Surface.open, className)}>
+      <div className={v6Cx("pointer-events-none absolute -right-14 top-3 z-0 h-24 w-24 rounded-full opacity-6 blur-3xl", v6Tone[tone].beam)} />
       <SurfaceContent>{children}</SurfaceContent>
     </section>
   );
@@ -123,9 +121,9 @@ export function OpenCluster({ children, tone = "studio", className }: { children
 
 export function InlineMetric({ label, value, meta, tone = "studio", className }: { label: ReactNode; value: ReactNode; meta?: ReactNode; tone?: V6Tone; className?: string }) {
   return (
-    <div dir="rtl" className={v6Cx("lk-safe-surface min-w-0 max-w-full rounded-[20px] border border-white/[0.035] bg-black/[0.10] px-3 py-2.5 text-start shadow-[inset_0_1px_0_rgba(255,247,223,0.026)]", className)}>
+    <div dir="rtl" className={v6Cx("lk-safe-surface min-w-0 max-w-full rounded-[20px] border border-white/[0.035] bg-black/[0.10] px-2.5 py-2 text-start shadow-[inset_0_1px_0_rgba(255,247,223,0.026)] sm:px-3 sm:py-2.5", className)}>
       <SafeMeta as="p" className="text-[10px] font-semibold text-white/34">{label}</SafeMeta>
-      <p className={v6Cx("lk-safe-text mt-1 max-w-full break-words text-[1.28rem] font-semibold tracking-[-0.044em]", v6Tone[tone].text)}>{value}</p>
+      <p className={v6Cx("lk-safe-text mt-1 max-w-full break-words text-[1.08rem] font-semibold tracking-[-0.044em] sm:text-[1.28rem]", v6Tone[tone].text)}>{value}</p>
       {meta ? <SafeMeta as="p" className="mt-1 text-[10px] text-white/34">{meta}</SafeMeta> : null}
     </div>
   );
@@ -133,11 +131,11 @@ export function InlineMetric({ label, value, meta, tone = "studio", className }:
 
 export function StageImage({ tone = "shop", label, icon: Icon, className }: { tone?: V6Tone; label?: string; icon?: ElementType; className?: string }) {
   return (
-    <div className={v6Cx("relative isolate min-h-36 overflow-hidden rounded-[34px] border border-[rgba(244,213,141,0.075)] bg-gradient-to-br shadow-[inset_0_1px_0_rgba(255,247,223,0.060),0_18px_46px_rgba(0,0,0,0.24)]", v6Tone[tone].grad, className)}>
+    <div className={v6Cx("relative isolate min-h-28 overflow-hidden rounded-[24px] border border-[rgba(244,213,141,0.070)] bg-gradient-to-br shadow-[inset_0_1px_0_rgba(255,247,223,0.050),0_12px_30px_rgba(0,0,0,0.18)]", v6Tone[tone].grad, className)}>
       <div className={v6Cx("pointer-events-none absolute inset-0 opacity-42 mix-blend-screen", v6Visual.curtain)} />
       <div className={v6Cx("pointer-events-none absolute inset-x-10 bottom-0 h-20 rounded-t-full opacity-60", v6Visual.plinth)} />
-      <div className="absolute bottom-5 right-5 grid h-16 w-16 place-items-center rounded-[26px] border border-[#f4d58d]/10 bg-black/14 shadow-[inset_0_1px_0_rgba(255,247,223,0.075)] sm:h-20 sm:w-20 sm:rounded-[32px]">
-        {Icon ? <Icon className={v6Tone[tone].text} size={23} strokeWidth={1.75} /> : null}
+      <div className="absolute bottom-4 right-4 grid h-12 w-12 place-items-center rounded-[20px] border border-[#f4d58d]/10 bg-black/14 shadow-[inset_0_1px_0_rgba(255,247,223,0.060)]">
+        {Icon ? <Icon className={v6Tone[tone].text} size={19} strokeWidth={1.75} /> : null}
       </div>
       {label ? <p className="lk-safe-meta absolute left-5 top-5 max-w-[8rem] text-left text-[9px] font-semibold uppercase leading-relaxed tracking-[0.20em] text-white/38">{label}</p> : null}
     </div>
@@ -146,9 +144,9 @@ export function StageImage({ tone = "shop", label, icon: Icon, className }: { to
 
 export function Widget({ title, kicker, icon: Icon, tone = "studio", children }: { title: string; kicker: string; icon: ElementType; tone?: V6Tone; children: ReactNode }) {
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[36px] border p-5", v6Surface.elevated)}>
-      <div className={v6Cx("pointer-events-none absolute -left-20 top-0 z-0 h-36 w-36 rounded-full opacity-9 blur-3xl", v6Tone[tone].beam)} />
-      <SurfaceContent className="mb-5 flex items-center gap-3">
+    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[26px] border p-4", v6Surface.elevated)}>
+      <div className={v6Cx("pointer-events-none absolute -left-16 top-0 z-0 h-24 w-24 rounded-full opacity-7 blur-3xl", v6Tone[tone].beam)} />
+      <SurfaceContent className="mb-4 flex items-center gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-2 text-start">
           <span className={v6Cx("grid h-8 w-8 shrink-0 place-items-center rounded-[16px] border border-white/[0.035]", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={14} strokeWidth={1.9} /></span>
           <SafeTitle as="h2" className="text-[16px] font-semibold leading-snug tracking-[-0.030em] text-white/86">{title}</SafeTitle>
@@ -162,36 +160,36 @@ export function Widget({ title, kicker, icon: Icon, tone = "studio", children }:
 
 export function FeedRow({ icon: Icon, title, body, meta, tone = "studio" }: { icon: ElementType; title: string; body: string; meta: string; tone?: V6Tone }) {
   return (
-    <SafeRow className={v6Cx("rounded-[28px] border px-3.5 py-3.5 transition hover:bg-white/[0.018]", v6Surface.whisper)}>
-      <span className={v6Cx("mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-[17px]", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={13} strokeWidth={1.9} /></span>
+    <SafeRow className={v6Cx("rounded-[14px] border px-2.5 py-2 transition hover:bg-white/[0.018]", v6Surface.whisper)}>
+      <span className={v6Cx("mt-px grid h-[26px] w-[26px] shrink-0 place-items-center rounded-[11px]", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={11.5} strokeWidth={1.9} /></span>
       <span className="min-w-0 flex-1 text-start">
-        <SafeTitle as="span" className="block text-[14px] font-semibold tracking-[-0.020em] text-white/86">{title}</SafeTitle>
-        <RtlText as="span" className="mt-1.5 block text-[12px] leading-relaxed text-white/50">{body}</RtlText>
+        <SafeTitle as="span" className="block truncate text-[12.5px] font-semibold tracking-[-0.012em] text-white/84">{title}</SafeTitle>
+        <RtlText as="span" className="mt-0.5 block truncate text-[10.5px] leading-relaxed text-white/45">{body}</RtlText>
       </span>
-      <SafeMeta as="span" className="rtl-row-trailing min-w-[4rem] max-w-full shrink text-[10px] font-semibold text-white/36 sm:max-w-[8rem]">{meta}</SafeMeta>
+      <SafeMeta as="span" className="rtl-row-trailing min-w-[3rem] max-w-full shrink text-[9.5px] font-semibold text-white/34 sm:max-w-[8rem]">{meta}</SafeMeta>
     </SafeRow>
   );
 }
 
 export function ActionPill({ icon: Icon, title, subtitle, tone = "studio", onClick }: { icon: ElementType; title: string; subtitle?: string; tone?: V6Tone; onClick?: () => void }) {
   return (
-    <button dir="rtl" onClick={onClick} className={v6Cx("lk-safe-surface group flex min-h-[64px] w-full min-w-0 items-start gap-3 rounded-[24px] border px-3 py-3 text-start transition duration-200 active:scale-[0.98]", v6Surface.whisper)}>
-      <span className={v6Cx("grid h-9 w-9 shrink-0 place-items-center rounded-full transition group-active:scale-95", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={15} strokeWidth={1.9} /></span>
+    <button dir="rtl" onClick={onClick} className={v6Cx("lk-safe-surface group flex min-h-[43px] w-full min-w-0 items-center gap-2 rounded-[14px] border px-2.5 py-2 text-start transition duration-200 active:scale-[0.98]", v6Surface.whisper)}>
+      <span className={v6Cx("grid h-[26px] w-[26px] shrink-0 place-items-center rounded-[11px] transition group-active:scale-95", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={12} strokeWidth={1.9} /></span>
       <span className="min-w-0 flex-1">
-        <SafeTitle as="span" className="block max-w-full text-[12.5px] font-semibold text-white/84">{title}</SafeTitle>
-        {subtitle ? <SafeMeta as="span" className="mt-0.5 block max-w-full text-[10px] font-medium text-white/38">{subtitle}</SafeMeta> : null}
+        <SafeTitle as="span" className="block max-w-full truncate text-[12px] font-semibold text-white/82">{title}</SafeTitle>
+        {subtitle ? <SafeMeta as="span" className="mt-px block max-w-full truncate text-[9.5px] font-medium text-white/36">{subtitle}</SafeMeta> : null}
       </span>
     </button>
   );
 }
 
 export function StatusBadge({ children, tone = "studio" }: { children: ReactNode; tone?: V6Tone }) {
-  return <span dir="auto" className={v6Cx("bidi-plain mx-0.5 inline-flex min-h-7 max-w-full min-w-0 items-center justify-center rounded-full border border-white/[0.035] px-3 py-1.5 text-center text-[11px] font-semibold shadow-[inset_0_1px_0_rgba(255,247,223,0.036)]", v6Safe.control, v6Tone[tone].soft, v6Tone[tone].text)}>{children}</span>;
+  return <span dir="auto" className={v6Cx("bidi-plain mx-0.5 inline-flex min-h-6 max-w-full min-w-0 items-center justify-center rounded-[14px] border border-white/[0.035] px-2.5 py-1 text-center text-[10px] font-semibold shadow-[inset_0_1px_0_rgba(255,247,223,0.032)]", v6Safe.control, v6Tone[tone].soft, v6Tone[tone].text)}>{children}</span>;
 }
 
 export function Button({ children, onClick, variant = "primary", disabled, type = "button" }: { children: ReactNode; onClick?: () => void; variant?: "primary" | "ghost" | "danger"; disabled?: boolean; type?: "button" | "submit" }) {
   return (
-    <button dir="rtl" type={type} disabled={disabled} onClick={onClick} className={v6Cx("lk-safe-control inline-flex min-h-12 max-w-full min-w-0 items-center justify-center gap-1.5 rounded-[24px] px-5 py-2.5 text-center text-sm font-semibold tracking-[-0.016em] transition duration-200 active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-45", variant === "primary" && "bg-[linear-gradient(135deg,#fff9ea,#f4d58d_56%,#d7b56d)] text-zinc-950 shadow-[0_14px_34px_rgba(244,213,141,0.14),inset_0_1px_0_rgba(255,255,255,0.62)]", variant === "ghost" && "border border-[rgba(244,213,141,0.070)] bg-white/[0.036] text-white/82 shadow-[inset_0_1px_0_rgba(255,247,223,0.046)]", variant === "danger" && "border border-rose-100/[0.055] bg-[#b72f3d]/12 text-rose-50 shadow-[inset_0_1px_0_rgba(255,247,223,0.042)]")}>
+    <button dir="rtl" type={type} disabled={disabled} onClick={onClick} className={v6Cx("lk-safe-control inline-flex min-h-10 max-w-full min-w-0 items-center justify-center gap-1.5 rounded-[15px] px-3.5 py-2 text-center text-[13px] font-semibold tracking-[-0.010em] transition duration-200 active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-45 focus-visible:ring-2 focus-visible:ring-[#f4d58d]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050304]", variant === "primary" && "bg-[linear-gradient(135deg,#fff9ea,#f4d58d_56%,#d7b56d)] text-zinc-950 shadow-[0_8px_18px_rgba(244,213,141,0.105),inset_0_1px_0_rgba(255,255,255,0.62)] hover:brightness-110", variant === "ghost" && "border border-[rgba(244,213,141,0.065)] bg-white/[0.030] text-white/80 shadow-[inset_0_1px_0_rgba(255,247,223,0.040)] hover:bg-white/[0.050]", variant === "danger" && "border border-rose-100/[0.075] bg-[#b72f3d]/13 text-rose-50 shadow-[inset_0_1px_0_rgba(255,247,223,0.050)] hover:bg-[#b72f3d]/18")}>
       {children}
     </button>
   );
@@ -199,7 +197,7 @@ export function Button({ children, onClick, variant = "primary", disabled, type 
 
 export function SheetActions({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={v6Cx("lk-sheet-actions sticky bottom-0 z-20 -mx-1 mt-2 flex flex-wrap gap-2 rounded-[28px] border p-2", v6Surface.elevated, className)}>
+    <div className={v6Cx("lk-sheet-actions sticky bottom-0 z-20 -mx-1 mt-2 grid grid-cols-2 gap-2 rounded-[18px] border p-1.5", v6Surface.elevated, className)}>
       {children}
     </div>
   );
@@ -268,10 +266,10 @@ export function BottomSheet({ title, children, onClose }: { title: string; child
         alignItems: "flex-end",
         justifyContent: "center",
         background: "radial-gradient(ellipse at 50% 100%, rgba(244,213,141,0.08), transparent 44%), rgba(0,0,0,0.70)",
-        paddingTop: "calc(env(safe-area-inset-top, 0px) + 12px)",
+        paddingTop: "calc(env(safe-area-inset-top, 0px) + 8px)",
         paddingBottom: "env(safe-area-inset-bottom, 0px)"
       }}
-      className="px-0 pb-0 backdrop-blur-lg md:p-6"
+      className="px-1.5 pb-0 backdrop-blur-lg md:p-6"
     >
       <button type="button" aria-label="סגירת שכבת עריכה" style={{ zIndex: 0 }} className="absolute inset-0 cursor-default" onClick={onClose} />
       <div
@@ -281,14 +279,14 @@ export function BottomSheet({ title, children, onClose }: { title: string; child
         aria-label={title}
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
-        style={{ zIndex: 1, height: "min(720px, calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 12px))", insetInline: 0, bottom: 0 }}
-        className={v6Cx(v6Safe.surface, "relative flex w-full max-w-[430px] flex-col overflow-hidden rounded-t-[40px] border outline-none md:max-w-[760px] md:rounded-[40px]", v6Surface.floating)}
+        style={{ zIndex: 1, height: "min(760px, calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 8px))" }}
+        className={v6Cx(v6Safe.surface, "relative flex w-[calc(100%-8px)] max-w-[430px] flex-col overflow-hidden rounded-t-[24px] border outline-none md:w-full md:max-w-[760px] md:rounded-[28px]", v6Surface.floating)}
       >
-        <div className="sticky top-0 z-10 flex flex-wrap items-start gap-3 bg-[#080506]/88 px-5 py-4 shadow-[inset_0_-1px_0_rgba(244,213,141,0.08)] backdrop-blur-2xl">
-          <SafeTitle as="h2" className="min-w-0 flex-1 text-start text-xl font-semibold tracking-[-0.035em]">{title}</SafeTitle>
-          <Button variant="ghost" onClick={onClose}>סגירה</Button>
+        <div className="sticky top-0 z-10 flex min-h-[46px] items-center gap-2 bg-[#080506]/90 px-3 py-2 shadow-[inset_0_-1px_0_rgba(244,213,141,0.07)] backdrop-blur-2xl sm:px-5">
+          <SafeTitle as="h2" className="min-w-0 flex-1 truncate text-start text-[14.5px] font-semibold leading-tight tracking-[-0.020em]">{title}</SafeTitle>
+          <span className="shrink-0 [&>button]:min-h-8 [&>button]:rounded-[13px] [&>button]:px-2.5 [&>button]:py-1.5 [&>button]:text-[11px]"><Button variant="ghost" onClick={onClose}>סגירה</Button></span>
         </div>
-        <div className="lk-sheet-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px)+var(--keyboard-inset,0px))]">{children}</div>
+        <div className="lk-sheet-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[calc(4.25rem+env(safe-area-inset-bottom,0px)+var(--keyboard-inset,0px))] sm:px-5">{children}</div>
       </div>
     </div>
   );

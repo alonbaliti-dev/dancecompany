@@ -14,7 +14,7 @@ import { Card, Header, Metric, ProgressBar, RingStat, SectionEyebrow, cx } from 
 import { CollapsibleSection } from "./ui/CollapsibleSection";
 import type { ShopInitialView } from "./shop/ShopScreen";
 
-const sectionGap = "space-y-8";
+const sectionGap = "space-y-5 md:space-y-7";
 
 export function ManagementDashboard({
   user,
@@ -37,13 +37,14 @@ export function ManagementDashboard({
   const health = healthScore.score;
 
   return (
-    <div className={cx(sectionGap, "pb-6")}>
+    <div className={cx(sectionGap, "pb-6")} dir="rtl">
       <Header title="לוח בקרת הנהלה" subtitle="מה דורש טיפול היום — מכירות, מורים וסיכונים." />
       <SmartFiltersPanel user={user} studioId={user.studioId} />
 
-      <Card animated={false} tone="management" glow>
-        <div className="flex flex-wrap items-center justify-between gap-8">
-          <RingStat value={health} label="בריאות סטודיו" size={92} tone="management" />
+      <Card animated={false} tone="management" glow className="relative overflow-hidden !p-4 md:!p-5">
+        <div className="pointer-events-none absolute -left-20 -top-20 h-48 w-48 rounded-full bg-sky-200/[0.055] blur-3xl" />
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-7">
+          <RingStat value={health} label="בריאות סטודיו" size={78} tone="management" />
           <div className="min-w-0 flex-1 space-y-2 text-right">
             <SectionEyebrow>מדד משוקלל</SectionEyebrow>
             <p className="text-sm leading-relaxed text-white/48">
@@ -61,7 +62,7 @@ export function ManagementDashboard({
         </div>
       </Card>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3">
         <Metric title="מורים" value={m.totalTeachers} icon={UserRound} />
         <Metric title="תלמידים" value={m.totalStudents} icon={UsersRound} />
         <Metric title="קבוצות" value={m.totalGroups} icon={Users} />
@@ -69,7 +70,7 @@ export function ManagementDashboard({
       </div>
 
       {m.alerts.length > 0 ? (
-        <Card animated={false} className="border-amber-400/15 bg-amber-500/[0.06]">
+        <Card animated={false} className="border-amber-300/20 bg-[linear-gradient(145deg,rgba(251,191,36,0.085),rgba(255,255,255,0.018))]">
           <SectionEyebrow>דחוף היום</SectionEyebrow>
           <ul className="mt-3 space-y-3">
             {m.alerts.slice(0, 3).map((a) => (
@@ -87,7 +88,7 @@ export function ManagementDashboard({
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <button type="button" onClick={onOpenUsers} className="text-right transition active:scale-[0.99]">
-          <Card animated={false} className="h-full">
+          <Card animated={false} className="h-full !p-4 lk-card-press">
             <ChevronLeft className="mb-2 text-white/30" size={20} />
             <p className="font-semibold text-white">הרשאות ומשתמשים</p>
             <p className="mt-1 text-sm text-white/45">תפקידים, קבוצות ויומן שינויים</p>
@@ -95,7 +96,7 @@ export function ManagementDashboard({
         </button>
         {onNavigate ? (
           <button type="button" onClick={() => onNavigate("attendance_intelligence")} className="text-right transition active:scale-[0.99]">
-            <Card animated={false} tone="teacher" className="h-full">
+            <Card animated={false} tone="teacher" className="h-full !p-4 lk-card-press">
               <ClipboardCheck className="mb-2 text-sky-200/80" size={22} />
               <p className="font-semibold text-white">מעקב נוכחות</p>
               <p className="mt-1 text-sm text-white/45">חיסורים ומגמות מהשנה</p>
@@ -119,7 +120,7 @@ export function ManagementDashboard({
       <CollapsibleSection title="מורים וקבוצות" count={m.teachers.length} tone="teacher">
         <div className="space-y-3">
           {m.teachers.map((t) => (
-            <Card key={t.userId} animated={false}>
+            <Card key={t.userId} animated={false} className="!p-4">
               <div className="text-right">
                 <p className="font-semibold text-white">{t.name}</p>
                 <p className="mt-1 text-sm text-white/42">

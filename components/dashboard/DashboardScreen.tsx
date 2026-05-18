@@ -107,14 +107,14 @@ export function DashboardScreen({
   const accent = getTone(metrics.nextAction.tone === "urgent" ? "urgent" : "accent");
 
   return (
-    <div className={cx(screenClass, "space-y-5")} dir="rtl">
+    <div className={cx(screenClass, "space-y-5 md:space-y-6")} dir="rtl">
       <RolePermissionsStrip user={user} />
 
       {user.permissions.isSuperAdmin ? (
         <button
           type="button"
           onClick={() => onOpenStack("super_admin_hub")}
-          className="lk-card lk-card-press w-full p-4 text-right"
+          className="lk-card lk-card-press w-full p-4 text-right md:p-5"
         >
           <p className="premium-section-label">ניהול האפליקציה</p>
           <p className="mt-1 text-lg font-semibold text-white">מצב האפליקציה והנתונים</p>
@@ -143,7 +143,7 @@ export function DashboardScreen({
 
       <section>
         <p className="premium-section-label mb-3 px-1">קיצורי דרך</p>
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4 md:gap-3">
           <QuickTile
             label="הודעות"
             hint={metrics.messages.unreadCount > 0 ? `${metrics.messages.unreadCount} חדשות` : "מעודכן"}
@@ -167,12 +167,13 @@ export function DashboardScreen({
         </div>
       </section>
 
-      <section className="lk-card p-4">
+      <section className="lk-card relative overflow-hidden p-4 md:p-5">
+        <div className="pointer-events-none absolute -left-16 -top-16 h-36 w-36 rounded-full bg-[#f4d58d]/[0.055] blur-3xl" />
         <div className="flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={() => onOpenStack("notifications")}
-            className="touch-icon-btn rounded-full border border-white/10 bg-white/[0.04] text-white/60"
+            className="touch-icon-btn rounded-full border border-[#f4d58d]/10 bg-white/[0.045] text-white/66 shadow-[inset_0_1px_0_rgba(255,247,223,0.045)] transition active:scale-95"
             aria-label="התראות"
           >
             <Bell size={18} />
@@ -263,9 +264,9 @@ function QuickTile({
 }) {
   const t = getTone(tone);
   return (
-    <button type="button" onClick={onPress} className="premium-tile w-full">
+    <button type="button" onClick={onPress} className="premium-tile w-full min-h-[7.1rem] md:min-h-[8rem]">
       <span
-        className="flex h-9 w-9 items-center justify-center rounded-xl border"
+        className="flex h-10 w-10 items-center justify-center rounded-2xl border shadow-[inset_0_1px_0_rgba(255,247,223,0.050)]"
         style={{ borderColor: t.border, backgroundColor: t.soft }}
       >
         <Icon size={18} style={{ color: t.core }} strokeWidth={1.75} />

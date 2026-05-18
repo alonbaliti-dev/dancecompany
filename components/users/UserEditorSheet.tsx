@@ -118,7 +118,7 @@ export function UserEditorSheet({ open, actor, studios, allUsers, initial, onClo
 
         {!initial ? (
           <>
-            <div className="rounded-xl border border-amber-400/20 bg-amber-500/[0.07] px-3 py-2 text-right text-[11px] leading-relaxed text-amber-100/85">
+            <div className="rounded-[20px] border border-amber-300/20 bg-[linear-gradient(145deg,rgba(251,191,36,0.075),rgba(255,255,255,0.018))] px-3 py-2 text-right text-[11px] leading-relaxed text-amber-100/85 shadow-[inset_0_1px_0_rgba(255,247,223,0.045)]">
               סיסמה זמנית — בדמו מקומי נשמרת רק בסביבת פיתוח. בייצור הסיסמה נשמרת כ-hash דרך שרת האקדמיה בלבד.
             </div>
             <Field label="סיסמה זמנית (מינימום 6 תווים)">
@@ -158,8 +158,8 @@ export function UserEditorSheet({ open, actor, studios, allUsers, initial, onClo
                 type="button"
                 onClick={() => onTypeChange(t)}
                 className={cx(
-                  "rounded-full border px-3 py-1.5 text-[11px] font-semibold",
-                  draft.type === t ? "border-emerald-400/35 bg-emerald-400/14 text-emerald-100" : "border-white/10 text-white/45"
+                  "rounded-full border px-3 py-1.5 text-[11px] font-semibold shadow-[inset_0_1px_0_rgba(255,247,223,0.030)] transition active:scale-95",
+                  draft.type === t ? "border-[#f4d58d]/28 bg-[#f4d58d]/12 text-[#fff7df]" : "border-white/10 text-white/48"
                 )}
               >
                 {USER_TYPE_LABELS[t]}
@@ -176,8 +176,8 @@ export function UserEditorSheet({ open, actor, studios, allUsers, initial, onClo
                 type="button"
                 onClick={() => setDraft((d) => ({ ...d, status: s }))}
                 className={cx(
-                  "flex-1 rounded-xl border py-2 text-sm font-semibold",
-                  draft.status === s ? "border-emerald-400/30 bg-emerald-500/10 text-emerald-100" : "border-white/10 text-white/45"
+                  "flex-1 rounded-2xl border py-2 text-sm font-semibold shadow-[inset_0_1px_0_rgba(255,247,223,0.030)] transition active:scale-95",
+                  draft.status === s ? "border-[#f4d58d]/26 bg-[#f4d58d]/10 text-[#fff7df]" : "border-white/10 text-white/48"
                 )}
               >
                 {s === "active" ? "חשבון פעיל" : "חשבון מושבת"}
@@ -205,7 +205,7 @@ export function UserEditorSheet({ open, actor, studios, allUsers, initial, onClo
                           }))
                         }
                         className={cx(
-                          "rounded-full border px-3 py-1.5 text-[11px] font-semibold",
+                          "rounded-full border px-3 py-1.5 text-[11px] font-semibold shadow-[inset_0_1px_0_rgba(255,247,223,0.030)] transition active:scale-95",
                           on ? "border-sky-400/35 bg-sky-400/14 text-sky-100" : "border-white/10 text-white/45"
                         )}
                       >

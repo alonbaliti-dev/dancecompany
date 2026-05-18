@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Bell,
   CalendarDays,
   Check,
   CheckCircle2,
   ClipboardList,
-  CreditCard,
   Database,
   Download,
   Flag,
@@ -31,7 +30,6 @@ import {
 import { V6AppProvider, useV6 } from "@/lib/v6/AppProvider";
 import { permissionsFor, roleLabel } from "@/lib/v6/seed";
 import {
-  AISuggestionStack,
   AppShellFrame,
   BidiNumber,
   BottomNavDock,
@@ -50,7 +48,6 @@ import {
   SheetActions,
   SurfaceContent,
   SegmentedControl,
-  StageImage,
   StatusBadge as V6StatusBadge,
   Surface,
   Toast as V6Toast,
@@ -76,7 +73,6 @@ import { selectV6EventOperatingSummary, selectV6SchoolYearEvents } from "@/lib/d
 import { buildV6ResetPasswordOperation, buildV6UpsertUserOperation } from "@/lib/domains/users/v6-operations";
 import { groupUsersByRole, selectV6UsersByRole, sortByHebrewName } from "@/lib/domains/users/selectors";
 import { selectV6SystemIssues } from "@/lib/domains/system/selectors";
-import { selectV6AIInsightsForActor } from "@/lib/domains/ai/selectors";
 import { computeV6ManagementHealth, computeV6PrivateLessonCoordination, summarizeV6Audit } from "@/lib/engines/v6";
 import type { V6AttendanceRecord, V6AttendanceStatus, V6CalendarEvent, V6MediaItem, V6Permissions, V6Product, V6Role, V6Screen, V6Tab, V6User } from "@/lib/v6/types";
 
@@ -427,13 +423,13 @@ function toneForRole(role: V6Role): Tone {
 
 function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
   return (
-    <header dir="rtl" className={v6Cx("lk-safe-surface relative isolate mx-auto w-full max-w-full overflow-hidden rounded-[36px] border p-4 text-start", v6Surface.base)}>
-      <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/18 to-transparent" />
-      <SurfaceContent className="flex flex-col gap-4 sm:flex-row sm:items-start">
+    <header dir="rtl" className={v6Cx("lk-safe-surface relative isolate mx-auto w-full max-w-full overflow-hidden rounded-[22px] border p-3.5 text-start", v6Surface.base)}>
+      <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/14 to-transparent" />
+      <SurfaceContent className="flex flex-col gap-2.5 sm:flex-row sm:items-start">
         <div className="min-w-0 flex-1">
-          <p className={v6Type.kicker}>LK Stage OS</p>
-          <SafeTitle as="h1" className={v6Cx("mt-2 max-w-full", v6Type.screenTitle)}>{title}</SafeTitle>
-          {subtitle ? <SafeMeta as="p" className={v6Cx("mt-3 max-w-[22rem]", v6Type.subtitle)}>{subtitle}</SafeMeta> : null}
+          <p className={v6Type.kicker}>ניהול</p>
+          <SafeTitle as="h1" className={v6Cx("mt-1 max-w-full", v6Type.screenTitle)}>{title}</SafeTitle>
+          {subtitle ? <SafeMeta as="p" className={v6Cx("mt-2 max-w-[22rem]", v6Type.subtitle)}>{subtitle}</SafeMeta> : null}
         </div>
         {action ? <div className="lk-safe-action-zone shrink-0 sm:max-w-[45%]">{action}</div> : null}
       </SurfaceContent>
@@ -444,13 +440,13 @@ function PageHeader({ title, subtitle, action }: { title: string; subtitle?: str
 function ActionCard({ icon: Icon, title, subtitle, tone, onClick }: { icon: React.ElementType; title: string; subtitle: string; tone: Tone; onClick: () => void }) {
   const t = tones[tone];
   return (
-    <button dir="rtl" onClick={onClick} className={v6Cx("lk-safe-surface group relative mx-auto flex min-h-[80px] w-full min-w-0 items-start gap-3 rounded-[30px] border px-3.5 py-3 text-start transition active:scale-[0.985]", v6Surface.whisper)}>
-      <span className={cx("grid h-10 w-10 shrink-0 place-items-center rounded-full", t.soft, t.text)}><Icon size={15} strokeWidth={1.9} /></span>
+    <button dir="rtl" onClick={onClick} className={v6Cx("lk-safe-surface group relative mx-auto flex min-h-[40px] w-full min-w-0 items-center gap-2 rounded-[13px] border px-2 py-1.5 text-start transition active:scale-[0.985]", v6Surface.whisper)}>
+      <span className={cx("grid h-6 w-6 shrink-0 place-items-center rounded-[10px]", t.soft, t.text)}><Icon size={11.5} strokeWidth={1.9} /></span>
       <span className="min-w-0 flex-1">
-        <SafeTitle as="span" className="block text-[15px] font-semibold tracking-[-0.025em] text-white/86">{title}</SafeTitle>
-        <SafeMeta as="span" className="mt-1 block text-[12px] text-white/42">{subtitle}</SafeMeta>
+        <SafeTitle as="span" className="block truncate text-[12px] font-semibold tracking-[-0.010em] text-white/82">{title}</SafeTitle>
+        <SafeMeta as="span" className="mt-px block truncate text-[9.5px] text-white/36">{subtitle}</SafeMeta>
       </span>
-      <DirectionalChevron className="shrink-0 text-white/20 transition group-hover:text-white/36" />
+      <DirectionalChevron className="h-3.5 w-3.5 shrink-0 text-white/16 transition group-hover:text-white/34" />
     </button>
   );
 }
@@ -489,27 +485,27 @@ function Login() {
     <main suppressHydrationWarning className="grid min-h-dynamic place-items-center overflow-x-hidden px-4 py-safe text-white sm:px-5" dir="rtl">
       <V6Toast message={message} />
       <div className={v6Cx("pointer-events-none fixed inset-0", v6Visual.canvas)} />
-      <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(110deg,transparent_0%,rgba(255,247,223,0.058)_40%,transparent_56%),repeating-linear-gradient(90deg,rgba(255,255,255,0.014)_0,rgba(255,255,255,0.014)_1px,transparent_1px,transparent_9px)] opacity-56 mix-blend-screen" />
-      <div className="pointer-events-none fixed bottom-0 left-1/2 h-[42vh] w-[min(86vw,430px)] -translate-x-1/2 rounded-t-full bg-[radial-gradient(ellipse_at_center,rgba(215,181,109,0.11),rgba(100,28,63,0.09)_42%,transparent_72%)] blur-sm" />
+      <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(110deg,transparent_0%,rgba(255,247,223,0.066)_40%,transparent_56%),repeating-linear-gradient(90deg,rgba(255,255,255,0.010)_0,rgba(255,255,255,0.010)_1px,transparent_1px,transparent_10px)] opacity-48 mix-blend-screen" />
+      <div className="pointer-events-none fixed bottom-0 left-1/2 h-[44vh] w-[min(90vw,450px)] -translate-x-1/2 rounded-t-full bg-[radial-gradient(ellipse_at_center,rgba(215,181,109,0.13),rgba(100,28,63,0.10)_42%,transparent_72%)] blur-sm" />
       <div className="relative mx-auto w-full max-w-[430px]">
-        <div className="mb-8 text-center">
-          <div className="relative mx-auto grid h-[116px] w-[116px] place-items-center rounded-[44px] border border-[rgba(215,181,109,0.14)] bg-[radial-gradient(circle_at_50%_20%,rgba(255,247,223,0.20),rgba(215,181,109,0.08)_38%,rgba(61,16,39,0.28))] shadow-[0_34px_90px_rgba(61,16,39,0.38),0_18px_70px_rgba(215,181,109,0.12),inset_0_1px_0_rgba(255,255,255,0.14)]">
+        <div className="mb-7 text-center">
+          <div className="relative mx-auto grid h-[104px] w-[104px] place-items-center rounded-[42px] border border-[rgba(215,181,109,0.18)] bg-[radial-gradient(circle_at_50%_20%,rgba(255,247,223,0.24),rgba(215,181,109,0.10)_38%,rgba(61,16,39,0.30))] shadow-[0_34px_96px_rgba(61,16,39,0.42),0_18px_70px_rgba(215,181,109,0.13),inset_0_1px_0_rgba(255,255,255,0.16)]">
             <div className="pointer-events-none absolute inset-4 rounded-[34px] border border-[rgba(255,255,255,0.07)]" />
-            <MoonStar className="text-[#fff7df]" size={36} />
+            <MoonStar className="text-[#fff7df]" size={32} />
           </div>
           <p className="mt-5 text-[10px] font-black uppercase tracking-[0.36em] text-[#f4d58d]/62">Backstage Access</p>
-          <h1 suppressHydrationWarning className="lk-safe-title mx-auto mt-2 max-w-[22rem] text-center text-[clamp(2.35rem,11vw,3.35rem)] font-semibold leading-[1.02] tracking-[-0.070em]">{db.editableTexts.loginTitle ?? studio?.branding.name}</h1>
-          <p className="mx-auto mt-5 max-w-xs text-[15px] leading-relaxed text-white/66">{db.editableTexts.loginSubtitle ?? studio?.branding.tagline}</p>
+          <h1 suppressHydrationWarning className="lk-safe-title mx-auto mt-2 max-w-[22rem] text-center text-[clamp(2.25rem,10vw,3.25rem)] font-semibold leading-[1.02] tracking-[-0.070em]">{db.editableTexts.loginTitle ?? studio?.branding.name}</h1>
+          <p className="mx-auto mt-4 max-w-xs text-[15px] leading-relaxed text-white/66">{db.editableTexts.loginSubtitle ?? studio?.branding.tagline}</p>
         </div>
         <form
-          className={v6Cx("lk-safe-surface relative isolate mx-auto w-full max-w-full space-y-5 overflow-hidden rounded-[38px] border border-[rgba(255,255,255,0.09)] bg-[linear-gradient(150deg,rgba(255,255,255,0.13),rgba(255,255,255,0.044)_48%,rgba(61,16,39,0.28)_100%)] p-5 shadow-[0_36px_104px_rgba(0,0,0,0.66),0_18px_58px_rgba(215,181,109,0.08),inset_0_1px_0_rgba(255,255,255,0.11)] backdrop-blur-2xl sm:p-6", v6Visual.texture)}
+          className={v6Cx("lk-safe-surface relative isolate mx-auto w-full max-w-full space-y-4 overflow-hidden rounded-[40px] border border-[rgba(244,213,141,0.14)] bg-[linear-gradient(150deg,rgba(255,247,223,0.13),rgba(255,255,255,0.044)_48%,rgba(61,16,39,0.30)_100%)] p-5 shadow-[0_42px_118px_rgba(0,0,0,0.68),0_20px_72px_rgba(215,181,109,0.09),inset_0_1px_0_rgba(255,247,223,0.13)] backdrop-blur-2xl sm:p-6", v6Visual.texture)}
           onSubmit={(e) => {
             e.preventDefault();
             const result = login(phone, password);
             if (result.ok === false) show(result.reason);
           }}
         >
-          <div className="relative flex min-h-12 items-center gap-3 rounded-[24px] border border-[rgba(255,255,255,0.06)] bg-black/24 px-4 py-3 text-start text-[13px] font-bold text-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.065)]"><Lock className="shrink-0 text-[#f4d58d]/80" size={16} /><span className="min-w-0 flex-1 leading-snug">כניסה מאובטחת לפי המסד</span></div>
+          <div className="relative flex min-h-12 items-center gap-3 rounded-[24px] border border-[rgba(244,213,141,0.09)] bg-black/24 px-4 py-3 text-start text-[13px] font-bold text-white/62 shadow-[inset_0_1px_0_rgba(255,247,223,0.070)]"><Lock className="shrink-0 text-[#f4d58d]/85" size={16} /><span className="min-w-0 flex-1 leading-snug">כניסה מאובטחת לפי המסד</span></div>
           <FormField label="טלפון" value={phone} onChange={setPhone} />
           <FormField label="סיסמה" value={password} onChange={setPassword} type="password" />
           <div className="[&>button]:w-full"><V6Button type="submit">כניסה</V6Button></div>
@@ -667,10 +663,10 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
     show("הנוכחות נשמרה");
   }
   const attendanceEditor = attendanceLesson && attendanceGroup ? (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <Surface tone="studio" className="p-4">
         <p className={v6Cx(v6Type.kicker, "text-emerald-100/52")}>נוכחות שיעור</p>
-        <SafeTitle as="h3" className="mt-2 text-[19px] font-semibold tracking-[-0.040em]">{attendanceGroup.name} · {attendanceLesson.time}</SafeTitle>
+        <SafeTitle as="h3" className="mt-1.5 text-[17px] font-semibold tracking-[-0.030em]">{attendanceGroup.name} · {attendanceLesson.time}</SafeTitle>
         <p className="lk-safe-meta mt-2 text-xs leading-relaxed text-white/48">
           {attendanceGroup.danceStyle ?? attendanceGroup.style} · {db.users.filter((teacher) => attendanceGroup.teacherIds.includes(teacher.id)).map((teacher) => teacher.name).join(", ") || "מורה לא שויך"} · {attendanceStudents.length} תלמידים
         </p>
@@ -678,12 +674,14 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
           סומנו {attendanceMarkedCount}/{attendanceStudents.length} · {attendanceLastSaved ? `נשמר לאחרונה ${new Date(attendanceLastSaved).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}` : "טרם נשמר היום"}
         </p>
       </Surface>
-      <div className="grid grid-cols-2 gap-2 [&>button]:w-full">
+      <div className="grid grid-cols-2 gap-2 rounded-[22px] border border-[#f4d58d]/8 bg-black/[0.12] p-2 shadow-[inset_0_1px_0_rgba(255,247,223,0.036)] [&>button]:w-full">
         <V6Button onClick={saveAttendance}>שמירת נוכחות</V6Button>
         <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
       </div>
-      <FormField label="תאריך שיעור" value={classDate} onChange={setClassDate} type="date" />
-      <V6Button variant="ghost" onClick={markAllPresent}>סמן כולם נוכחים</V6Button>
+      <div className={v6Cx("grid gap-3 rounded-[22px] border p-3", v6Surface.quiet)}>
+        <FormField label="תאריך שיעור" value={classDate} onChange={setClassDate} type="date" />
+        <V6Button variant="ghost" onClick={markAllPresent}>סמן כולם נוכחים</V6Button>
+      </div>
       <div className="space-y-3">
         {attendanceStudents.map((student) => {
           const draft = attendanceDraft[student.id] ?? { status: "present" as V6AttendanceStatus, note: "" };
@@ -691,7 +689,7 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
           const parent = db.users.find((item) => item.role === "parent" && (item.linkedStudentIds.includes(student.id) || student.linkedParentIds?.includes(item.id)));
           const openTasks = db.tasks.filter((task) => student.groupIds.includes(task.groupId) && !task.doneByUserIds.includes(student.id)).length;
           return (
-            <div key={student.id} className={v6Cx("lk-safe-surface rounded-[29px] border p-3.5 text-start", v6Surface.quiet)}>
+            <div key={student.id} className={v6Cx("lk-safe-surface rounded-[22px] border p-3 text-start shadow-[inset_0_1px_0_rgba(255,247,223,0.030)]", v6Surface.quiet)}>
               <div className="lk-safe-row flex items-start gap-3">
                 <div className="min-w-0 flex-1">
                   <SafeTitle as="p" className="text-[15px] font-semibold tracking-[-0.020em]">{student.name}</SafeTitle>
@@ -703,7 +701,7 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
                 {openTasks ? <span>משימות פתוחות: <BidiNumber>{openTasks}</BidiNumber></span> : null}
                 {parent && (user.role === "management" || user.role === "super_admin" || user.permissions.manageAttendance) ? <span>טלפון הורה: <BidiNumber>{parent.phone}</BidiNumber></span> : null}
               </div>
-              <div className="mt-3 flex flex-wrap gap-2">{(["present", "absent", "late", "excused"] as V6AttendanceStatus[]).map((status) => <button key={status} onClick={() => setAttendanceStatus(student.id, status)} className={v6Cx("rounded-full px-3 py-2 text-xs font-semibold transition active:scale-95", draft.status === status ? "bg-emerald-100 text-zinc-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]" : v6Control.chip)}>{attendanceStatusLabel[status]}</button>)}</div>
+              <div className="mt-3 grid grid-cols-2 gap-2">{(["present", "absent", "late", "excused"] as V6AttendanceStatus[]).map((status) => <button key={status} onClick={() => setAttendanceStatus(student.id, status)} className={v6Cx("min-h-10 rounded-[18px] px-3 py-2 text-xs font-semibold transition active:scale-95", draft.status === status ? "bg-emerald-100 text-zinc-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]" : v6Control.chip)}>{attendanceStatusLabel[status]}</button>)}</div>
               <div className="mt-3"><FormField label="הערה" value={draft.note} onChange={(value) => setAttendanceNote(student.id, value)} placeholder="למשל סיבת היעדרות או איחור" /></div>
             </div>
           );
@@ -716,17 +714,23 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
     </div>
   ) : null;
   return (
-    <div className="space-y-4">
-      <HeroSurface tone="studio" className="min-h-[220px] p-5">
-        <div className="flex items-center gap-3 text-start">
-          <span className="grid h-10 w-10 place-items-center rounded-[17px] bg-emerald-100/10 text-emerald-50"><CalendarDays size={20} /></span>
-          <V6StatusBadge tone="studio">השיעור הקרוב</V6StatusBadge>
+    <div className="space-y-1.5">
+      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[17px] border p-2.5 text-start", v6Surface.base)}>
+        <div className="flex items-center gap-2">
+          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-[10px] bg-emerald-100/10 text-emerald-50"><CalendarDays size={12} /></span>
+          <div className="min-w-0 flex-1">
+            <p className={v6Type.kicker}>השיעור הקרוב</p>
+            <SafeTitle as="h1" className="mt-px truncate text-[15.5px] font-semibold leading-tight tracking-[-0.020em]">{nextLesson?.title ?? "אין שיעור קרוב"}</SafeTitle>
+            <SafeMeta as="p" className="mt-px truncate text-[10px] text-white/50">{nextLesson ? `${nextLesson.weekday} · ${nextLesson.time} · ${nextLesson.room}` : "אפשר לתאם שיעור פרטי מהמסך הבא."}</SafeMeta>
+          </div>
         </div>
-        <SafeTitle as="h1" className="mt-5 max-w-[20rem] text-[clamp(2.05rem,9vw,2.85rem)] font-semibold leading-[1.04] tracking-[-0.058em]">{nextLesson?.title ?? "אין שיעור קרוב"}</SafeTitle>
-        <SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/64">{nextLesson ? `${nextLesson.weekday} · ${nextLesson.time} · ${nextLesson.room}` : "אפשר לתאם שיעור פרטי מהמסך הבא."}</SafeMeta>
-      </HeroSurface>
-      <EditorialSection title="קצב השבוע" kicker="חזרות ושיעורים" tone="studio">
-      <div className="space-y-2.5">
+      </section>
+      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[14px] border p-1.5", v6Surface.editorial)}>
+      <div className="mb-1 px-0.5 text-start">
+        <p className={v6Type.kicker}>חזרות ושיעורים</p>
+        <SafeTitle as="h2" className="mt-px text-[13px] font-semibold tracking-[-0.014em] text-white/80">קצב השבוע</SafeTitle>
+      </div>
+      <div className="space-y-1">
       {lessons.map((lesson) => {
         const group = db.groups.find((g) => g.id === lesson.groupId);
         const tone = toneForStyle(group?.style);
@@ -734,25 +738,20 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
         const absentCount = todayRecords.filter((record) => record.status === "absent" || record.status === "missing").length;
         const lateCount = todayRecords.filter((record) => record.status === "late").length;
         return (
-          <div key={lesson.id} className={v6Cx("lk-safe-surface rounded-[30px] border p-3.5", v6Surface.quiet)}>
-            <div className="flex flex-col gap-3 text-start sm:flex-row sm:items-center">
-              <div className="flex min-w-0 flex-1 items-center gap-3">
-              <span className={v6Cx("grid h-11 w-11 shrink-0 place-items-center rounded-[21px] border border-white/[0.030]", v6Tone[tone].soft, v6Tone[tone].text)}><CalendarDays size={16} strokeWidth={1.9} /></span>
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-col items-start gap-1.5">
-                  <SafeTitle as="p" className="min-w-0 flex-1 text-[16px] font-semibold tracking-[-0.026em] text-white/88">{lesson.title}</SafeTitle>
-                  {group?.style ? <SafeMeta as="span" className={v6Cx("text-[11px] font-semibold", v6Tone[tone].text)}>{group.style}</SafeMeta> : null}
-                </div>
-                <SafeMeta as="p" className="mt-1.5 text-sm font-medium text-white/56">{lesson.weekday} · {lesson.time} · {lesson.room} · {todayRecords.length ? `${todayRecords.length} סומנו, ${absentCount} חסרים, ${lateCount} איחורים` : "טרם סומן היום"}</SafeMeta>
+          <div key={lesson.id} className={v6Cx("lk-safe-surface rounded-[11px] border px-1.5 py-1 shadow-[inset_0_1px_0_rgba(255,247,223,0.016)]", v6Surface.quiet)}>
+            <div className="grid grid-cols-[2.8rem_1fr_auto] items-center gap-1.5 text-start">
+              <span className={v6Cx("grid h-7 shrink-0 place-items-center rounded-[9px] border border-white/[0.024] px-1 text-[10px] font-semibold tabular-nums", v6Tone[tone].soft, v6Tone[tone].text)}>{lesson.time}</span>
+              <div className="min-w-0">
+                <SafeTitle as="p" className="truncate text-[12px] font-semibold tracking-[-0.008em] text-white/84">{lesson.title}</SafeTitle>
+                <SafeMeta as="p" className="mt-px truncate text-[9px] font-medium text-white/44">{lesson.weekday} · {lesson.room} · {todayRecords.length ? `${todayRecords.length} סומנו, ${absentCount} חסרים, ${lateCount} איחורים` : "טרם סומן היום"}</SafeMeta>
               </div>
-              </div>
-              {(user.permissions.manageAttendance || user.role === "super_admin") ? <div className="sm:shrink-0 [&>button]:w-full"><V6Button variant="ghost" onClick={() => openAttendance(lesson.id)}>נוכחות</V6Button></div> : null}
+              {(user.permissions.manageAttendance || user.role === "super_admin") ? <div className="self-center [&>button]:min-h-6 [&>button]:rounded-[9px] [&>button]:px-1.5 [&>button]:py-0.5 [&>button]:text-[9px]"><V6Button variant="ghost" onClick={() => openAttendance(lesson.id)}>נוכחות</V6Button></div> : group?.style ? <SafeMeta as="span" className={v6Cx("text-[9px] font-semibold", v6Tone[tone].text)}>{group.style}</SafeMeta> : null}
             </div>
           </div>
         );
       })}
       </div>
-      </EditorialSection>
+      </section>
       <V6SheetController activeSheet={attendanceEditor ? activeSheet : null} title="סימון נוכחות" onClose={() => setActiveSheet(null)}>{attendanceEditor}</V6SheetController>
     </div>
   );
@@ -763,26 +762,44 @@ function Messages({ user, show }: { user: V6User; show: (message: string) => voi
   const notifications = selectV6NotificationsForActor(db, user);
   const messages = selectV6MessagesForActor(db, user);
   return (
-    <div className="space-y-4">
-      <HeroSurface tone={notifications.some((item) => !item.readBy.includes(user.id)) ? "urgent" : "modern"} className="min-h-[210px] p-5">
-        <V6StatusBadge tone="modern">קהילה ועדכונים</V6StatusBadge>
-        <SafeTitle as="h1" className="mt-4 max-w-[18rem] text-[clamp(2.0rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.058em]">רק מה שצריך להישמע</SafeTitle>
-        <SafeMeta as="p" className="mt-4 max-w-[20rem] text-sm leading-relaxed text-white/58">חדש עולה קדימה. השאר נשאר שקט.</SafeMeta>
-        <div className="mt-4"><V6Button variant="ghost" onClick={() => { dispatch({ type: "mark_all_read", userId: user.id }); show("הכול סומן כנקרא"); }}>סמן הכול כנקרא</V6Button></div>
-      </HeroSurface>
-      <EditorialSection title="התראות חשובות" kicker="מה דורש קריאה" tone="modern">
-      <div className="space-y-2.5">
-        {notifications.length ? notifications.map((item) => (
-        <button key={item.id} onClick={() => { dispatch({ type: "mark_notification_read", userId: user.id, notificationId: item.id }); show("ההודעה סומנה כנקראה"); }} className="w-full">
-          <V6FeedRow icon={Bell} title={item.title} body={item.body} meta={item.readBy.includes(user.id) ? "נקרא" : "חדש"} tone={item.readBy.includes(user.id) ? "studio" : "urgent"} />
-        </button>
-      )) : <p className="py-4 text-center text-sm text-white/45">אין התראות כרגע.</p>}
-      </div>
-      </EditorialSection>
-      <Widget title="עדכוני סטודיו" kicker="קבוצה וקהילה" icon={MessageCircle} tone="modern">
-        <div className="space-y-2">{messages.map((item) => <V6FeedRow key={item.id} icon={MessageCircle} title={item.title} body={item.body} meta="סטודיו" tone="modern" />)}</div>
-      </Widget>
+    <div className="space-y-1.5">
+      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[17px] border p-2.5 text-start", v6Surface.base)}>
+        <div className="grid grid-cols-[1fr_auto] items-center gap-2">
+          <div className="min-w-0">
+            <p className={v6Type.kicker}>קהילה ועדכונים</p>
+            <SafeTitle as="h1" className="mt-px truncate text-[17px] font-semibold tracking-[-0.022em]">הודעות</SafeTitle>
+            <SafeMeta as="p" className="mt-px truncate text-[10.5px] leading-relaxed text-white/50">מהסטודיו ומהקבוצה.</SafeMeta>
+          </div>
+          <div className="[&>button]:min-h-7 [&>button]:rounded-[10px] [&>button]:px-2 [&>button]:py-1 [&>button]:text-[10px]"><V6Button variant="ghost" onClick={() => { dispatch({ type: "mark_all_read", userId: user.id }); show("הכול סומן כנקרא"); }}>סמן הכול כנקרא</V6Button></div>
+        </div>
+      </section>
+      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[16px] border p-2", v6Surface.editorial)}>
+        <div className="px-0.5 text-start">
+          <p className={v6Type.kicker}>התראות</p>
+            <SafeTitle as="h2" className="mt-px text-[13px] font-semibold tracking-[-0.014em] text-white/80">לא נקראו</SafeTitle>
+        </div>
+        <div className="mt-1.5 space-y-1">
+          {notifications.length ? notifications.map((item) => (
+            <button key={item.id} onClick={() => { dispatch({ type: "mark_notification_read", userId: user.id, notificationId: item.id }); show("ההודעה סומנה כנקראה"); }} className="w-full">
+              <V6FeedRow icon={Bell} title={item.title} body={item.body} meta={item.readBy.includes(user.id) ? "נקרא" : "לא נקרא"} tone={item.readBy.includes(user.id) ? "studio" : "urgent"} />
+            </button>
+          )) : <p className="py-3 text-center text-xs text-white/42">אין התראות כרגע.</p>}
+        </div>
+        <div className="mt-2 border-t border-[#f4d58d]/7 px-0.5 pt-1.5 text-start">
+          <p className={v6Type.kicker}>קבוצה וקהילה</p>
+          <SafeTitle as="h2" className="mt-px text-[13px] font-semibold tracking-[-0.014em] text-white/80">מהסטודיו</SafeTitle>
+        </div>
+        <div className="mt-1.5 space-y-1">{messages.map((item) => <V6FeedRow key={item.id} icon={MessageCircle} title={item.title} body={item.body} meta="סטודיו" tone="modern" />)}</div>
+      </section>
     </div>
+  );
+}
+
+function ProductBadge({ children, tone = "shop" }: { children: ReactNode; tone?: V6Tone }) {
+  return (
+    <span dir="rtl" className={v6Cx("inline-flex h-5 max-w-full shrink-0 items-center rounded-full border px-2 text-[9px] font-semibold leading-none whitespace-nowrap", v6Tone[tone].soft, v6Tone[tone].text, "border-[#f4d58d]/6")}>
+      {children}
+    </span>
   );
 }
 
@@ -795,36 +812,45 @@ function ProductCard({ product, user, show, onPrivateLesson, onEdit, variant = "
   const image = product.featuredImageMediaId ? db.media.find((item) => item.id === product.featuredImageMediaId) : undefined;
   const priceLabel = product.priceMode === "request" ? "לפי בקשה" : product.priceMode === "free" ? "חינם" : `₪ ${product.price}`;
   const inventoryLabel = inventoryStatusLabel[product.inventoryStatus ?? (product.active ? "in_stock" : "draft")];
+  const badges = [
+    { id: "category", label: collection, tone },
+    { id: "inventory", label: inventoryLabel, tone: product.active ? tone : "urgent" as V6Tone },
+    (product.memberOnly || product.visibility === "members") ? { id: "members", label: "לחברים בלבד", tone: "management" as V6Tone } : null,
+    { id: "active", label: product.active ? "זמין" : "לא פעיל", tone: product.active ? "success" as V6Tone : "urgent" as V6Tone }
+  ].filter(Boolean) as Array<{ id: string; label: string; tone: V6Tone }>;
   const action = privateLesson
     ? () => onPrivateLesson()
     : () => {
         dispatch({ type: "shop_order", actor: user, productId: product.id });
-        show("הפעולה נשמרה ונשלחה התראה");
+        show("ההזמנה נשלחה לסטודיו");
       };
   const feature = variant === "feature";
   return (
-    <Surface tone={tone} className={v6Cx("p-0", feature && "md:grid md:grid-cols-[1.12fr_0.88fr]")}>
-      {image?.localPreviewUrl ? <div role="img" aria-label={product.title} className={v6Cx("w-full bg-cover bg-center", feature ? "h-64 rounded-t-[34px] md:h-full md:min-h-[260px] md:rounded-l-none md:rounded-r-[34px]" : "h-36 rounded-t-[34px]")} style={{ backgroundImage: `url(${image.localPreviewUrl})` }} /> : <StageImage tone={tone} label={collection} icon={privateLesson ? Receipt : ticket ? Sparkles : ShoppingBag} className={v6Cx(feature ? "h-64 md:h-full md:min-h-[260px] md:rounded-l-none" : "h-36", "rounded-b-none border-x-0 border-t-0")} />}
-      <SurfaceContent className={v6Cx("text-start", feature ? "p-5 sm:p-6 md:flex md:flex-col md:justify-between" : "p-4")}>
-        <div className="space-y-2">
-          <div className="min-w-0">
-            <p className={v6Cx(v6Type.kicker, "mb-2 text-white/30")}>{collection}</p>
-            <SafeTitle as="h2" className={v6Cx(feature ? "text-[clamp(1.9rem,8vw,2.75rem)] leading-[1.04] tracking-[-0.060em]" : "text-[18px] leading-snug tracking-[-0.035em]", "font-semibold text-white/90")}>{product.title}</SafeTitle>
-            <SafeMeta as="p" className="mt-1.5 text-sm leading-relaxed text-white/58">{product.description}</SafeMeta>
+    <article dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[16px] border p-2.5 text-start", v6Surface.base, feature && "border-[rgba(244,213,141,0.10)]")}>
+      <div className={v6Cx("grid min-w-0 gap-2", image?.localPreviewUrl ? "grid-cols-[56px_minmax(0,1fr)]" : "grid-cols-1")}>
+        {image?.localPreviewUrl ? (
+          <div role="img" aria-label={product.title} className="h-14 w-14 rounded-[13px] border border-[#f4d58d]/7 bg-cover bg-center shadow-[inset_0_1px_0_rgba(255,247,223,0.040)]" style={{ backgroundImage: `url(${image.localPreviewUrl})` }} />
+        ) : null}
+
+        <div className="min-w-0">
+          <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+            <h2 className="min-w-0 truncate text-[13.5px] font-semibold leading-snug tracking-[-0.014em] text-white/90">{product.title}</h2>
+            <p className="shrink-0 text-[13px] font-semibold leading-snug tracking-[-0.012em] text-[#fff7df]/90"><BidiNumber>{priceLabel}</BidiNumber></p>
           </div>
-          <p className={v6Cx(feature ? "text-[1.4rem]" : "text-[15px]", "break-words font-semibold leading-tight tracking-[-0.035em] text-[#fff7df]/84")}><BidiNumber>{priceLabel}</BidiNumber></p>
+
+          <p className="mt-1 line-clamp-2 text-[10px] leading-relaxed text-white/45">{product.description}</p>
+
+          <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-1 overflow-hidden">
+            {badges.map((badge) => <ProductBadge key={badge.id} tone={badge.tone}>{badge.label}</ProductBadge>)}
+          </div>
         </div>
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          <V6StatusBadge tone={product.active ? "shop" : "urgent"}>{inventoryLabel}</V6StatusBadge>
-          {product.memberOnly || product.visibility === "members" ? <V6StatusBadge tone="management">לחברים בלבד</V6StatusBadge> : null}
-        </div>
-        <div className="mt-5 grid grid-cols-2 gap-2 pt-2 [&>button]:w-full">
-          <V6Button disabled={!product.active} onClick={action}>{privateLesson ? "זמינות" : "רכישה"}</V6Button>
-          {onEdit ? <V6Button variant="ghost" onClick={onEdit}>עריכה</V6Button> : null}
-          <SafeMeta as="span" className="col-span-2 text-xs font-medium text-white/38">{product.active ? "זמין" : "לא פעיל"}</SafeMeta>
-        </div>
-      </SurfaceContent>
-    </Surface>
+      </div>
+
+      <div className={v6Cx("mt-2 grid gap-1.5", onEdit ? "grid-cols-2" : "grid-cols-1")}>
+        <button type="button" disabled={!product.active} onClick={action} className="min-h-8 rounded-[11px] bg-[#f4d58d] px-3 py-1 text-[11px] font-semibold leading-none text-zinc-950 transition active:scale-[0.985] disabled:opacity-45">{privateLesson ? "זמינות" : "הזמנה"}</button>
+        {onEdit ? <button type="button" onClick={onEdit} className="min-h-8 rounded-[11px] border border-[#f4d58d]/8 bg-white/[0.022] px-3 py-1 text-[11px] font-semibold leading-none text-white/62 transition active:scale-[0.985]">עריכה</button> : null}
+      </div>
+    </article>
   );
 }
 
@@ -857,8 +883,7 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
   const filtered = category === "פרטיים" ? selectV6ShopProductsForActor(db, user, "שיעורים") : selectV6ShopProductsForActor(db, user, category);
   const lanes = selectV6FeaturedShopLanes(db);
   const shopImages = db.media.filter((item) => item.mediaType === "image" && (item.visibility === "shop" || item.linkedProductId || item.localPreviewUrl));
-  const featuredProduct = filtered[0];
-  const supportingProducts = filtered.slice(1);
+  const products = filtered;
   function openProductEditor(product?: V6Product) {
     const nextId = product?.id ?? nextV6ClientId("prod");
     setProductId(nextId);
@@ -958,39 +983,39 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
     }
   }
   const productEditor = (
-    <div className="space-y-4">
-      <Surface tone="shop" className="p-4">
+    <div className="space-y-2.5">
+      <div className={v6Cx("rounded-[18px] border p-3 text-start", v6Surface.quiet)}>
         <p className={v6Cx(v6Type.kicker, "text-yellow-100/54")}>ניהול מוצר</p>
-        <SafeTitle as="h3" className="mt-2 text-[19px] font-semibold tracking-[-0.040em]">{productTitle || "מוצר חדש"}</SafeTitle>
-        <SafeMeta as="p" className="mt-2 text-xs leading-relaxed text-white/48">שמירה מעדכנת את הנתונים, יומן הפעולות והחנות באותו רגע.</SafeMeta>
-      </Surface>
-      <div className="grid grid-cols-2 gap-2 [&>button]:w-full">
-        <V6Button disabled={productSaving} onClick={() => void saveProduct()}>{productSaving ? "שומר…" : "שמירת מוצר"}</V6Button>
-        <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
+        <SafeTitle as="h3" className="mt-1 truncate text-[15px] font-semibold tracking-[-0.020em]">{productTitle || "מוצר חדש"}</SafeTitle>
+        <SafeMeta as="p" className="mt-1 text-[11px] leading-relaxed text-white/45">שמירה מעדכנת את הנתונים, יומן הפעולות והחנות באותו רגע.</SafeMeta>
       </div>
-      <FormField label="שם מוצר" value={productTitle} onChange={setProductTitle} />
-      <FormField label="תיאור" value={productDescription} onChange={setProductDescription} />
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className={v6Cx("space-y-2.5 rounded-[18px] border p-2.5", v6Surface.quiet)}>
+        <FormField label="שם מוצר" value={productTitle} onChange={setProductTitle} />
+        <FormField label="תיאור" value={productDescription} onChange={setProductDescription} />
+      </div>
+      <div className={v6Cx("grid gap-2.5 rounded-[18px] border p-2.5 sm:grid-cols-2", v6Surface.quiet)}>
         <label className="block text-start"><span className={v6Control.label}>קטגוריה</span><select value={productCategory} onChange={(e) => setProductCategory(e.target.value)} className={v6Cx("mt-2", v6Control.field)}>{productCategories.map((item) => <option key={item} value={item} className="bg-zinc-950">{item}</option>)}</select></label>
         <label className="block text-start"><span className={v6Control.label}>סוג מוצר</span><select value={productType} onChange={(e) => setProductType(e.target.value as NonNullable<V6Product["type"]>)} className={v6Cx("mt-2", v6Control.field)}>{v6ProductTypes.map((item) => <option key={item} value={item} className="bg-zinc-950">{productTypeLabel[item]}</option>)}</select></label>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className={v6Cx("grid gap-2.5 rounded-[18px] border p-2.5 sm:grid-cols-2", v6Surface.quiet)}>
         <label className="block text-start"><span className={v6Control.label}>תמחור</span><select value={productPriceMode} onChange={(e) => setProductPriceMode(e.target.value as NonNullable<V6Product["priceMode"]>)} className={v6Cx("mt-2", v6Control.field)}>{Object.entries(productPriceModeLabel).map(([id, label]) => <option key={id} value={id} className="bg-zinc-950">{label}</option>)}</select></label>
         <FormField label="מחיר ₪" value={productPrice} onChange={setProductPrice} type="number" />
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className={v6Cx("grid gap-2.5 rounded-[18px] border p-2.5 sm:grid-cols-2", v6Surface.quiet)}>
         <label className="block text-start"><span className={v6Control.label}>סטטוס מלאי</span><select value={productInventoryStatus} onChange={(e) => { const next = e.target.value as NonNullable<V6Product["inventoryStatus"]>; setProductInventoryStatus(next); setProductActive(next !== "draft"); }} className={v6Cx("mt-2", v6Control.field)}>{v6InventoryStatuses.map((item) => <option key={item} value={item} className="bg-zinc-950">{inventoryStatusLabel[item]}</option>)}</select></label>
         <label className="block text-start"><span className={v6Control.label}>נראות</span><select value={productVisibility} onChange={(e) => setProductVisibility(e.target.value as NonNullable<V6Product["visibility"]>)} className={v6Cx("mt-2", v6Control.field)}><option value="public" className="bg-zinc-950">גלוי בחנות</option><option value="members" className="bg-zinc-950">לחברים בלבד</option><option value="hidden" className="bg-zinc-950">מוסתר</option></select></label>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className={v6Cx("grid gap-2.5 rounded-[18px] border p-2.5 sm:grid-cols-2", v6Surface.quiet)}>
         <FormField label="מידות (מופרד בפסיקים)" value={productSizes} onChange={setProductSizes} />
         <FormField label="צבעים (מופרד בפסיקים)" value={productColors} onChange={setProductColors} />
       </div>
-      <FormField label="הערות מוצר" value={productNotes} onChange={setProductNotes} />
-      <FormField label="הערת איסוף / משלוח" value={productPickupNote} onChange={setProductPickupNote} />
-      <button onClick={() => setProductMemberOnly((value) => !value)} className={v6Cx("w-full rounded-[24px] px-4 py-3 text-start text-sm font-semibold", productMemberOnly ? "bg-emerald-100 text-zinc-950" : v6Control.chip)}>דרופ מוגבל לחברי סטודיו בלבד</button>
+      <div className={v6Cx("space-y-2.5 rounded-[18px] border p-2.5", v6Surface.quiet)}>
+        <FormField label="הערות מוצר" value={productNotes} onChange={setProductNotes} />
+        <FormField label="הערת איסוף / משלוח" value={productPickupNote} onChange={setProductPickupNote} />
+      </div>
+      <button onClick={() => setProductMemberOnly((value) => !value)} className={v6Cx("w-full rounded-[16px] px-3 py-2.5 text-start text-[12px] font-semibold", productMemberOnly ? "bg-emerald-100 text-zinc-950" : v6Control.chip)}>דרופ מוגבל לחברי סטודיו בלבד</button>
       <input ref={productImageInput} type="file" accept="image/*" className="hidden" onChange={(event) => uploadProductImage(event.target.files?.[0])} />
-      <div className={v6Cx("space-y-2 rounded-[28px] border p-3", v6Surface.quiet)}>
+      <div className={v6Cx("space-y-2 rounded-[18px] border p-2.5", v6Surface.quiet)}>
         <div className="flex gap-2 [&>button]:flex-1"><V6Button variant="ghost" onClick={() => productImageInput.current?.click()}><Upload size={16} /> העלאת תמונה</V6Button></div>
         {pendingProductImageFile ? <p className="text-start text-xs text-emerald-100/70">נבחרה תמונה להעלאה בשמירה: {pendingProductImageFile.name}</p> : null}
         {productImagePreviewUrl ? <div className="h-28 rounded-[22px] bg-cover bg-center" style={{ backgroundImage: `url(${productImagePreviewUrl})` }} /> : null}
@@ -1003,53 +1028,54 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
     </div>
   );
   return (
-    <div className="space-y-5">
-      <HeroSurface tone="shop" className="min-h-[320px] p-5">
-        <V6StatusBadge tone="shop">בוטיק</V6StatusBadge>
-        <SafeTitle as="h1" className={v6Cx("mt-5 max-w-[20rem]", v6Type.editorialTitle)}>בוטיק לפני במה</SafeTitle>
-        <SafeMeta as="p" className="mt-4 max-w-[19rem] text-[14px] leading-relaxed text-white/62">כרטיסים, שיעורים פרטיים ופריטי סטודיו. מעט, ברור, מוכן לרכישה.</SafeMeta>
-        <div className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-3">
-          <InlineMetric tone="shop" label="פריטים" value={<BidiNumber>{filtered.length}</BidiNumber>} meta={category} />
-          <InlineMetric tone="studio" label="פרטיים" value={<BidiNumber>{lanes.privateLessons.length}</BidiNumber>} meta="זמינים" />
-          <InlineMetric tone="repertoire" label="כרטיסים" value={<BidiNumber>{lanes.tickets.length}</BidiNumber>} meta="במה" />
-        </div>
-      </HeroSurface>
-      <OpenCluster tone="shop" className="space-y-4 px-4 py-4">
-        <SegmentedControl value={category} options={categories} onChange={setCategory} />
-        <div className="flex gap-2 overflow-x-auto no-scrollbar [&>button]:min-w-[12.5rem]">
-          <ActionCard icon={Receipt} title="שיעורים פרטיים" subtitle={`${lanes.privateLessons.length} ${lanes.privateLessons.length === 1 ? "אפשרות" : "אפשרויות"}`} tone="shop" onClick={() => openScreen("private_lessons")} />
-          <ActionCard icon={Sparkles} title="כרטיסים" subtitle={`${lanes.tickets.length} במלאי`} tone="repertoire" onClick={() => setCategory("כרטיסים")} />
-        </div>
-      </OpenCluster>
-      <V6SheetController activeSheet={activeSheet} title={productTitle || "מוצר חדש"} onClose={() => setActiveSheet(null)}>{productEditor}</V6SheetController>
-      {(user.permissions.manageShop || user.role === "super_admin") ? <ActionCard icon={Plus} title="הוספת מוצר" subtitle="ניהול מוצר ותמונות" tone="shop" onClick={() => openProductEditor()} /> : null}
-      <div className="space-y-3">
-        {featuredProduct ? <ProductCard product={featuredProduct} user={user} show={show} onPrivateLesson={() => openScreen("private_lessons")} onEdit={(user.permissions.manageShop || user.role === "super_admin") ? () => openProductEditor(featuredProduct) : undefined} variant="feature" /> : null}
-        {supportingProducts.length ? (
-          <div className="space-y-3">
-            {supportingProducts.map((product) => <ProductCard key={product.id} product={product} user={user} show={show} onPrivateLesson={() => openScreen("private_lessons")} onEdit={(user.permissions.manageShop || user.role === "super_admin") ? () => openProductEditor(product) : undefined} />)}
+    <div className="space-y-1.5">
+      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[17px] border p-2.5 text-start", v6Surface.base)}>
+        <div className="grid grid-cols-[1fr_auto] items-start gap-2">
+          <div className="min-w-0">
+            <p className={v6Type.kicker}>חנות</p>
+            <SafeTitle as="h1" className="mt-px truncate text-[17px] font-semibold tracking-[-0.022em] text-white">חנות הסטודיו</SafeTitle>
+            <SafeMeta as="p" className="mt-px line-clamp-1 text-[10.5px] leading-relaxed text-white/50">מוצרים, כרטיסים ושיעורים פרטיים.</SafeMeta>
           </div>
-        ) : null}
-      </div>
-      <Surface tone="shop" className="space-y-3 p-4">
-        <div className="flex items-center gap-2 text-start"><CreditCard className="shrink-0 text-yellow-100/70" size={17} /><span className="min-w-0 flex-1 text-xs font-medium text-white/38">תשלום מאובטח יופעל בצד שרת</span></div>
-        <div className="grid grid-cols-1 gap-1.5 rounded-[20px] bg-black/18 p-1.5 text-center text-xs font-semibold text-white/56 shadow-[inset_0_1px_0_rgba(255,255,255,0.040)] sm:grid-cols-3">
-          {["Apple Pay", "Bit", "אשראי"].map((method) => <button key={method} onClick={() => show(`${method} נבחר כאמצעי תשלום מועדף`)} className="lk-safe-control min-h-11 rounded-[17px] px-3 py-2 transition hover:bg-white/[0.06] active:scale-95">{method}</button>)}
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[12px] bg-[#f4d58d]/10 text-yellow-50"><ShoppingBag size={13.5} strokeWidth={1.9} /></span>
         </div>
-      </Surface>
+        <div className="mt-2 overflow-x-auto pb-0.5 no-scrollbar [&_button]:min-h-8 [&_button]:px-3 [&_button]:py-1.5 [&_button]:text-[11px]"><SegmentedControl value={category} options={categories} onChange={setCategory} /></div>
+        <div className="mt-1.5 grid grid-cols-2 gap-1">
+          <button onClick={() => openScreen("private_lessons")} className="min-w-0 rounded-[12px] border border-[#f4d58d]/6 bg-white/[0.014] px-2 py-1.5 text-start transition active:scale-[0.99]">
+            <SafeMeta as="p" className={v6Type.kicker}>שיעורים פרטיים</SafeMeta>
+            <SafeTitle as="p" className="mt-px truncate text-[11.5px] font-semibold text-white/80">{lanes.privateLessons.length} {lanes.privateLessons.length === 1 ? "אפשרות" : "אפשרויות"}</SafeTitle>
+          </button>
+          <button onClick={() => setCategory("כרטיסים")} className="min-w-0 rounded-[12px] border border-[#f4d58d]/6 bg-white/[0.014] px-2 py-1.5 text-start transition active:scale-[0.99]">
+            <SafeMeta as="p" className={v6Type.kicker}>כרטיסים</SafeMeta>
+            <SafeTitle as="p" className="mt-px truncate text-[11.5px] font-semibold text-white/80">{lanes.tickets.length} במלאי</SafeTitle>
+          </button>
+        </div>
+        {(user.permissions.manageShop || user.role === "super_admin") ? (
+          <button onClick={() => openProductEditor()} className="mt-1.5 grid w-full grid-cols-[auto_1fr] items-center gap-2 rounded-[12px] border border-[#f4d58d]/7 bg-[#f4d58d]/[0.028] px-2.5 py-1.5 text-start transition active:scale-[0.99]">
+            <Plus size={13} className="text-[#f4d58d]/70" />
+            <span className="min-w-0">
+              <SafeTitle as="span" className="block text-[11.5px] font-semibold text-white/82">הוספת מוצר</SafeTitle>
+              <SafeMeta as="span" className="mt-px block truncate text-[9.5px] text-white/36">ניהול מוצר ותמונות</SafeMeta>
+            </span>
+          </button>
+        ) : null}
+      </section>
+      <V6SheetController activeSheet={activeSheet} title={productTitle || "מוצר חדש"} onClose={() => setActiveSheet(null)}>{productEditor}</V6SheetController>
+      <div className="space-y-1.5">
+        {products.map((product, index) => (
+          <ProductCard key={product.id} product={product} user={user} show={show} onPrivateLesson={() => openScreen("private_lessons")} onEdit={(user.permissions.manageShop || user.role === "super_admin") ? () => openProductEditor(product) : undefined} variant={index === 0 ? "feature" : "standard"} />
+        ))}
+      </div>
     </div>
   );
 }
 
 function More({ user, openScreen, openTab }: { user: V6User; openScreen: (screen: V6Screen) => void; openTab: (tab: V6Tab) => void }) {
-  const { db } = useV6();
-  const aiInsights = useMemo(() => selectV6AIInsightsForActor(db, user).slice(0, 1), [db, user]);
   const seenMoreTargets = new Set<string>();
   const sections = [
-    { title: "ניהול", items: user.role === "super_admin" ? [{ title: "מסד נתונים", subtitle: "ייצוא, ייבוא וגיבוי", icon: Database, tone: "admin" as Tone, screen: "database" as V6Screen }, { title: "טקסטים", subtitle: "תוכן שאפשר לערוך", icon: Sparkles, tone: "repertoire" as Tone, screen: "texts" as V6Screen }, { title: "אפשרויות", subtitle: "הפעלה וכיבוי", icon: Flag, tone: "admin" as Tone, screen: "flags" as V6Screen }, { title: "יומן פעולות", subtitle: "מה השתנה ומתי", icon: ClipboardList, tone: "management" as Tone, screen: "audit" as V6Screen }, { title: "מצב האפליקציה", subtitle: "פתיחה וסנכרון", icon: HeartPulse, tone: "studio" as Tone, screen: "system" as V6Screen }, { title: "חיבורים", subtitle: "Supabase, R2 ותשלומים", icon: Shield, tone: "admin" as Tone, screen: "integrations" as V6Screen }, { title: "מיתוג", subtitle: "שם, שפה ונראות סטודיו", icon: Settings, tone: "admin" as Tone, screen: "branding" as V6Screen }] : [] },
+    { title: "ניהול", items: user.role === "super_admin" ? [{ title: "מסד נתונים", subtitle: "ייצוא, ייבוא וגיבוי", icon: Database, tone: "admin" as Tone, screen: "database" as V6Screen }, { title: "טקסטים", subtitle: "תוכן שאפשר לערוך", icon: Sparkles, tone: "repertoire" as Tone, screen: "texts" as V6Screen }, { title: "אפשרויות", subtitle: "הפעלה וכיבוי", icon: Flag, tone: "admin" as Tone, screen: "flags" as V6Screen }, { title: "יומן פעולות", subtitle: "מה השתנה ומתי", icon: ClipboardList, tone: "management" as Tone, screen: "audit" as V6Screen }, { title: "פתיחה וסנכרון", subtitle: "בדיקות בסיסיות", icon: HeartPulse, tone: "studio" as Tone, screen: "system" as V6Screen }, { title: "חיבורים", subtitle: "Supabase, R2 ותשלומים", icon: Shield, tone: "admin" as Tone, screen: "integrations" as V6Screen }, { title: "מיתוג", subtitle: "שם, שפה ונראות סטודיו", icon: Settings, tone: "admin" as Tone, screen: "branding" as V6Screen }] : [] },
     { title: "הסטודיו", items: [{ title: "לוח שנה ותחרויות", subtitle: "אירועים, חזרות והכנות", icon: CalendarDays, tone: "management" as Tone, screen: "calendar" as V6Screen }, { title: "שיעורים פרטיים", subtitle: "בקשות, מועדים ותשלום", icon: Receipt, tone: "shop" as Tone, screen: "private_lessons" as V6Screen }, { title: "גלריה", subtitle: "תמונות, וידאו וחומרים", icon: ImagePlus, tone: "modern" as Tone, screen: "media" as V6Screen }, { title: "זיכרונות והישגים", subtitle: "רגעים יפים מהסטודיו", icon: Trophy, tone: "repertoire" as Tone, screen: "legacy" as V6Screen }] },
-    { title: "חנות ותשלומים", items: [{ title: "בוטיק ותשלומים", subtitle: "מוצרים, כרטיסים ואמצעי תשלום", icon: ShoppingBag, tone: "shop" as Tone, tab: "shop" as V6Tab }] },
-    { title: "כלים למורה", items: user.role === "teacher" || user.role === "management" || user.role === "super_admin" ? [{ title: "נוכחות וקבוצות", subtitle: "פעולות מהירות למורה", icon: School, tone: "studio" as Tone, screen: "system" as V6Screen }] : [] },
+    { title: "חנות ותשלומים", items: [{ title: "חנות הסטודיו", subtitle: "מוצרים, כרטיסים ואמצעי תשלום", icon: ShoppingBag, tone: "shop" as Tone, tab: "shop" as V6Tab }] },
+    { title: "כלים למורה", items: user.role === "teacher" || user.role === "management" || user.role === "super_admin" ? [{ title: "שיעורים ונוכחות", subtitle: "לו״ז וסימון נוכחות", icon: School, tone: "studio" as Tone, tab: "lessons" as V6Tab }] : [] },
     { title: "צוות וניהול", items: user.permissions.manageUsers || user.role === "super_admin" ? [{ title: "ניהול משתמשים", subtitle: "תלמידים, הורים וצוות", icon: Users, tone: "management" as Tone, screen: "users" as V6Screen }] : [] }
   ].map((section) => ({
     ...section,
@@ -1061,27 +1087,27 @@ function More({ user, openScreen, openTab }: { user: V6User; openScreen: (screen
     })
   })).filter((s) => s.items.length);
   return (
-    <div className="space-y-5">
-      <HeroSurface tone={user.role === "super_admin" ? "admin" : user.role === "management" ? "management" : "modern"} className="min-h-[250px] p-5">
-        <V6StatusBadge tone={user.role === "super_admin" ? "admin" : "management"}>{user.role === "super_admin" ? "ניהול" : "כלים שימושיים"}</V6StatusBadge>
-        <SafeTitle as="h1" className={v6Cx("mt-5 max-w-[18rem]", v6Type.editorialTitle)}>כל מה שצריך, במקום אחד</SafeTitle>
-        <SafeMeta as="p" className="mt-4 max-w-[20rem] text-sm leading-relaxed text-white/58">קיצורים נוחים לכלים החשובים, בצורה רגועה וברורה.</SafeMeta>
-        <div className="mt-7 grid grid-cols-2 gap-2">
-          <InlineMetric tone="management" label="אזורים" value={<BidiNumber>{sections.length}</BidiNumber>} meta="זמינים" />
-          <InlineMetric tone="admin" label="תפקיד" value={roleLabel[user.role]} meta="הרשאות" />
+    <div className="space-y-1.5">
+      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[17px] border p-2.5 text-start", v6Surface.base)}>
+        <div className="flex items-center gap-2">
+          <span className={v6Cx("grid h-7 w-7 shrink-0 place-items-center rounded-[12px]", user.role === "super_admin" ? v6Tone.admin.soft : v6Tone.management.soft, user.role === "super_admin" ? v6Tone.admin.text : v6Tone.management.text)}><Users size={13.5} strokeWidth={1.9} /></span>
+          <div className="min-w-0 flex-1">
+            <p className={v6Type.kicker}>{user.role === "super_admin" ? "ניהול" : "כלים שימושיים"}</p>
+            <SafeTitle as="h1" className="mt-px truncate text-[17px] font-semibold tracking-[-0.022em] text-white">הגדרות וכלים</SafeTitle>
+            <SafeMeta as="p" className="mt-px truncate text-[10.5px] leading-relaxed text-white/50">ניהול, סטודיו וחנות במקום אחד.</SafeMeta>
+          </div>
         </div>
-      </HeroSurface>
+      </section>
       {sections.map((section) => (
-        <OpenCluster key={section.title} tone={section.title === "ניהול" ? "admin" : section.title === "צוות וניהול" ? "management" : "studio"} className="space-y-3 px-4 py-4">
+        <section key={section.title} dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[16px] border p-1.5", v6Surface.open)}>
           <div className="px-1 text-start">
             <p className={v6Type.kicker}>{section.title}</p>
           </div>
-          <div className="space-y-1">
+          <div className="mt-1 space-y-0.5">
             {section.items.map((item) => <ActionCard key={item.title} icon={item.icon} title={item.title} subtitle={item.subtitle} tone={item.tone} onClick={() => "tab" in item ? openTab(item.tab) : openScreen(item.screen)} />)}
           </div>
-        </OpenCluster>
+        </section>
       ))}
-      {aiInsights.length ? <AISuggestionStack insights={aiInsights} /> : null}
     </div>
   );
 }
@@ -1234,29 +1260,31 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
         <SafeTitle as="h3" className="mt-2 text-[19px] font-semibold tracking-[-0.040em]">{selected?.name ?? (name || "משתמש חדש")}</SafeTitle>
         <SafeMeta as="p" className="mt-2 text-xs leading-relaxed text-white/48">שינוי תפקיד מעדכן את הרשאות המשתמש דרך אותו מסלול נתונים.</SafeMeta>
       </Surface>
-      <div className="grid grid-cols-2 gap-2 [&>button]:w-full">
+      <div className="grid grid-cols-2 gap-2 rounded-[30px] border border-[#f4d58d]/8 bg-black/[0.12] p-2 shadow-[inset_0_1px_0_rgba(255,247,223,0.036)] [&>button]:w-full">
         <V6Button onClick={() => { if (save()) setActiveSheet(null); }}>שמירה</V6Button>
         <V6Button variant="ghost" onClick={resetPassword}>איפוס סיסמה</V6Button>
       </div>
-      <FormField label="שם" value={name} onChange={setName} />
-      <FormField label="טלפון" value={phone} onChange={setPhone} />
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className={v6Cx("space-y-3 rounded-[34px] border p-3.5", v6Surface.quiet)}>
+        <FormField label="שם" value={name} onChange={setName} />
+        <FormField label="טלפון" value={phone} onChange={setPhone} />
+      </div>
+      <div className={v6Cx("grid gap-3 rounded-[34px] border p-3.5 sm:grid-cols-2", v6Surface.quiet)}>
         <label className="block text-start"><span className={v6Control.label}>תפקיד</span><select value={role} onChange={(e) => setRoleAndPermissions(e.target.value as V6Role)} className={v6Cx("mt-2", v6Control.field)}>{Object.entries(roleLabel).map(([id, label]) => <option key={id} value={id} className="bg-zinc-950">{label}</option>)}</select></label>
         <label className="block text-start"><span className={v6Control.label}>סטטוס</span><select value={active ? "active" : "inactive"} onChange={(e) => setActive(e.target.value === "active")} className={v6Cx("mt-2", v6Control.field)}><option value="active" className="bg-zinc-950">פעיל</option><option value="inactive" className="bg-zinc-950">מושבת</option></select></label>
       </div>
       {(role === "teacher" || role === "student") ? <div className={v6Cx("rounded-[28px] border p-3 text-start", v6Surface.quiet)}><p className="mb-2 text-[12px] font-semibold text-white/48">{role === "teacher" ? "שיוך מורה לקבוצות" : "שיוך תלמיד/ה לקבוצות"}</p><div className="flex flex-wrap gap-2">{db.groups.map((group) => <button key={group.id} onClick={() => toggleGroup(group.id)} className={v6Cx("rounded-full px-3 py-2 text-xs font-semibold", groupIds.includes(group.id) ? "bg-emerald-100 text-zinc-950" : v6Control.chip)}>{group.name}</button>)}</div></div> : null}
-      {role === "student" ? <FormField label="קבוצת גיל" value={ageGroup} onChange={setAgeGroup} placeholder="למשל נוער / בוגרות" /> : null}
+      {role === "student" ? <div className={v6Cx("rounded-[34px] border p-3.5", v6Surface.quiet)}><FormField label="קבוצת גיל" value={ageGroup} onChange={setAgeGroup} placeholder="למשל נוער / בוגרות" /></div> : null}
       {(role === "teacher" || role === "student") ? <div className={v6Cx("rounded-[28px] border p-3 text-start", v6Surface.quiet)}><p className="mb-2 text-[12px] font-semibold text-white/48">סגנונות ריקוד</p><div className="flex flex-wrap gap-2">{danceStyles.map((style) => <button key={style} onClick={() => toggleDanceStyle(style)} className={v6Cx("rounded-full px-3 py-2 text-xs font-semibold", danceStyleIds.includes(style) ? "bg-cyan-100 text-zinc-950" : v6Control.chip)}>{style}</button>)}</div></div> : null}
       {role === "parent" ? <div className={v6Cx("rounded-[28px] border p-3 text-start", v6Surface.quiet)}><p className="mb-2 text-[12px] font-semibold text-white/48">קישור הורה לתלמיד/ה</p><div className="flex flex-wrap gap-2">{availableStudents.map((student) => <button key={student.id} onClick={() => toggleLinkedStudent(student.id)} className={v6Cx("rounded-full px-3 py-2 text-xs font-semibold", linkedStudentIds.includes(student.id) ? "bg-sky-100 text-zinc-950" : v6Control.chip)}>{student.name}</button>)}</div></div> : null}
-      {role === "parent" ? <div className="grid gap-3 sm:grid-cols-2"><FormField label="העדפות תקשורת" value={communicationPrefs} onChange={setCommunicationPrefs} /><button onClick={() => setPrimaryContact((value) => !value)} className={v6Cx("min-h-[56px] rounded-[24px] px-4 text-start text-sm font-semibold", primaryContact ? "bg-sky-100 text-zinc-950" : v6Control.chip)}>איש קשר ראשי</button></div> : null}
+      {role === "parent" ? <div className={v6Cx("grid gap-3 rounded-[34px] border p-3.5 sm:grid-cols-2", v6Surface.quiet)}><FormField label="העדפות תקשורת" value={communicationPrefs} onChange={setCommunicationPrefs} /><button onClick={() => setPrimaryContact((value) => !value)} className={v6Cx("min-h-[56px] rounded-[24px] px-4 text-start text-sm font-semibold", primaryContact ? "bg-sky-100 text-zinc-950" : v6Control.chip)}>איש קשר ראשי</button></div> : null}
       {role === "teacher" ? <button onClick={() => setPrivateLessonEnabled((value) => !value)} className={v6Cx("w-full rounded-[24px] px-4 py-3 text-start text-sm font-semibold", privateLessonEnabled ? "bg-yellow-100 text-zinc-950" : v6Control.chip)}>זמין/ה לשיעורים פרטיים</button> : null}
-      {(role === "management" || role === "super_admin") ? <FormField label="אחריות / תפקיד ניהולי" value={responsibility} onChange={setResponsibility} /> : null}
-      <FormField label="הערות" value={notes} onChange={setNotes} />
+      {(role === "management" || role === "super_admin") ? <div className={v6Cx("rounded-[34px] border p-3.5", v6Surface.quiet)}><FormField label="אחריות / תפקיד ניהולי" value={responsibility} onChange={setResponsibility} /></div> : null}
+      <div className={v6Cx("rounded-[34px] border p-3.5", v6Surface.quiet)}><FormField label="הערות" value={notes} onChange={setNotes} /></div>
       <div className={v6Cx("rounded-[28px] border p-3 text-start", v6Surface.quiet)}>
         <p className="mb-2 text-[12px] font-semibold text-white/48">הרשאות</p>
         <div className="flex flex-wrap gap-2">{permissionLabels.map(([key, label]) => <button key={key} onClick={() => togglePermission(key)} className={v6Cx("rounded-full px-3 py-2 text-xs font-semibold", permissions[key] ? "bg-violet-100 text-zinc-950" : v6Control.chip)}>{label}</button>)}</div>
       </div>
-      <FormField label={selected ? "סיסמה חדשה לאיפוס" : "סיסמה ראשונית"} value={password} onChange={setPassword} />
+      <div className={v6Cx("rounded-[34px] border p-3.5", v6Surface.quiet)}><FormField label={selected ? "סיסמה חדשה לאיפוס" : "סיסמה ראשונית"} value={password} onChange={setPassword} /></div>
       <SheetActions>
         <V6Button onClick={() => { if (save()) setActiveSheet(null); }}>שמירה</V6Button>
         <V6Button variant="ghost" onClick={resetPassword}>איפוס</V6Button>
@@ -1265,18 +1293,20 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
     </div>
   );
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <BackHeader title="ניהול משתמשים" back={back} action={<V6Button onClick={() => openNewUser("student")}>חדש</V6Button>} />
-      <HeroSurface tone="management" className="min-h-[190px] p-5">
+      <HeroSurface tone="management" className="min-h-[176px] p-5">
         <V6StatusBadge tone="management">זהויות</V6StatusBadge>
-        <SafeTitle as="h2" className="mt-4 max-w-[18rem] text-[clamp(1.9rem,8.4vw,2.65rem)] font-semibold leading-[1.04] tracking-[-0.054em]">להחזיק את הלהקה נכון</SafeTitle>
+        <SafeTitle as="h2" className="mt-4 max-w-[19rem] text-[clamp(1.82rem,8vw,2.55rem)] font-semibold leading-[1.04] tracking-[-0.054em]">להחזיק את הלהקה נכון</SafeTitle>
         <SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/56">אנשים, תפקידים והרשאות. זהות ברורה לפני כלי ניהול.</SafeMeta>
       </HeroSurface>
       <OpenCluster tone="management" className="px-4 py-4">
-      <div className="mb-4 px-1 text-start"><p className={v6Type.kicker}>חיפוש וסינון</p></div>
-      <div className="space-y-3">
+      <div className="mb-3 px-1 text-start"><p className={v6Type.kicker}>חיפוש וסינון</p></div>
+      <div className="space-y-2.5">
         <FormField label="חיפוש" value={query} onChange={setQuery} placeholder="חיפוש לפי שם או טלפון" />
-        <SegmentedControl value={filterOptions.find((item) => item.id === filter)?.label ?? "כולם"} options={filterOptions.map((item) => item.label)} onChange={(value) => setFilter(filterOptions.find((item) => item.label === value)?.id ?? "all")} />
+        <div className="overflow-x-auto pb-1 no-scrollbar">
+          <SegmentedControl value={filterOptions.find((item) => item.id === filter)?.label ?? "כולם"} options={filterOptions.map((item) => item.label)} onChange={(value) => setFilter(filterOptions.find((item) => item.label === value)?.id ?? "all")} />
+        </div>
         <div className="grid gap-2 sm:grid-cols-4">
           <label className="block text-start"><span className={v6Control.label}>קבוצה</span><select value={groupFilter} onChange={(e) => setGroupFilter(e.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כל הקבוצות</option>{db.groups.map((group) => <option key={group.id} value={group.id} className="bg-zinc-950">{group.name}</option>)}</select></label>
           <label className="block text-start"><span className={v6Control.label}>גיל</span><select value={ageFilter} onChange={(e) => setAgeFilter(e.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כל הגילים</option>{ageGroups.map((age) => <option key={age} value={age} className="bg-zinc-950">{age}</option>)}</select></label>
@@ -1287,9 +1317,9 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
       </OpenCluster>
       <V6SheetController activeSheet={activeSheet} title={selected?.name ?? "משתמש חדש"} onClose={() => setActiveSheet(null)}>{editor}</V6SheetController>
       <div className="grid gap-3">
-        <OpenCluster tone="management" className="lg:p-3">
-          <div className="mb-4 px-1 text-start"><p className={v6Type.kicker}><BidiNumber>{filteredUsers.length}</BidiNumber> מוצגים</p><RtlText as="h2" className={v6Type.sectionTitle}>אנשי הסטודיו</RtlText></div>
-          <div className="space-y-4">{groupedUsers.map((group) => <div key={group.role} className="space-y-2"><p className="text-start text-[11px] font-black text-white/40">{roleLabel[group.role]}</p>{group.users.map((user) => <button key={user.id} onClick={() => openUserSheet(user)} className="w-full"><UserCard user={user} db={db} active={selected?.id === user.id} /></button>)}</div>)}</div>
+        <OpenCluster tone="management" className="px-3 py-4 lg:p-3">
+          <div className="mb-4 px-2 text-start"><p className={v6Type.kicker}><BidiNumber>{filteredUsers.length}</BidiNumber> מוצגים</p><RtlText as="h2" className={v6Type.sectionTitle}>אנשי הסטודיו</RtlText></div>
+          <div className="space-y-4">{groupedUsers.map((group) => <div key={group.role} className="space-y-2.5"><p className="px-2 text-start text-[11px] font-black text-white/40">{roleLabel[group.role]}</p>{group.users.map((user) => <button key={user.id} onClick={() => openUserSheet(user)} className="w-full"><UserCard user={user} db={db} active={selected?.id === user.id} /></button>)}</div>)}</div>
         </OpenCluster>
       </div>
     </div>
@@ -1310,14 +1340,14 @@ function UserCard({ user, db, active }: { user: V6User; db: ReturnType<typeof us
         ? `${groups.map((group) => group.name).join(", ") || "ללא קבוצה"} · ${user.ageGroup ?? "גיל לא צוין"} · הורים: ${linkedParents || "לא שויך"}`
         : user.responsibility || "הרשאות וניהול";
   return (
-    <div dir="rtl" className={v6Cx("lk-safe-row flex items-start gap-3 rounded-[30px] px-3 py-3 text-start transition", active ? "bg-[#f4d58d]/10 text-[#fff7df]" : "text-white hover:bg-white/[0.018]")}>
-      <span className={v6Cx("grid h-10 w-10 shrink-0 place-items-center rounded-full font-semibold", active ? "bg-[#f4d58d]/14 text-[#fff7df]" : v6Cx(v6Tone[tone].soft, v6Tone[tone].text))}>{user.name.slice(0, 1)}</span>
+    <div dir="rtl" className={v6Cx("lk-safe-row flex items-start gap-3 rounded-[30px] border px-3 py-3 text-start shadow-[inset_0_1px_0_rgba(255,247,223,0.030)] transition active:scale-[0.99]", active ? "border-[#f4d58d]/18 bg-[#f4d58d]/10 text-[#fff7df]" : "border-[#f4d58d]/[0.045] bg-white/[0.014] text-white hover:bg-white/[0.024]")}>
+      <span className={v6Cx("grid h-11 w-11 shrink-0 place-items-center rounded-[20px] border border-white/[0.035] font-semibold shadow-[inset_0_1px_0_rgba(255,247,223,0.045)]", active ? "bg-[#f4d58d]/14 text-[#fff7df]" : v6Cx(v6Tone[tone].soft, v6Tone[tone].text))}>{user.name.slice(0, 1)}</span>
       <span className="min-w-0 flex-1">
         <SafeTitle as="span" className="block text-[15px] font-semibold tracking-[-0.024em]">{user.name}</SafeTitle>
         <span className={v6Cx("lk-safe-meta mt-1 block text-[12px] font-medium", active ? "text-white/68" : "text-white/46")}>טלפון: <BidiNumber>{user.phone}</BidiNumber></span>
         <SafeMeta as="span" className={v6Cx("mt-1 block text-[11px] font-medium", active ? "text-white/62" : "text-white/42")}>{meta}</SafeMeta>
       </span>
-      <span className={v6Cx("max-w-[5.5rem] shrink-0 text-[10px] font-semibold leading-tight", active ? "text-white/68" : "text-white/48")}>{user.active ? roleLabel[user.role] : "לא פעיל"}</span>
+      <span className={v6Cx("max-w-[5.5rem] shrink-0 rounded-full border border-white/[0.045] px-2 py-1 text-center text-[10px] font-semibold leading-tight", active ? "bg-[#f4d58d]/10 text-white/72" : "bg-white/[0.022] text-white/48")}>{user.active ? roleLabel[user.role] : "לא פעיל"}</span>
       <DirectionalChevron className="opacity-35" />
     </div>
   );
@@ -1690,7 +1720,7 @@ function SystemScreen({ back }: { back: () => void }) {
   const { db, sync } = useV6();
   const issues = selectV6SystemIssues(db);
   const health = computeV6ManagementHealth(db);
-  return <div className="space-y-4"><BackHeader title="מצב האפליקציה" back={back} /><HeroSurface tone={issues.length ? "urgent" : "studio"} className="p-5"><V6StatusBadge tone={issues.length ? "urgent" : "success"}>{issues.length ? "דורש בדיקה" : "תקין"}</V6StatusBadge><SafeTitle as="h2" className="mt-4 text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">{health.summary}</SafeTitle><SafeMeta as="p" className="mt-4 text-sm leading-relaxed text-white/64">פתיחה, נתונים וסנכרון מוצגים כאן בצורה פשוטה.</SafeMeta></HeroSurface><OpenCluster tone={issues.length ? "urgent" : "studio"} className="grid gap-1 sm:grid-cols-3"><MiniSummary icon={Check} tone="studio" label="פתיחה" title="מיידית" meta={sync} /><MiniSummary icon={Database} tone="admin" label="גרסה" title={`V${db.version}`} meta="נתונים" /><MiniSummary icon={HeartPulse} tone={issues.length ? "urgent" : "modern"} label="מצב" title={issues.length ? `${issues.length} לבדיקה` : "תקין"} meta={issues.length ? "צריך לבדוק" : "ללא חסימות"} /></OpenCluster><Widget title="בדיקות" kicker="מעקב יומי" icon={HeartPulse} tone={issues.length ? "urgent" : "studio"}><div className="space-y-2">{issues.length ? issues.map((issue) => <V6FeedRow key={issue.id} icon={HeartPulse} title={issue.title} body={issue.body} meta={issue.severity === "critical" ? "חשוב" : "בדיקה"} tone={issue.severity === "critical" ? "urgent" : "management"} />) : <V6FeedRow icon={CheckCircle2} title="אין חסימות פעילות" body="האפליקציה מוכנה לפתיחה ושימוש יומי." meta="תקין" tone="studio" />}</div></Widget></div>;
+  return <div className="space-y-4"><BackHeader title="פתיחה וסנכרון" back={back} /><HeroSurface tone={issues.length ? "urgent" : "studio"} className="p-5"><V6StatusBadge tone={issues.length ? "urgent" : "success"}>{issues.length ? "דורש בדיקה" : "תקין"}</V6StatusBadge><SafeTitle as="h2" className="mt-4 text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">{health.summary}</SafeTitle><SafeMeta as="p" className="mt-4 text-sm leading-relaxed text-white/64">פתיחה, נתונים וסנכרון מוצגים כאן בצורה פשוטה.</SafeMeta></HeroSurface><OpenCluster tone={issues.length ? "urgent" : "studio"} className="grid gap-1 sm:grid-cols-3"><MiniSummary icon={Check} tone="studio" label="פתיחה" title="מיידית" meta={sync} /><MiniSummary icon={Database} tone="admin" label="גרסה" title={`V${db.version}`} meta="נתונים" /><MiniSummary icon={HeartPulse} tone={issues.length ? "urgent" : "modern"} label="בדיקות" title={issues.length ? `${issues.length} לבדיקה` : "תקין"} meta={issues.length ? "צריך לבדוק" : "ללא חסימות"} /></OpenCluster><Widget title="בדיקות" kicker="מעקב יומי" icon={HeartPulse} tone={issues.length ? "urgent" : "studio"}><div className="space-y-2">{issues.length ? issues.map((issue) => <V6FeedRow key={issue.id} icon={HeartPulse} title={issue.title} body={issue.body} meta={issue.severity === "critical" ? "חשוב" : "בדיקה"} tone={issue.severity === "critical" ? "urgent" : "management"} />) : <V6FeedRow icon={CheckCircle2} title="אין חסימות פעילות" body="האפליקציה מוכנה לפתיחה ושימוש יומי." meta="תקין" tone="studio" />}</div></Widget></div>;
 }
 
 function integrationTone(status: IntegrationHealthItem["statusHe"]): V6Tone {

@@ -14,24 +14,28 @@ type LoginMethod = "password" | "sms";
 const inputStyle = {
   width: "100%",
   boxSizing: "border-box" as const,
-  border: "1px solid rgba(255,255,255,0.18)",
-  borderRadius: 14,
-  padding: "13px 14px",
+  border: "1px solid rgba(246,230,181,0.12)",
+  borderRadius: 22,
+  padding: "14px 15px",
   color: "#fff",
-  background: "rgba(255,255,255,0.08)",
-  minHeight: 48
+  background: "linear-gradient(180deg, rgba(255,247,223,0.058), rgba(255,255,255,0.022))",
+  boxShadow: "inset 0 1px 0 rgba(255,247,223,0.06)",
+  minHeight: 54,
+  outline: "none",
+  transition: "border-color 160ms ease, background 160ms ease, box-shadow 160ms ease"
 };
 
 const buttonStyle = {
   marginTop: 8,
   border: 0,
-  borderRadius: 16,
+  borderRadius: 22,
   padding: "14px 16px",
   color: "#120f18",
   fontWeight: 800,
   background: "linear-gradient(135deg, #F6E6B5, #D7B56D)",
+  boxShadow: "0 14px 34px rgba(215,181,109,0.18), inset 0 1px 0 rgba(255,255,255,0.55)",
   cursor: "pointer",
-  minHeight: 48
+  minHeight: 52
 };
 
 function messageFor(error?: string | null) {
@@ -149,16 +153,19 @@ export function AcademyOtpLoginForm({ academyId, slug, enabled }: AcademyOtpLogi
   }
 
   return (
-    <div style={{ display: "grid", gap: 12 }}>
+    <div style={{ position: "relative", zIndex: 1, display: "grid", gap: 14 }}>
       {errorMessage || notice ? (
         <div
           role="status"
           style={{
-            borderRadius: 18,
+            borderRadius: 22,
             border: `1px solid ${errorMessage ? "rgba(251,113,133,0.34)" : "rgba(52,211,153,0.34)"}`,
-            padding: 14,
+            padding: "14px 15px",
             color: "rgba(255,255,255,0.86)",
-            background: errorMessage ? "rgba(127,29,29,0.24)" : "rgba(6,78,59,0.22)",
+            background: errorMessage
+              ? "linear-gradient(145deg, rgba(127,29,29,0.30), rgba(255,255,255,0.025))"
+              : "linear-gradient(145deg, rgba(6,78,59,0.28), rgba(255,255,255,0.025))",
+            boxShadow: "inset 0 1px 0 rgba(255,247,223,0.06)",
             lineHeight: 1.6
           }}
         >
@@ -174,7 +181,7 @@ export function AcademyOtpLoginForm({ academyId, slug, enabled }: AcademyOtpLogi
           if (method === "sms" && step === "phone") void sendCode();
           if (method === "sms" && step === "code") void verifyCode();
         }}
-        style={{ display: "grid", gap: 12 }}
+        style={{ display: "grid", gap: 14 }}
       >
         <input name="slug" type="hidden" value={slug} />
         <input name="academyId" type="hidden" value={academyId} />
@@ -186,10 +193,12 @@ export function AcademyOtpLoginForm({ academyId, slug, enabled }: AcademyOtpLogi
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             gap: 8,
-            padding: 4,
-            borderRadius: 18,
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.08)"
+            padding: 5,
+            borderRadius: 24,
+            background: "rgba(255,247,223,0.045)",
+            border: "1px solid rgba(246,230,181,0.10)",
+            boxShadow: "inset 0 1px 0 rgba(255,247,223,0.05)",
+            overflow: "hidden"
           }}
         >
           {([
@@ -204,12 +213,14 @@ export function AcademyOtpLoginForm({ academyId, slug, enabled }: AcademyOtpLogi
               onClick={() => resetFlow(id)}
               disabled={loading}
               style={{
-                minHeight: 42,
-                borderRadius: 14,
+                minHeight: 44,
+                borderRadius: 19,
                 color: method === id ? "#120f18" : "rgba(255,255,255,0.78)",
                 fontWeight: 800,
                 background: method === id ? "linear-gradient(135deg, #F6E6B5, #D7B56D)" : "transparent",
-                cursor: loading ? "not-allowed" : "pointer"
+                boxShadow: method === id ? "0 10px 26px rgba(215,181,109,0.14), inset 0 1px 0 rgba(255,255,255,0.48)" : "none",
+                cursor: loading ? "not-allowed" : "pointer",
+                transition: "background 160ms ease, color 160ms ease, transform 160ms ease"
               }}
             >
               {label}
@@ -217,8 +228,8 @@ export function AcademyOtpLoginForm({ academyId, slug, enabled }: AcademyOtpLogi
           ))}
         </div>
 
-        <label style={{ display: "grid", gap: 6 }}>
-          <span>טלפון נייד</span>
+        <label style={{ display: "grid", gap: 7 }}>
+          <span style={{ color: "rgba(255,255,255,0.62)", fontSize: 13, fontWeight: 700 }}>טלפון נייד</span>
           <input
             name="phone"
             type="tel"
@@ -234,8 +245,8 @@ export function AcademyOtpLoginForm({ academyId, slug, enabled }: AcademyOtpLogi
         </label>
 
         {method === "password" ? (
-          <label style={{ display: "grid", gap: 6 }}>
-            <span>סיסמה</span>
+          <label style={{ display: "grid", gap: 7 }}>
+            <span style={{ color: "rgba(255,255,255,0.62)", fontSize: 13, fontWeight: 700 }}>סיסמה</span>
             <input
               name="password"
               type="password"
@@ -249,8 +260,8 @@ export function AcademyOtpLoginForm({ academyId, slug, enabled }: AcademyOtpLogi
         ) : null}
 
         {method === "sms" && step !== "phone" ? (
-          <label style={{ display: "grid", gap: 6 }}>
-            <span>קוד חד־פעמי</span>
+          <label style={{ display: "grid", gap: 7 }}>
+            <span style={{ color: "rgba(255,255,255,0.62)", fontSize: 13, fontWeight: 700 }}>קוד חד־פעמי</span>
             <input
               name="code"
               type="text"
@@ -274,7 +285,8 @@ export function AcademyOtpLoginForm({ academyId, slug, enabled }: AcademyOtpLogi
           style={{
             ...buttonStyle,
             cursor: !enabled || loading || step === "done" ? "not-allowed" : "pointer",
-            opacity: !enabled || loading || step === "done" ? 0.58 : 1
+            opacity: !enabled || loading || step === "done" ? 0.58 : 1,
+            transition: "opacity 160ms ease, transform 160ms ease, filter 160ms ease"
           }}
         >
           {loading ? "רגע..." : method === "password" ? "כניסה לסטודיו" : step === "phone" ? "שליחת קוד SMS" : "כניסה עם קוד"}
@@ -290,7 +302,7 @@ export function AcademyOtpLoginForm({ academyId, slug, enabled }: AcademyOtpLogi
               setError(null);
               setNotice(null);
             }}
-            style={{ color: "rgba(246,230,181,0.9)", padding: "8px 0", textAlign: "center" }}
+            style={{ color: "rgba(246,230,181,0.9)", padding: "10px 0", textAlign: "center", minHeight: 42 }}
           >
             שינוי מספר טלפון
           </button>

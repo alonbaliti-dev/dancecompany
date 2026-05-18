@@ -5,12 +5,12 @@
 :root {
   color-scheme: dark;
 
-  --bg-canvas: #030203;
-  --bg-card: #0d0709;
+  --bg-canvas: #020102;
+  --bg-card: #0b0709;
   --bg-elevated: #151014;
-  --bg-glass: rgba(11, 6, 8, 0.82);
-  --border-subtle: rgba(244, 213, 141, 0.07);
-  --border-accent: rgba(244, 213, 141, 0.26);
+  --bg-glass: rgba(10, 6, 8, 0.84);
+  --border-subtle: rgba(244, 213, 141, 0.09);
+  --border-accent: rgba(244, 213, 141, 0.34);
 
   --text-primary: rgba(255, 255, 255, 0.91);
   --text-secondary: rgba(255, 255, 255, 0.58);
@@ -52,6 +52,13 @@
   --radius-nav: 1.5rem;
   --shadow-card-inset: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   --shadow-nav: 0 -16px 56px rgba(0, 0, 0, 0.5);
+  --shadow-premium-card:
+    0 34px 94px rgba(0, 0, 0, 0.46),
+    0 12px 42px rgba(244, 213, 141, 0.045),
+    inset 0 1px 0 rgba(255, 247, 223, 0.075);
+  --focus-premium:
+    0 0 0 2px rgba(244, 213, 141, 0.34),
+    0 0 0 7px rgba(244, 213, 141, 0.085);
 
   /* Safe areas — iPhone notch, Dynamic Island, home indicator, iPad */
   --safe-top: env(safe-area-inset-top, 0px);
@@ -103,7 +110,10 @@ body {
   min-height: 100%;
   min-height: var(--app-height);
   min-height: var(--app-height-px, var(--app-height));
-  background: var(--bg-canvas);
+  background:
+    radial-gradient(ellipse 90% 46% at 50% -10%, rgba(244, 213, 141, 0.09), transparent 58%),
+    radial-gradient(ellipse 70% 46% at 105% 10%, rgba(61, 16, 39, 0.22), transparent 60%),
+    var(--bg-canvas);
   color: var(--text-primary);
   overflow-x: hidden;
   max-width: 100vw;
@@ -187,6 +197,37 @@ textarea {
 ::selection {
   background: rgba(215, 181, 109, 0.30);
   color: #fff;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-premium);
+}
+
+@supports selector(:focus-visible) {
+  :where(button, a, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+    outline: none;
+    box-shadow: var(--focus-premium);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid rgba(2, 1, 2, 0.86);
+  border-radius: 999px;
+  background: rgba(244, 213, 141, 0.20);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(244, 213, 141, 0.28);
 }
 
 /* --- Viewport utilities --- */
@@ -294,15 +335,15 @@ textarea {
 
 /* --- Glass surfaces with opaque fallbacks --- */
 .surface-chrome {
-  background-color: rgba(8, 8, 10, 0.94);
+  background-color: rgba(8, 5, 7, 0.94);
 }
 
 .surface-header {
-  background-color: rgba(6, 6, 8, 0.92);
+  background-color: rgba(7, 5, 7, 0.92);
 }
 
 .surface-card {
-  background-color: rgba(16, 16, 20, 0.88);
+  background-color: rgba(15, 10, 12, 0.88);
 }
 
 .overlay-dim {
@@ -313,21 +354,21 @@ textarea {
   (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))
 ) {
   .surface-chrome {
-    background-color: rgba(8, 8, 10, 0.88);
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
-    backdrop-filter: blur(24px) saturate(150%);
+    background-color: rgba(8, 5, 7, 0.86);
+    -webkit-backdrop-filter: blur(28px) saturate(155%);
+    backdrop-filter: blur(28px) saturate(155%);
   }
 
   .surface-header {
-    background-color: rgba(6, 6, 8, 0.55);
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
-    backdrop-filter: blur(24px) saturate(150%);
+    background-color: rgba(7, 5, 7, 0.66);
+    -webkit-backdrop-filter: blur(26px) saturate(150%);
+    backdrop-filter: blur(26px) saturate(150%);
   }
 
   .surface-card {
-    background-color: rgba(16, 16, 20, 0.72);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
+    background-color: rgba(15, 10, 12, 0.70);
+    -webkit-backdrop-filter: blur(26px) saturate(138%);
+    backdrop-filter: blur(26px) saturate(138%);
   }
 
   .overlay-blur {
@@ -362,11 +403,11 @@ textarea {
 /* Premium ambient canvas — Apple Fitness–inspired depth */
 .app-canvas-glow {
   background:
-    radial-gradient(ellipse 105% 55% at 50% -18%, rgba(244, 213, 141, 0.15), transparent 54%),
-    radial-gradient(ellipse 52% 42% at 92% 12%, rgba(100, 28, 63, 0.18), transparent 50%),
-    radial-gradient(ellipse 48% 38% at 4% 52%, rgba(139, 92, 246, 0.08), transparent 52%),
-    radial-gradient(ellipse 40% 30% at 70% 88%, rgba(16, 185, 129, 0.065), transparent 46%),
-    var(--bg-canvas);
+    radial-gradient(ellipse 112% 56% at 50% -20%, rgba(244, 213, 141, 0.17), transparent 58%),
+    radial-gradient(ellipse 56% 44% at 94% 12%, rgba(100, 28, 63, 0.20), transparent 56%),
+    radial-gradient(ellipse 48% 38% at 4% 56%, rgba(139, 92, 246, 0.075), transparent 55%),
+    radial-gradient(ellipse 42% 30% at 70% 90%, rgba(16, 185, 129, 0.055), transparent 50%),
+    linear-gradient(180deg, #020102 0%, #080405 46%, #020102 100%);
 }
 
 .lk-card {
@@ -374,16 +415,26 @@ textarea {
   min-width: 0;
   max-width: 100%;
   border-radius: var(--lk-card-radius);
-  border: 1px solid rgba(244, 213, 141, 0.07);
-  background: linear-gradient(155deg, rgba(255, 247, 223, 0.048) 0%, rgba(255, 255, 255, 0.014) 52%, rgba(0, 0, 0, 0.16) 100%);
-  box-shadow:
-    0 24px 68px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(255, 247, 223, 0.055);
+  border: 1px solid rgba(244, 213, 141, 0.095);
+  background:
+    linear-gradient(155deg, rgba(255, 247, 223, 0.066) 0%, rgba(255, 255, 255, 0.018) 52%, rgba(0, 0, 0, 0.20) 100%),
+    rgba(11, 7, 9, 0.74);
+  box-shadow: var(--shadow-premium-card);
 }
 
 .lk-card-press {
-  transition: transform 0.18s ease, border-color 0.18s ease;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
   touch-action: manipulation;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lk-card-press:hover {
+    border-color: rgba(244, 213, 141, 0.16);
+    box-shadow:
+      0 40px 112px rgba(0, 0, 0, 0.50),
+      0 16px 48px rgba(244, 213, 141, 0.06),
+      inset 0 1px 0 rgba(255, 247, 223, 0.085);
+  }
 }
 
 .lk-card-press:active {
@@ -391,12 +442,15 @@ textarea {
 }
 
 .lk-login-panel {
-  border-radius: 2.375rem;
-  border: 1px solid rgba(244, 213, 141, 0.105);
-  background: linear-gradient(155deg, rgba(255, 247, 223, 0.10) 0%, rgba(12, 7, 9, 0.92) 100%);
+  border-radius: clamp(1.75rem, 8vw, 2.6rem);
+  border: 1px solid rgba(244, 213, 141, 0.14);
+  background:
+    radial-gradient(ellipse 82% 70% at 100% 0%, rgba(244, 213, 141, 0.12), transparent 60%),
+    linear-gradient(155deg, rgba(255, 247, 223, 0.105) 0%, rgba(12, 7, 9, 0.93) 100%);
   box-shadow:
-    0 38px 104px rgba(0, 0, 0, 0.58),
-    inset 0 1px 0 rgba(255, 247, 223, 0.11);
+    0 42px 118px rgba(0, 0, 0, 0.64),
+    0 18px 70px rgba(244, 213, 141, 0.055),
+    inset 0 1px 0 rgba(255, 247, 223, 0.13);
 }
 
 .lk-shop-hero {
@@ -442,13 +496,24 @@ textarea {
   align-items: flex-end;
   justify-content: center;
   gap: 0.35rem;
-  border-radius: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border-radius: 1.45rem;
+  border: 1px solid rgba(244, 213, 141, 0.08);
+  background:
+    linear-gradient(165deg, rgba(255, 247, 223, 0.060) 0%, rgba(255, 255, 255, 0.018) 62%, rgba(0, 0, 0, 0.12) 100%);
   padding: 0.9rem 1rem;
   text-align: right;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 247, 223, 0.06);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .premium-tile:hover {
+    border-color: rgba(244, 213, 141, 0.15);
+    background:
+      linear-gradient(165deg, rgba(255, 247, 223, 0.082) 0%, rgba(255, 255, 255, 0.024) 62%, rgba(0, 0, 0, 0.14) 100%);
+  }
 }
 
 .premium-tile:active {
@@ -464,11 +529,12 @@ textarea {
 }
 
 .premium-nav-pill {
-  background: linear-gradient(180deg, rgba(22, 22, 28, 0.96) 0%, rgba(10, 10, 12, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: linear-gradient(180deg, rgba(20, 14, 16, 0.96) 0%, rgba(7, 5, 6, 0.98) 100%);
+  border: 1px solid rgba(244, 213, 141, 0.11);
   box-shadow:
     0 -20px 60px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 -8px 42px rgba(244, 213, 141, 0.035),
+    inset 0 1px 0 rgba(255, 247, 223, 0.07);
 }
 
 .app-root {
@@ -587,6 +653,25 @@ textarea {
 .lk-safe-control,
 .lk-safe-control > * {
   min-width: 0;
+}
+
+.lk-safe-control:is(input, select, textarea) {
+  -webkit-appearance: none;
+  appearance: none;
+  background:
+    linear-gradient(180deg, rgba(255, 247, 223, 0.058), rgba(255, 255, 255, 0.020)) !important;
+  border-color: rgba(244, 213, 141, 0.085) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 247, 223, 0.060) !important;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.lk-safe-control:is(input, select, textarea):focus {
+  background:
+    linear-gradient(180deg, rgba(255, 247, 223, 0.075), rgba(255, 255, 255, 0.028)) !important;
+  border-color: rgba(244, 213, 141, 0.30) !important;
+  box-shadow:
+    0 0 0 4px rgba(244, 213, 141, 0.070),
+    inset 0 1px 0 rgba(255, 247, 223, 0.075) !important;
 }
 
 .lk-safe-surface button,

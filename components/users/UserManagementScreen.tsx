@@ -144,12 +144,12 @@ export function UserManagementScreen({
         </div>
 
         <div className="relative">
-          <Search className="pointer-events-none absolute right-3.5 top-1/2 size-[1.1rem] -translate-y-1/2 text-white/35" />
+          <Search className="pointer-events-none absolute right-3.5 top-1/2 size-[1.1rem] -translate-y-1/2 text-[#f4d58d]/50" />
           <input
             value={filters.q}
             onChange={(e) => setFilters((f) => ({ ...f, q: e.target.value }))}
             placeholder="חיפוש לפי שם, טלפון או אימייל…"
-            className="w-full rounded-2xl border border-white/10 bg-white/[0.05] py-3.5 pl-4 pr-11 text-[15px] text-white outline-none placeholder:text-white/35 focus:border-emerald-400/35"
+            className="w-full rounded-[24px] border border-[#f4d58d]/10 bg-[linear-gradient(180deg,rgba(255,247,223,0.052),rgba(255,255,255,0.020))] py-3.5 pl-4 pr-11 text-[15px] text-white shadow-[inset_0_1px_0_rgba(255,247,223,0.055)] outline-none transition placeholder:text-white/35 focus:border-[#f4d58d]/30 focus:bg-white/[0.065]"
           />
         </div>
 
@@ -157,7 +157,7 @@ export function UserManagementScreen({
           <select
             value={filters.type}
             onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value as UserMgmtFilters["type"] }))}
-            className="rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
+            className="rounded-2xl border border-[#f4d58d]/10 bg-black/40 px-3 py-2 text-sm text-white shadow-[inset_0_1px_0_rgba(255,247,223,0.035)] outline-none focus:border-[#f4d58d]/30"
           >
             <option value="all">כל הסוגים</option>
             {sections.map((s) => (
@@ -169,7 +169,7 @@ export function UserManagementScreen({
           <select
             value={filters.status}
             onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value as UserMgmtFilters["status"] }))}
-            className="rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
+            className="rounded-2xl border border-[#f4d58d]/10 bg-black/40 px-3 py-2 text-sm text-white shadow-[inset_0_1px_0_rgba(255,247,223,0.035)] outline-none focus:border-[#f4d58d]/30"
           >
             <option value="all">כל הסטטוסים</option>
             <option value="active">פעיל</option>
@@ -179,7 +179,7 @@ export function UserManagementScreen({
           <select
             value={filters.groupId}
             onChange={(e) => setFilters((f) => ({ ...f, groupId: e.target.value }))}
-            className="rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
+            className="rounded-2xl border border-[#f4d58d]/10 bg-black/40 px-3 py-2 text-sm text-white shadow-[inset_0_1px_0_rgba(255,247,223,0.035)] outline-none focus:border-[#f4d58d]/30"
           >
             <option value="all">כל הקבוצות</option>
             {getStudioGroups().map((g) => (
@@ -220,15 +220,15 @@ export function UserManagementScreen({
             })}
           </div>
         ) : (
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+          <div className="space-y-2 max-h-[60vh] overflow-y-auto rounded-[28px] border border-[#f4d58d]/7 bg-black/[0.10] p-2">
             {filtered.map((u) => (
               <button
                 key={u.id}
                 type="button"
                 onClick={() => setSelectedId(u.id)}
                 className={cx(
-                  "w-full rounded-2xl border px-4 py-3 text-right transition",
-                  selected?.id === u.id ? "border-emerald-400/30 bg-emerald-500/10" : "border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.05]"
+                  "w-full rounded-[22px] border px-4 py-3 text-right shadow-[inset_0_1px_0_rgba(255,247,223,0.035)] transition",
+                  selected?.id === u.id ? "border-[#f4d58d]/24 bg-[#f4d58d]/[0.075]" : "border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.05]"
                 )}
               >
                 <p className="font-semibold text-white">{u.name}</p>
@@ -306,10 +306,10 @@ function UserCard({
   const editable = canEditUser(actor, user);
 
   return (
-    <Card animated={false} className="!p-4">
+    <Card animated={false} className="!p-4 lk-card-press">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-1 items-start gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-base font-semibold text-white">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[22px] border border-[#f4d58d]/10 bg-white/[0.06] text-base font-semibold text-white shadow-[inset_0_1px_0_rgba(255,247,223,0.050)]">
             {user.avatarInitial}
           </div>
           <div className="min-w-0 text-right">
@@ -332,7 +332,7 @@ function UserCard({
       </div>
 
       {editable ? (
-        <div className="mt-4 flex flex-wrap justify-end gap-2 border-t border-white/[0.06] pt-3">
+        <div className="mt-4 flex flex-wrap justify-end gap-2 border-t border-[#f4d58d]/8 pt-3">
           <GhostButton className="!text-[11px]" onClick={onEdit}>
             עריכה
           </GhostButton>
@@ -384,7 +384,7 @@ function UserDetailPanel({
   return (
     <Card animated={false} className="sticky top-4 !p-5">
       <div className="flex items-center gap-3">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-lg font-semibold text-white">
+        <div className="flex h-14 w-14 items-center justify-center rounded-[24px] border border-[#f4d58d]/10 bg-white/[0.06] text-lg font-semibold text-white shadow-[inset_0_1px_0_rgba(255,247,223,0.050)]">
           <UserRound size={22} className="text-white/50" />
         </div>
         <div className="text-right">
