@@ -2,7 +2,7 @@
 
 import { type ElementType, type ReactNode } from "react";
 import { AlertTriangle, CalendarDays, ChevronLeft, Clock3, DoorOpen, PencilLine, Sparkles, Users } from "lucide-react";
-import { v6Cx, v6Interactive, v6Motion, v6Radius, v6Safe, v6Space, v6Surface, v6Tone, v6Type, type V6Tone } from "./tokens";
+import { v6Cx, v6Interactive, v6Motion, v6Radius, v6Safe, v6Space, v6Surface, v6Tone, v6Type, v6Visual, type V6Tone } from "./tokens";
 import { BidiNumber, SafeMeta, SafeTitle } from "./primitives";
 
 export function MobileScreen({ children, className }: { children: ReactNode; className?: string }) {
@@ -124,14 +124,72 @@ export function MobileInfoTile({ icon: Icon, label, value, tone = "studio" }: { 
 
 export function ManagementSummaryTile({ icon: Icon, label, value, meta, tone = "management" }: { icon: ElementType; label: ReactNode; value: ReactNode; meta?: ReactNode; tone?: V6Tone }) {
   return (
-    <div dir="rtl" className={v6Cx("lk-safe-surface min-w-0 rounded-[18px] border px-2.5 py-2.5 text-start", v6Surface.inset)}>
-      <div className="flex items-center justify-between gap-2">
-        <SafeMeta as="span" className="truncate text-[9px] font-semibold text-white/36">{label}</SafeMeta>
-        <Icon size={12} strokeWidth={1.8} aria-hidden="true" className={v6Tone[tone].text} />
+    <div dir="rtl" className={v6Cx("lk-safe-surface relative isolate min-w-0 overflow-hidden rounded-[20px] border px-3 py-3 text-start", v6Surface.tile)}>
+      <div className="pointer-events-none absolute -left-8 -top-10 h-16 w-16 rounded-full bg-[#f4d58d]/[0.050] blur-2xl" />
+      <div className="relative z-10 flex items-center justify-between gap-2 text-white/36">
+        <SafeMeta as="span" className="truncate text-[9.5px] font-semibold uppercase tracking-[0.14em]">{label}</SafeMeta>
+        <span className={v6Cx("grid h-6 w-6 shrink-0 place-items-center rounded-[10px]", v6Tone[tone].soft, v6Tone[tone].text)}>
+          <Icon size={11.5} strokeWidth={1.8} aria-hidden="true" />
+        </span>
       </div>
-      <SafeTitle as="span" className={v6Cx("mt-1 block truncate text-[1.15rem] font-semibold leading-none tracking-[-0.042em]", v6Tone[tone].text)}>{value}</SafeTitle>
-      {meta ? <SafeMeta as="span" className="mt-1 block truncate text-[9.5px] font-medium text-white/35">{meta}</SafeMeta> : null}
+      <SafeTitle as="span" className={v6Cx("relative z-10 mt-2 block truncate text-[1.45rem] font-semibold leading-none tracking-[-0.055em]", v6Tone[tone].text)}>{value}</SafeTitle>
+      {meta ? <SafeMeta as="span" className="relative z-10 mt-1.5 block truncate text-[9.8px] font-medium text-white/40">{meta}</SafeMeta> : null}
     </div>
+  );
+}
+
+export function LiveActivityRow({
+  icon: Icon,
+  title,
+  subtitle,
+  meta,
+  stateLabel,
+  tone = "studio",
+  pulse = false,
+  onClick,
+  ariaLabel
+}: {
+  icon: ElementType;
+  title: ReactNode;
+  subtitle?: ReactNode;
+  meta?: ReactNode;
+  stateLabel: ReactNode;
+  tone?: V6Tone;
+  pulse?: boolean;
+  onClick?: () => void;
+  ariaLabel?: string;
+}) {
+  return (
+    <button
+      dir="rtl"
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel ?? (typeof title === "string" ? title : undefined)}
+      className={v6Cx(
+        "group grid min-h-[62px] w-full grid-cols-[auto_auto_1fr_auto] items-center gap-2.5 overflow-hidden rounded-[20px] border px-3 py-2.5 text-start",
+        v6Surface.whisper,
+        v6Motion.standard,
+        v6Motion.pressSoft,
+        v6Motion.focusRing,
+        onClick && v6Interactive.row
+      )}
+    >
+      <span className={v6Cx("h-2.5 w-2.5 shrink-0 rounded-full shadow-[0_0_18px_rgba(244,213,141,0.18)]", v6Tone[tone].soft, pulse && "animate-pulse")} aria-hidden="true" />
+      <span className={v6Cx("grid h-9 w-9 shrink-0 place-items-center rounded-[14px]", v6Motion.iconPress, v6Tone[tone].soft, v6Tone[tone].text)}>
+        <Icon size={13.5} strokeWidth={1.9} aria-hidden="true" />
+      </span>
+      <span className="min-w-0">
+        <span className="flex items-center justify-between gap-2">
+          <SafeTitle as="span" className="block truncate text-[13px] font-semibold tracking-[-0.012em] text-white/88">{title}</SafeTitle>
+          <span className={v6Cx("shrink-0 rounded-full px-2 py-0.5 text-[9px] font-semibold", v6Tone[tone].soft, v6Tone[tone].text)}>{stateLabel}</span>
+        </span>
+        {subtitle ? <SafeMeta as="span" className="mt-0.5 block truncate text-[9.8px] font-medium text-white/43">{subtitle}</SafeMeta> : null}
+      </span>
+      <span className="flex min-w-0 shrink-0 items-center gap-1.5">
+        {meta ? <SafeMeta as="span" className="max-w-[5.8rem] truncate text-[9.5px] font-semibold text-white/42">{meta}</SafeMeta> : null}
+        {onClick ? <ChevronLeft size={13} strokeWidth={1.8} className="text-white/24 transition group-hover:text-white/42" aria-hidden="true" /> : null}
+      </span>
+    </button>
   );
 }
 
@@ -254,28 +312,30 @@ export function WeeklyStudioTimetableShell({
   children: ReactNode;
 }) {
   return (
-    <div dir="rtl" className={v6Cx("space-y-2 rounded-[24px] border p-2 text-start", v6Surface.elevated)}>
-      <div className="flex items-start justify-between gap-2.5 px-1">
+    <div dir="rtl" className={v6Cx("lk-safe-surface relative isolate overflow-hidden rounded-[28px] border p-2.5 text-start sm:p-3", v6Surface.glassStrong, v6Visual.texture)}>
+      <div className={v6Cx("pointer-events-none absolute -left-16 top-2 z-0 h-32 w-32 rounded-full opacity-8 blur-3xl", v6Tone.management.beam)} />
+      <div className="pointer-events-none absolute inset-x-8 top-0 z-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/24 to-transparent" />
+      <div className="relative z-10 flex items-start justify-between gap-3 px-1">
         <div className="min-w-0">
           <SafeMeta as="p" className={v6Type.kicker}>מערכת סטודיו שבועית</SafeMeta>
-          <SafeTitle as="h2" className="mt-1 text-[16px] font-semibold leading-tight tracking-[-0.030em] text-white/88">תכנון שבועי קבוע</SafeTitle>
-          <SafeMeta as="p" className="mt-1 max-w-[15rem] text-[10px] leading-relaxed text-white/42">{weekLabel}</SafeMeta>
+          <SafeTitle as="h2" className="mt-1 text-[clamp(1rem,4.6vw,1.28rem)] font-semibold leading-tight tracking-[-0.034em] text-white/90">תכנון שבועי קבוע</SafeTitle>
+          <SafeMeta as="p" className="mt-1.5 max-w-[18rem] text-[10.5px] leading-relaxed text-white/48">{weekLabel}</SafeMeta>
         </div>
         <div className="grid shrink-0 grid-cols-2 gap-1">
-          <span className="rounded-[15px] border border-white/[0.045] bg-black/16 px-2 py-1.5 text-center">
+          <span className="rounded-[16px] border border-[#f4d58d]/[0.075] bg-white/[0.045] px-2.5 py-2 text-center shadow-[inset_0_1px_0_rgba(255,247,223,0.052)]">
             <SafeTitle as="span" className="block text-[14px] font-semibold leading-none text-[#f4d58d]"><BidiNumber>{lessonCount}</BidiNumber></SafeTitle>
             <SafeMeta as="span" className="mt-1 block text-[8px] font-semibold text-white/34">שיעורים</SafeMeta>
           </span>
-          <span className="rounded-[15px] border border-white/[0.045] bg-black/16 px-2 py-1.5 text-center">
+          <span className="rounded-[16px] border border-sky-100/[0.070] bg-white/[0.038] px-2.5 py-2 text-center shadow-[inset_0_1px_0_rgba(255,247,223,0.046)]">
             <SafeTitle as="span" className="block text-[14px] font-semibold leading-none text-sky-50"><BidiNumber>{roomCount}</BidiNumber></SafeTitle>
             <SafeMeta as="span" className="mt-1 block text-[8px] font-semibold text-white/34">חללים</SafeMeta>
           </span>
         </div>
       </div>
 
-      {actions ? <div className="px-0.5">{actions}</div> : null}
+      {actions ? <div className="relative z-10 mt-2 px-0.5">{actions}</div> : null}
 
-      <div className="-mx-0.5 flex snap-x gap-1.5 overflow-x-auto px-0.5 pb-1 pt-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="relative z-10 -mx-0.5 flex snap-x gap-2 overflow-x-auto px-0.5 pb-1 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {daySummaries.map((day) => {
           const active = Boolean(day.isActive);
           const content = (
@@ -301,7 +361,7 @@ export function WeeklyStudioTimetableShell({
                 onClick={day.onClick}
                 aria-label={`מעבר ליום ${day.day} במערכת השבועית`}
                 aria-pressed={active}
-                className={v6Cx("min-h-[52px] min-w-[92px] snap-start rounded-[18px] border px-3 py-2 text-start", v6Motion.standard, v6Motion.pressSoft, v6Motion.focusRing, active ? "border-[#f4d58d]/45 bg-[#f4d58d] shadow-[0_10px_24px_rgba(244,213,141,0.11)]" : "border-[#f4d58d]/[0.055] bg-white/[0.030] text-white/64 hover:bg-white/[0.045]")}
+                className={v6Cx("min-h-[56px] min-w-[96px] snap-start rounded-[20px] border px-3 py-2 text-start shadow-[inset_0_1px_0_rgba(255,247,223,0.040)]", v6Motion.standard, v6Motion.pressSoft, v6Motion.focusRing, active ? "border-[#f4d58d]/55 bg-[linear-gradient(135deg,#fff9ea,#f4d58d_58%,#d7b56d)] shadow-[0_14px_30px_rgba(244,213,141,0.14),inset_0_1px_0_rgba(255,255,255,0.58)]" : "border-[#f4d58d]/[0.070] bg-white/[0.040] text-white/64 hover:border-[#f4d58d]/15 hover:bg-white/[0.060]")}
               >
                 {content}
               </button>
@@ -309,7 +369,7 @@ export function WeeklyStudioTimetableShell({
           }
 
           return (
-            <span key={day.day} className={v6Cx("min-h-[52px] min-w-[92px] snap-start rounded-[18px] border px-3 py-2", active ? "border-[#f4d58d]/45 bg-[#f4d58d]" : "border-[#f4d58d]/[0.055] bg-white/[0.030]")}>
+            <span key={day.day} className={v6Cx("min-h-[56px] min-w-[96px] snap-start rounded-[20px] border px-3 py-2 shadow-[inset_0_1px_0_rgba(255,247,223,0.035)]", active ? "border-[#f4d58d]/45 bg-[#f4d58d]" : "border-[#f4d58d]/[0.055] bg-white/[0.030]")}>
               {content}
             </span>
           );
@@ -317,11 +377,11 @@ export function WeeklyStudioTimetableShell({
       </div>
 
       {conflictSummary.length ? (
-        <div className="flex flex-wrap gap-1 px-0.5" aria-label="סיכום התנגשויות במערכת השבועית">
+        <div className="relative z-10 flex flex-wrap gap-1.5 px-0.5" aria-label="סיכום התנגשויות במערכת השבועית">
           {conflictSummary.map((item) => {
             const style = weeklyStudioConflictStyles[item.kind];
             return (
-              <span key={item.kind} className={v6Cx("inline-flex min-h-6 items-center gap-1 rounded-full border px-2 text-[8.8px] font-semibold", style.chip)} title={`${item.label}: ${item.count}`}>
+              <span key={item.kind} className={v6Cx("inline-flex min-h-6 items-center gap-1 rounded-full border px-2.5 text-[8.8px] font-semibold shadow-[inset_0_1px_0_rgba(255,247,223,0.045)]", style.chip)} title={`${item.label}: ${item.count}`}>
                 <span className={v6Cx("h-1.5 w-1.5 rounded-full", style.dot)} aria-hidden="true" />
                 {item.compactLabel}
                 <BidiNumber>{item.count}</BidiNumber>
@@ -331,7 +391,7 @@ export function WeeklyStudioTimetableShell({
         </div>
       ) : null}
 
-      <div className="space-y-2">{children}</div>
+      <div className="relative z-10 space-y-2.5">{children}</div>
     </div>
   );
 }
@@ -356,8 +416,9 @@ export function WeeklyStudioDayLane({
   children: ReactNode;
 }) {
   return (
-    <article dir="rtl" className={v6Cx("overflow-hidden rounded-[22px] border p-2 text-start", conflictCount ? "border-rose-200/20 bg-rose-200/[0.035]" : isToday ? "border-[#f4d58d]/24 bg-[#f4d58d]/[0.055]" : "border-[#f4d58d]/[0.052] bg-black/[0.10]")}>
-      <div className="mb-2 flex items-start justify-between gap-2 px-1">
+    <article dir="rtl" className={v6Cx("lk-safe-surface relative isolate overflow-hidden rounded-[24px] border p-2.5 text-start shadow-[inset_0_1px_0_rgba(255,247,223,0.035)]", conflictCount ? "border-rose-200/24 bg-[linear-gradient(135deg,rgba(251,113,133,0.075),rgba(255,255,255,0.014)_58%,rgba(244,213,141,0.026))]" : isToday ? "border-[#f4d58d]/28 bg-[linear-gradient(135deg,rgba(244,213,141,0.090),rgba(255,255,255,0.016)_58%,rgba(125,211,252,0.026))]" : "border-[#f4d58d]/[0.060] bg-[linear-gradient(135deg,rgba(255,247,223,0.036),rgba(255,255,255,0.010)_62%,rgba(0,0,0,0.12))]")}>
+      <div className={v6Cx("pointer-events-none absolute -left-16 -top-16 z-0 h-28 w-28 rounded-full opacity-6 blur-3xl", conflictCount ? v6Tone.urgent.beam : isToday ? v6Tone.repertoire.beam : v6Tone.management.beam)} />
+      <div className="relative z-10 mb-2.5 flex items-start justify-between gap-2 px-1">
         <div className="min-w-0">
           <SafeTitle as="h3" className="flex items-center gap-1.5 text-[14.5px] font-semibold tracking-[-0.018em] text-white/88">
             {conflictCount ? <AlertTriangle size={12} strokeWidth={1.9} className="text-rose-50" aria-hidden="true" /> : <CalendarDays size={12} strokeWidth={1.9} className={isToday ? "text-[#f4d58d]" : "text-white/34"} aria-hidden="true" />}
@@ -369,14 +430,14 @@ export function WeeklyStudioDayLane({
         </div>
         <div className="flex max-w-[48%] flex-wrap justify-end gap-1">
           {rooms.slice(0, 3).map((room, index) => (
-            <span key={`${String(room)}-${index}`} className="inline-flex min-h-6 items-center gap-1 rounded-full border border-white/[0.045] bg-black/18 px-2 text-[8.8px] font-semibold text-white/46">
+            <span key={`${String(room)}-${index}`} className="inline-flex min-h-6 items-center gap-1 rounded-full border border-white/[0.055] bg-white/[0.040] px-2 text-[8.8px] font-semibold text-white/50 shadow-[inset_0_1px_0_rgba(255,247,223,0.035)]">
               <DoorOpen size={9.5} strokeWidth={1.8} aria-hidden="true" />
               {room}
             </span>
           ))}
         </div>
       </div>
-      <div className={v6Cx("grid gap-1.5 sm:grid-cols-2", lessonCount > 5 && "max-h-[62dvh] overflow-y-auto overscroll-contain pr-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden")}>{children}</div>
+      <div className={v6Cx("relative z-10 grid gap-2 sm:grid-cols-2", lessonCount > 5 && "max-h-[62dvh] overflow-y-auto overscroll-contain pr-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden")}>{children}</div>
     </article>
   );
 }
@@ -437,17 +498,19 @@ export function WeeklyStudioLessonCard({
       data-conflict-kind={primaryConflict?.kind}
       style={{ minHeight: `${cardMinHeight}px` }}
       className={v6Cx(
-        "group relative isolate grid w-full grid-cols-[auto_1fr] gap-2.5 overflow-hidden rounded-[19px] border px-2.5 py-2.5 text-start",
-        "border-[#f4d58d]/[0.070] bg-[linear-gradient(135deg,rgba(255,247,223,0.058),rgba(255,255,255,0.018)_58%,rgba(125,211,252,0.032))]",
-        "shadow-[inset_0_1px_0_rgba(255,247,223,0.052)]",
+        "group relative isolate grid w-full grid-cols-[auto_1fr] gap-2.5 overflow-hidden rounded-[22px] border px-2.5 py-2.5 text-start sm:px-3 sm:py-3",
+        "border-[#f4d58d]/[0.078] bg-[radial-gradient(ellipse_78%_64%_at_100%_0%,rgba(244,213,141,0.060),transparent_64%),linear-gradient(135deg,rgba(255,247,223,0.064),rgba(255,255,255,0.020)_58%,rgba(125,211,252,0.034))]",
+        "shadow-[0_12px_30px_rgba(0,0,0,0.16),inset_0_1px_0_rgba(255,247,223,0.060)]",
         primaryConflictStyle?.card,
         v6Motion.standard,
         v6Motion.pressSoft,
         v6Motion.focusRing,
-        onClick && v6Interactive.card
+        onClick && v6Interactive.card,
+        onClick && "motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-[#f4d58d]/18 motion-safe:hover:shadow-[0_18px_42px_rgba(0,0,0,0.24),0_8px_26px_rgba(244,213,141,0.040),inset_0_1px_0_rgba(255,247,223,0.075)]"
       )}
     >
-      <span className="pointer-events-none absolute -left-10 -top-12 h-24 w-24 rounded-full bg-[#f4d58d]/[0.055] blur-3xl" />
+      <span className="pointer-events-none absolute -left-10 -top-12 h-24 w-24 rounded-full bg-[#f4d58d]/[0.065] blur-3xl transition-opacity duration-300 group-hover:opacity-80" />
+      <span className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-l from-transparent via-[#fff7df]/14 to-transparent" />
       <span className="flex flex-col items-center gap-1 pt-0.5">
         <span className={v6Cx("grid h-7 w-7 place-items-center rounded-[12px] border border-white/[0.045]", v6Tone[tone].soft, v6Tone[tone].text)}>
           <Clock3 size={12} strokeWidth={1.9} aria-hidden="true" />
@@ -486,7 +549,7 @@ export function WeeklyStudioLessonCard({
               </span>
             ) : null}
           </span>
-          <span className="inline-flex min-h-6 shrink-0 items-center gap-1 rounded-full border border-white/[0.055] bg-black/18 px-2 text-[9.5px] font-semibold text-white/58">
+          <span className="inline-flex min-h-6 shrink-0 items-center gap-1 rounded-full border border-white/[0.055] bg-white/[0.040] px-2 text-[9.5px] font-semibold text-white/60 shadow-[inset_0_1px_0_rgba(255,247,223,0.035)]">
             <DoorOpen size={9.5} strokeWidth={1.8} aria-hidden="true" />
             {room}
           </span>
@@ -497,13 +560,13 @@ export function WeeklyStudioLessonCard({
             <Sparkles size={9.5} strokeWidth={1.8} aria-hidden="true" />
             <span className="truncate">{danceStyle}</span>
           </span>
-          <span className="inline-flex min-h-6 max-w-full items-center gap-1 rounded-full border border-white/[0.045] bg-white/[0.030] px-2 text-[9px] font-semibold text-white/44">
+          <span className="inline-flex min-h-6 max-w-full items-center gap-1 rounded-full border border-white/[0.050] bg-white/[0.036] px-2 text-[9px] font-semibold text-white/46">
             <Users size={9.5} strokeWidth={1.8} aria-hidden="true" />
             <BidiNumber>{studentCount}</BidiNumber> תלמידות
           </span>
         </span>
 
-        <span className="mt-1.5 grid min-h-8 grid-cols-[1fr_auto] items-center gap-2 rounded-[13px] border border-white/[0.045] bg-black/14 px-2 py-1">
+        <span className="mt-1.5 grid min-h-8 grid-cols-[1fr_auto] items-center gap-2 rounded-[14px] border border-white/[0.050] bg-black/16 px-2 py-1 shadow-[inset_0_1px_0_rgba(255,247,223,0.030)]">
           <SafeMeta as="span" className="truncate text-[9.5px] font-semibold text-white/46">מורה: {teacher}</SafeMeta>
           <span className={v6Cx("inline-flex items-center gap-1 rounded-full px-2 py-1 text-[8.8px] font-semibold", v6Tone[statusTone].soft, v6Tone[statusTone].text)}>
             <PencilLine size={9.5} strokeWidth={1.8} aria-hidden="true" />
@@ -537,12 +600,14 @@ export function RoomAllocationTile({
   room,
   next,
   groupCount,
+  active = false,
   onClick,
   ariaLabel
 }: {
   room: ReactNode;
   next?: ReactNode;
   groupCount: number;
+  active?: boolean;
   onClick?: () => void;
   ariaLabel?: string;
 }) {
@@ -552,15 +617,19 @@ export function RoomAllocationTile({
       type="button"
       onClick={onClick}
       aria-label={ariaLabel ?? (typeof room === "string" ? `פתיחת חדר ${room}` : undefined)}
-      className={v6Cx("group min-h-[74px] w-full rounded-[18px] border px-3 py-2.5 text-start", v6Surface.whisper, v6Motion.standard, v6Motion.pressSoft, v6Motion.focusRing, onClick && v6Interactive.row)}
+      className={v6Cx("group relative isolate min-h-[78px] w-full overflow-hidden rounded-[20px] border px-3.5 py-3 text-start", active ? "border-emerald-100/[0.10] bg-[linear-gradient(135deg,rgba(16,185,129,0.085),rgba(255,255,255,0.018)_58%,rgba(244,213,141,0.030))]" : v6Surface.whisper, v6Motion.standard, v6Motion.pressSoft, v6Motion.focusRing, onClick && v6Interactive.row)}
     >
+      <span className={v6Cx("pointer-events-none absolute -left-10 -top-12 h-20 w-20 rounded-full blur-3xl", active ? "bg-emerald-100/[0.075]" : "bg-white/[0.035]")} />
       <span className="flex items-start justify-between gap-2">
         <span className="min-w-0">
-          <SafeTitle as="span" className="block truncate text-[13px] font-semibold text-white/86">{room}</SafeTitle>
-          {next ? <SafeMeta as="span" className="mt-1 block truncate text-[10px] font-medium text-white/42">{next}</SafeMeta> : null}
+          <span className="flex min-w-0 items-center gap-2">
+            <SafeTitle as="span" className="block truncate text-[13.5px] font-semibold text-white/88">{room}</SafeTitle>
+            <SafeMeta as="span" className="shrink-0 text-[9.2px] font-medium text-white/36">· עדכון חדר</SafeMeta>
+          </span>
+          {next ? <SafeMeta as="span" className="mt-1 block truncate text-[10.2px] font-medium text-white/45">{active ? `מתקיים/הבא: ${next}` : next}</SafeMeta> : null}
         </span>
-        <span className="shrink-0 rounded-full border border-white/[0.055] bg-black/16 px-2 py-1 text-[9.5px] font-semibold text-white/45">
-          <BidiNumber>{groupCount}</BidiNumber> קבוצות
+        <span className={v6Cx("shrink-0 rounded-full px-2.5 py-1 text-[9.5px] font-semibold", active ? "bg-emerald-100 text-emerald-950" : "bg-white/[0.060] text-white/48")}>
+          {active ? "פעיל" : "רגוע"} · <BidiNumber>{groupCount}</BidiNumber>
         </span>
       </span>
     </button>

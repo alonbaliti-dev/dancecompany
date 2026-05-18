@@ -14,7 +14,7 @@ import { createV6TimetableDraftDiscardedAuditEvent, createV6TimetablePublishAtte
 import { createV6TimetableSnapshot, createV6TimetableSnapshotFilename, parseV6TimetableSnapshotJsonImport, serializeV6TimetableSnapshot } from "@/lib/v6/timetable-snapshot";
 import { createTimetablePersistencePayload, hydrateTimetableSessionFromPersistence, type V6TimetablePersistencePayload } from "@/lib/v6/timetable-persistence";
 import { createV6TimetablePersistenceRuntime } from "@/lib/v6/timetable-persistence-runtime";
-import { AttachedPrimaryAction, BidiNumber, BottomSheet, Button, HeroSurface, InlineMetric, ManagementSummaryTile, MobileInfoTile, MobileIntro, MobileList, MobileListRow, MobileScreen, MobileSection, OperationalAlertRow, RoomAllocationTile, SafeMeta, SafeTitle, SheetActions, StatusBadge, Surface, WeeklyStudioDayLane, WeeklyStudioLessonCard, WeeklyStudioTimetableShell, v6Cx, type V6Tone } from "@/components/v6/design-system";
+import { AttachedPrimaryAction, BidiNumber, BottomSheet, Button, HeroSurface, InlineMetric, LiveActivityRow, ManagementSummaryTile, MobileInfoTile, MobileIntro, MobileList, MobileListRow, MobileScreen, MobileSection, OperationalAlertRow, RoomAllocationTile, SafeMeta, SafeTitle, SheetActions, StatusBadge, Surface, WeeklyStudioDayLane, WeeklyStudioLessonCard, WeeklyStudioTimetableShell, v6Control, v6Cx, v6Motion, v6Surface, type V6Tone } from "@/components/v6/design-system";
 
 type HomeAction = {
   icon: ElementType;
@@ -995,16 +995,33 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
         tone="management"
       />
 
-      <HeroSurface tone="management" className="p-4">
+      <HeroSurface tone="management" className="p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <SafeMeta as="p" className="text-[9px] font-semibold uppercase tracking-[0.16em] text-white/38">תמונת מצב תפעולית</SafeMeta>
-            <SafeTitle as="h2" className="mt-2 text-[clamp(1.55rem,6.4vw,2.35rem)] font-semibold leading-tight tracking-[-0.055em] text-white">
-              {liveLesson ? `${liveLesson.time} · ${liveGroup?.name ?? liveLesson.title}` : "היום רגוע במערכת"}
-            </SafeTitle>
-            <SafeMeta as="p" className="mt-2 text-[12px] leading-relaxed text-white/58">
-              {liveLesson ? liveLessonSummary : "כשיוזנו שיעורים, חדרים וצוותים הם יופיעו כאן כתמונת מצב יומית."}
-            </SafeMeta>
+            <div className="flex flex-wrap items-center gap-2">
+              <SafeMeta as="p" className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">מה קורה היום בסטודיו</SafeMeta>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100/[0.08] bg-emerald-100/[0.06] px-2 py-1 text-[9.5px] font-semibold text-emerald-50/78">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-200" aria-hidden="true" />
+                מתעדכן בזמן אמת
+              </span>
+            </div>
+            <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <SafeTitle as="h2" className="text-[clamp(2rem,9vw,3rem)] font-semibold leading-none tracking-[-0.070em] text-white">
+                <BidiNumber>{todayLessons.length}</BidiNumber>
+              </SafeTitle>
+              <SafeMeta as="p" className="max-w-[15rem] text-[12px] leading-relaxed text-white/58">
+                שיעורים היום · <BidiNumber>{activeGroups.length}</BidiNumber> קבוצות פעילות · <BidiNumber>{rooms.length}</BidiNumber> חללים
+              </SafeMeta>
+            </div>
+            <div className="mt-3 rounded-[20px] border border-white/[0.055] bg-white/[0.045] p-3 shadow-[inset_0_1px_0_rgba(255,247,223,0.048)]">
+              <SafeMeta as="p" className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/36">השיעור החי</SafeMeta>
+              <SafeTitle as="p" className="mt-1 truncate text-[14px] font-semibold tracking-[-0.018em] text-white/88">
+                {liveLesson ? `${liveLesson.time} · ${liveGroup?.name ?? liveLesson.title}` : "היום רגוע במערכת"}
+              </SafeTitle>
+              <SafeMeta as="p" className="mt-1 text-[11px] leading-relaxed text-white/48">
+                {liveLesson ? liveLessonSummary : "כשיוזנו שיעורים, חדרים וצוותים הם יופיעו כאן כתמונת מצב יומית."}
+              </SafeMeta>
+            </div>
           </div>
           <StatusBadge tone={attentionItems.length ? "urgent" : "success"}>{attentionItems.length ? "דורש תשומת לב" : "רגוע"}</StatusBadge>
         </div>
@@ -1040,11 +1057,11 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
       </MobileSection>
 
       <MobileSection kicker={liveLesson ? `${liveLesson.time} · ${liveLesson.room}` : "סטטוס חי"} title="פעילות חיה" tone="studio">
-        <MobileList>
-          <MobileListRow icon={Activity} title={liveLesson ? liveGroup?.name ?? liveLesson.title : "אין שיעור פעיל להצגה"} subtitle={liveLesson ? liveActivitySummary : "מערכת השיעורים ריקה כרגע"} meta={liveLesson?.weekday} tone="studio" onClick={() => openTab("lessons")} ariaLabel="פתיחת שיעורי הסטודיו" />
-          <MobileListRow icon={Bell} title={unread ? `${unread} הודעות שלא נקראו` : "אין הודעות חדשות"} subtitle={systemRows[0]?.title ?? "הודעות מערכת וקבוצות"} meta="תקשורת" tone={unread ? "urgent" : "modern"} onClick={() => openTab("messages")} ariaLabel="פתיחת הודעות" />
-          <MobileListRow icon={ClipboardList} title={openTasks.length ? `${openTasks.length} משימות פתוחות` : "אין משימות פתוחות"} subtitle={openTasks[0]?.title ?? "משימות קבוצתיות יוצגו כאן"} meta="מעקב" tone={openTasks.length ? "repertoire" : "success"} onClick={() => openTab("lessons")} ariaLabel="פתיחת משימות ושיעורים" />
-        </MobileList>
+        <div className="space-y-2">
+          <LiveActivityRow icon={Activity} title={liveLesson ? liveGroup?.name ?? liveLesson.title : "אין שיעור פעיל להצגה"} subtitle={liveLesson ? liveActivitySummary : "מערכת השיעורים ריקה כרגע"} meta={liveLesson?.weekday} stateLabel={liveLesson ? "כעת" : "רגוע"} tone={liveLesson ? "studio" : "success"} pulse={Boolean(liveLesson)} onClick={() => openTab("lessons")} ariaLabel="פתיחת שיעורי הסטודיו" />
+          <LiveActivityRow icon={Bell} title={unread ? `${unread} הודעות שלא נקראו` : "אין הודעות חדשות"} subtitle={systemRows[0]?.title ?? "הודעות מערכת וקבוצות"} meta="תקשורת" stateLabel={unread ? "לטיפול" : "שקט"} tone={unread ? "urgent" : "modern"} pulse={Boolean(unread)} onClick={() => openTab("messages")} ariaLabel="פתיחת הודעות" />
+          <LiveActivityRow icon={ClipboardList} title={openTasks.length ? `${openTasks.length} משימות פתוחות` : "אין משימות פתוחות"} subtitle={openTasks[0]?.title ?? "משימות קבוצתיות יוצגו כאן"} meta="מעקב" stateLabel={openTasks.length ? "הבא" : "מסודר"} tone={openTasks.length ? "repertoire" : "success"} onClick={() => openTab("lessons")} ariaLabel="פתיחת משימות ושיעורים" />
+        </div>
       </MobileSection>
 
       <MobileSection kicker={`${lessons.length} שיעורים · ${rooms.length} חללים`} title="מערכת שבועית לסטודיו" tone="management" className="p-1.5">
@@ -1057,7 +1074,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
             daySummaries={localDaySummaries.map((day) => ({ ...day, conflictCount: timetableConflictCountsByDay[day.day] ?? 0, isActive: day.day === selectedDay, onClick: day.lessonCount ? () => setSelectedScheduleDay(day.day) : undefined }))}
             actions={
               <div className="space-y-2">
-                <div className="flex flex-wrap items-center justify-between gap-2 rounded-[18px] border border-[#f4d58d]/[0.065] bg-black/[0.14] px-2.5 py-2">
+                <div className={v6Cx("lk-safe-surface flex flex-wrap items-center justify-between gap-2 rounded-[22px] border px-2.5 py-2.5 shadow-[inset_0_1px_0_rgba(255,247,223,0.050)] sm:px-3", v6Surface.glass)}>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-1.5">
                       <SafeTitle as="p" className="text-[11.5px] font-semibold text-white/82">
@@ -1091,8 +1108,11 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
                     <label
                       htmlFor={timetableImportInputId}
                       className={v6Cx(
-                        "inline-flex min-h-9 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 text-[11px] font-semibold transition active:scale-[0.99]",
-                        "border border-[#f4d58d]/10 bg-white/[0.045] text-white/76 hover:bg-white/[0.075]"
+                        "inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-[16px] px-3.5 text-[13px] font-semibold tracking-[-0.010em]",
+                        v6Motion.standard,
+                        v6Motion.press,
+                        v6Motion.focusRing,
+                        "border border-[rgba(244,213,141,0.075)] bg-white/[0.036] text-white/82 shadow-[inset_0_1px_0_rgba(255,247,223,0.048)] hover:bg-white/[0.056]"
                       )}
                     >
                       <Upload size={12} strokeWidth={1.9} aria-hidden="true" /> ייבוא
@@ -1100,25 +1120,25 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
                   </div>
                 </div>
                 {timetablePublishNotice ? (
-                  <div className="rounded-[16px] border border-[#f4d58d]/[0.070] bg-[#f4d58d]/[0.040] px-2.5 py-2">
-                    <SafeMeta as="p" className="text-[9.6px] font-semibold text-white/54">{timetablePublishNotice}</SafeMeta>
+                  <div className={v6Cx("rounded-[18px] border px-3 py-2", v6Surface.whisper, "bg-[#f4d58d]/[0.045]")}>
+                    <SafeMeta as="p" className="text-[10px] font-semibold leading-relaxed text-white/58">{timetablePublishNotice}</SafeMeta>
                   </div>
                 ) : null}
                 {timetableExportNotice ? (
-                  <div className="rounded-[16px] border border-sky-100/[0.070] bg-sky-200/[0.040] px-2.5 py-2">
-                    <SafeMeta as="p" className="text-[9.6px] font-semibold text-white/54">{timetableExportNotice}</SafeMeta>
+                  <div className={v6Cx("rounded-[18px] border border-sky-100/[0.090] bg-sky-200/[0.045] px-3 py-2", v6Surface.whisper)}>
+                    <SafeMeta as="p" className="text-[10px] font-semibold leading-relaxed text-white/58">{timetableExportNotice}</SafeMeta>
                   </div>
                 ) : null}
                 {timetableImportNotice ? (
                   <div className={v6Cx(
-                    "rounded-[16px] border px-2.5 py-2",
-                    timetableImportNotice.tone === "success" ? "border-emerald-100/[0.070] bg-emerald-200/[0.040]" : "border-red-100/[0.080] bg-red-300/[0.050]"
+                    "rounded-[18px] border px-3 py-2 shadow-[inset_0_1px_0_rgba(255,247,223,0.038)]",
+                    timetableImportNotice.tone === "success" ? "border-emerald-100/[0.090] bg-emerald-200/[0.050]" : "border-red-100/[0.10] bg-red-300/[0.060]"
                   )}>
-                    <SafeMeta as="p" className="text-[9.6px] font-semibold text-white/54">{timetableImportNotice.message}</SafeMeta>
+                    <SafeMeta as="p" className="text-[10px] font-semibold leading-relaxed text-white/58">{timetableImportNotice.message}</SafeMeta>
                   </div>
                 ) : null}
                 {timetableAuditEvents.length ? (
-                  <div className="rounded-[18px] border border-white/[0.050] bg-black/[0.11] p-1.5">
+                  <div className={v6Cx("rounded-[22px] border p-1.5", v6Surface.inset)}>
                     <div className="mb-1 flex items-center justify-between gap-2 px-0.5">
                       <SafeMeta as="p" className="text-[9px] font-semibold text-white/38">פעילות מערכת אחרונה</SafeMeta>
                       <StatusBadge tone={timetablePersistenceCanUseAdapter ? "success" : "management"}>{timetablePersistenceCanUseAdapter ? "Supabase" : "מקומי בלבד"}</StatusBadge>
@@ -1214,7 +1234,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
               </div>
             </Surface>
 
-            <Surface tone="management" variant="quiet" className="space-y-3 p-3">
+            <Surface tone="management" variant="glass" className="space-y-3 p-3">
               <div>
                 <SafeTitle as="h3" className="text-[12.5px] font-semibold text-white/82">פרטים לעריכה</SafeTitle>
                 <SafeMeta as="p" className="mt-1 text-[10.8px] leading-relaxed text-white/50">
@@ -1228,7 +1248,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
                   dir="rtl"
                   value={lessonDraft.displayTitle}
                   onChange={(event) => setLessonDraft((current) => updateV6ManagementLessonDraft(current, { displayTitle: event.target.value }))}
-                  className="min-h-12 w-full rounded-[16px] border border-[#f4d58d]/10 bg-black/20 px-3 text-[13px] font-semibold text-white/86 outline-none transition placeholder:text-white/24 focus:border-[#f4d58d]/32 focus:bg-black/26"
+                  className={v6Cx(v6Control.field, "text-start font-semibold")}
                 />
               </label>
 
@@ -1239,7 +1259,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
                     dir="rtl"
                     value={lessonDraft.room}
                     onChange={(event) => setLessonDraft((current) => updateV6ManagementLessonDraft(current, { room: event.target.value }))}
-                    className="min-h-12 w-full rounded-[16px] border border-[#f4d58d]/10 bg-zinc-950 px-3 text-[12px] font-semibold text-white/84 outline-none transition focus:border-[#f4d58d]/32"
+                    className={v6Cx(v6Control.field, "text-start font-semibold")}
                   >
                     {roomOptions.map((room) => <option key={room} value={room}>{room}</option>)}
                   </select>
@@ -1251,7 +1271,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
                     dir="rtl"
                     value={lessonDraft.durationMinutes}
                     onChange={(event) => setLessonDraft((current) => updateV6ManagementLessonDraft(current, { durationMinutes: Number(event.target.value) }))}
-                    className="min-h-12 w-full rounded-[16px] border border-[#f4d58d]/10 bg-zinc-950 px-3 text-[12px] font-semibold text-white/84 outline-none transition focus:border-[#f4d58d]/32"
+                    className={v6Cx(v6Control.field, "text-start font-semibold")}
                   >
                     {durationOptions.map((duration) => <option key={duration} value={duration}>{formatLessonDuration(duration)}</option>)}
                   </select>
@@ -1273,7 +1293,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
                     const teacher = teachers.find((item) => item.id === nextTeacherId);
                     setLessonDraft((current) => updateV6ManagementLessonDraft(current, { teacherId: nextTeacherId, teacherName: teacher?.displayName ?? "" }));
                   }}
-                  className="min-h-12 w-full rounded-[16px] border border-[#f4d58d]/10 bg-zinc-950 px-3 text-[12px] font-semibold text-white/84 outline-none transition focus:border-[#f4d58d]/32"
+                  className={v6Cx(v6Control.field, "text-start font-semibold")}
                 >
                   {lessonDraft.teacherName && !lessonDraft.teacherId ? <option value="__current">{lessonDraft.teacherName}</option> : null}
                   <option value="__none">ללא צוות משויך</option>
@@ -1287,7 +1307,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
                   dir="rtl"
                   value={lessonDraft.status}
                   onChange={(event) => setLessonDraft((current) => updateV6ManagementLessonDraft(current, { status: event.target.value }))}
-                  className="min-h-12 w-full rounded-[16px] border border-[#f4d58d]/10 bg-zinc-950 px-3 text-[12px] font-semibold text-white/84 outline-none transition focus:border-[#f4d58d]/32"
+                  className={v6Cx(v6Control.field, "text-start font-semibold")}
                 >
                   {statusOptions.map((status) => <option key={status} value={status}>{status}</option>)}
                 </select>
@@ -1320,6 +1340,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
                 room={room.room}
                 next={room.next ? `${room.next.weekday} · ${room.next.time} · ${groupsById.get(room.next.groupId)?.name ?? room.next.title}` : "אין שיעור משויך"}
                 groupCount={room.groupCount}
+                active={Boolean(room.next)}
                 onClick={() => openTab("lessons")}
                 ariaLabel={`פתיחת חדר ${room.room}`}
               />
