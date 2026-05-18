@@ -6,16 +6,55 @@ const config: Config = {
     extend: {
       colors: {
         canvas: "var(--bg-canvas)",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
         card: "var(--bg-card)",
+        "card-foreground": "var(--card-foreground)",
         elevated: "var(--bg-elevated)",
+        surface: "var(--surface)",
+        "surface-elevated": "var(--surface-elevated)",
+        hairline: "var(--hairline)",
         accent: "var(--color-accent)",
+        primary: {
+          DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)"
+        },
+        secondary: {
+          DEFAULT: "var(--secondary)",
+          foreground: "var(--secondary-foreground)"
+        },
+        muted: {
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)"
+        },
+        destructive: {
+          DEFAULT: "var(--destructive)",
+          foreground: "var(--destructive-foreground)"
+        },
+        gold: "var(--gold)",
+        rose: "var(--rose)",
         success: "var(--color-success)",
         warning: "var(--color-warning)",
         danger: "var(--color-danger)",
-        info: "var(--color-info)"
+        info: "var(--color-info)",
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)"
+      },
+      opacity: {
+        3: "0.03",
+        8: "0.08"
       },
       fontFamily: {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
+      },
+      borderRadius: {
+        sm: "calc(var(--radius) - 6px)",
+        md: "calc(var(--radius) - 4px)",
+        lg: "var(--radius)",
+        xl: "calc(var(--radius) + 6px)",
+        "2xl": "calc(var(--radius) + 12px)",
+        "3xl": "calc(var(--radius) + 20px)"
       },
       transitionTimingFunction: {
         out: "cubic-bezier(0.16, 1, 0.3, 1)"

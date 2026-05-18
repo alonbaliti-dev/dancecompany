@@ -28,14 +28,18 @@ export const v6Tone: Record<V6Tone, { text: string; soft: string; grad: string; 
 };
 
 export const v6Surface = {
-  base: "border-[rgba(244,213,141,0.050)] bg-[linear-gradient(150deg,rgba(255,247,223,0.042),rgba(255,255,255,0.016)_58%,rgba(90,54,30,0.035)_100%)] shadow-[0_7px_20px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,247,223,0.040)] backdrop-blur-xl",
-  elevated: "border-[rgba(244,213,141,0.058)] bg-[linear-gradient(152deg,rgba(255,247,223,0.052),rgba(255,255,255,0.018)_62%,rgba(90,54,30,0.045)_100%)] shadow-[0_10px_28px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,247,223,0.050)] backdrop-blur-xl",
-  quiet: "border-[rgba(244,213,141,0.038)] bg-[linear-gradient(145deg,rgba(255,247,223,0.032),rgba(255,255,255,0.012)_64%,rgba(90,54,30,0.026))] shadow-[inset_0_1px_0_rgba(255,247,223,0.028)]",
-  editorial: "border-[rgba(244,213,141,0.046)] bg-[linear-gradient(180deg,rgba(255,247,223,0.030),rgba(255,255,255,0.012)_70%,rgba(90,54,30,0.026))] shadow-[0_8px_22px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,247,223,0.032)] backdrop-blur-xl",
-  floating: "border-[rgba(244,213,141,0.115)] bg-[linear-gradient(165deg,rgba(26,20,18,0.98),rgba(8,5,7,0.985)_54%,rgba(10,5,8,0.995)_100%)] shadow-[0_28px_86px_rgba(0,0,0,0.62),inset_0_1px_0_rgba(255,247,223,0.080)] backdrop-blur-2xl",
-  hairline: "border-[rgba(244,213,141,0.035)] bg-[rgba(255,247,223,0.018)] shadow-[inset_0_1px_0_rgba(255,247,223,0.030)]",
-  open: "border-[rgba(244,213,141,0.040)] bg-[linear-gradient(135deg,rgba(255,247,223,0.032),rgba(255,255,255,0.010)_58%,rgba(244,213,141,0.020))] shadow-[inset_0_1px_0_rgba(255,247,223,0.026)]",
-  whisper: "border-[rgba(244,213,141,0.034)] bg-white/[0.024] shadow-[inset_0_1px_0_rgba(255,247,223,0.020)]"
+  base: "surface-card border-[rgba(244,213,141,0.060)] bg-[linear-gradient(150deg,rgba(255,247,223,0.052),rgba(255,255,255,0.018)_56%,rgba(90,54,30,0.045)_100%)] shadow-[0_10px_28px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,247,223,0.052)] backdrop-blur-xl",
+  elevated: "surface-card border-[rgba(244,213,141,0.078)] bg-[radial-gradient(ellipse_82%_70%_at_100%_0%,rgba(244,213,141,0.075),transparent_60%),linear-gradient(152deg,rgba(255,247,223,0.070),rgba(255,255,255,0.022)_58%,rgba(90,54,30,0.055)_100%)] shadow-[0_18px_48px_rgba(0,0,0,0.30),0_10px_32px_rgba(244,213,141,0.030),inset_0_1px_0_rgba(255,247,223,0.070)] backdrop-blur-2xl",
+  quiet: "border-[rgba(244,213,141,0.042)] bg-[linear-gradient(145deg,rgba(255,247,223,0.038),rgba(255,255,255,0.014)_64%,rgba(90,54,30,0.030))] shadow-[inset_0_1px_0_rgba(255,247,223,0.034)]",
+  editorial: "surface-card border-[rgba(244,213,141,0.056)] bg-[linear-gradient(180deg,rgba(255,247,223,0.038),rgba(255,255,255,0.014)_68%,rgba(90,54,30,0.030))] shadow-[0_10px_28px_rgba(0,0,0,0.14),inset_0_1px_0_rgba(255,247,223,0.040)] backdrop-blur-xl",
+  floating: "surface-chrome border-[rgba(244,213,141,0.125)] bg-[linear-gradient(165deg,rgba(26,20,18,0.98),rgba(8,5,7,0.985)_54%,rgba(10,5,8,0.995)_100%)] shadow-[0_28px_86px_rgba(0,0,0,0.62),0_14px_54px_rgba(244,213,141,0.045),inset_0_1px_0_rgba(255,247,223,0.090)] backdrop-blur-2xl",
+  hairline: "border-[rgba(244,213,141,0.040)] bg-[rgba(255,247,223,0.020)] shadow-[inset_0_1px_0_rgba(255,247,223,0.034)]",
+  open: "border-[rgba(244,213,141,0.050)] bg-[linear-gradient(135deg,rgba(255,247,223,0.040),rgba(255,255,255,0.012)_58%,rgba(244,213,141,0.026))] shadow-[inset_0_1px_0_rgba(255,247,223,0.032)]",
+  whisper: "border-[rgba(244,213,141,0.040)] bg-white/[0.028] shadow-[inset_0_1px_0_rgba(255,247,223,0.024)]",
+  glass: "surface-card border-[rgba(244,213,141,0.070)] bg-[linear-gradient(180deg,rgba(255,255,255,0.060),rgba(255,255,255,0.026))] shadow-[0_14px_34px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,247,223,0.058)] backdrop-blur-2xl",
+  glassStrong: "surface-card border-[rgba(244,213,141,0.092)] bg-[linear-gradient(180deg,rgba(255,255,255,0.096),rgba(255,255,255,0.036))] shadow-[0_22px_58px_rgba(0,0,0,0.34),0_10px_36px_rgba(244,213,141,0.036),inset_0_1px_0_rgba(255,247,223,0.075)] backdrop-blur-2xl",
+  tile: "border-[rgba(244,213,141,0.068)] bg-[linear-gradient(165deg,rgba(255,247,223,0.058),rgba(255,255,255,0.018)_62%,rgba(0,0,0,0.13))] shadow-[0_14px_34px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,247,223,0.056)]",
+  inset: "border-[rgba(244,213,141,0.045)] bg-black/[0.12] shadow-[inset_0_1px_0_rgba(255,247,223,0.032)]"
 };
 
 export const v6Visual = {
@@ -53,6 +57,39 @@ export const v6Visual = {
     "bg-[linear-gradient(90deg,rgba(255,255,255,0.018),transparent_15%,rgba(255,255,255,0.022)_32%,transparent_50%,rgba(244,213,141,0.024)_66%,transparent_84%)]",
   plinth:
     "bg-[radial-gradient(ellipse_at_center,rgba(255,247,223,0.24),rgba(244,213,141,0.10)_36%,rgba(0,0,0,0.04)_58%,transparent_72%)]"
+};
+
+export const v6Radius = {
+  chip: "rounded-[14px]",
+  control: "rounded-[16px]",
+  row: "rounded-[18px]",
+  card: "rounded-[24px]",
+  hero: "rounded-[30px]",
+  sheet: "rounded-t-[28px] md:rounded-[30px]"
+};
+
+export const v6Space = {
+  card: "p-3.5 sm:p-4",
+  compactCard: "p-2.5 sm:p-3",
+  sectionGap: "space-y-3 sm:space-y-4",
+  safeBottom: "pb-[calc(var(--safe-bottom)+0.75rem)]",
+  navBottom: "pb-[calc(var(--nav-offset)+1rem)]"
+};
+
+export const v6Motion = {
+  standard: "transition-[transform,border-color,background,box-shadow,filter] duration-200 ease-out",
+  gentle: "transition-[transform,border-color,background,box-shadow,opacity] duration-300 ease-out",
+  press: "active:scale-[0.985]",
+  pressSoft: "active:scale-[0.99]",
+  iconPress: "transition-transform duration-200 ease-out group-active:scale-95",
+  hoverGlow: "motion-safe:hover:border-[rgba(244,213,141,0.13)] motion-safe:hover:shadow-[0_18px_46px_rgba(0,0,0,0.28),0_10px_34px_rgba(244,213,141,0.040),inset_0_1px_0_rgba(255,247,223,0.070)]",
+  focusRing: "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f4d58d]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050304]"
+};
+
+export const v6Interactive = {
+  card: "lk-card-press cursor-pointer touch-manipulation",
+  row: "cursor-pointer touch-manipulation hover:bg-white/[0.020]",
+  control: "touch-manipulation disabled:cursor-not-allowed disabled:opacity-45"
 };
 
 export const v6ScreenAtmosphere = {
@@ -82,13 +119,17 @@ export const v6Safe = {
   text: "lk-safe-text",
   meta: "lk-safe-meta",
   badgeGroup: "lk-safe-badge-group",
-  control: "lk-safe-control"
+  control: "lk-safe-control",
+  screen: "min-h-app px-safe",
+  page: "lk-scroll-page scroll-touch",
+  bottom: "pb-safe",
+  navBottom: "pb-nav-safe"
 };
 
 export const v6Control = {
-  field: "lk-safe-control min-h-[50px] w-full max-w-full appearance-none rounded-[18px] border border-[rgba(244,213,141,0.080)] !bg-[linear-gradient(180deg,rgba(255,247,223,0.048),rgba(255,255,255,0.018))] px-3.5 py-2.5 text-[16px] leading-normal text-white outline-none placeholder:text-white/30 shadow-[inset_0_1px_0_rgba(255,247,223,0.050)] transition duration-200 focus:border-[rgba(244,213,141,0.28)] focus:!bg-[linear-gradient(180deg,rgba(255,247,223,0.064),rgba(255,255,255,0.024))] focus:shadow-[0_0_0_3px_rgba(244,213,141,0.060),inset_0_1px_0_rgba(255,247,223,0.065)]",
+  field: "lk-safe-control min-h-[50px] w-full max-w-full appearance-none rounded-[18px] border border-[rgba(244,213,141,0.085)] !bg-[linear-gradient(180deg,rgba(255,247,223,0.052),rgba(255,255,255,0.020))] px-3.5 py-2.5 text-[16px] leading-normal text-white outline-none placeholder:text-white/30 shadow-[inset_0_1px_0_rgba(255,247,223,0.060)] transition duration-200 focus:border-[rgba(244,213,141,0.30)] focus:!bg-[linear-gradient(180deg,rgba(255,247,223,0.070),rgba(255,255,255,0.026))] focus:shadow-[0_0_0_4px_rgba(244,213,141,0.070),inset_0_1px_0_rgba(255,247,223,0.075)]",
   label: "lk-safe-meta text-[12px] font-semibold tracking-[-0.010em] text-white/48",
-  chip: "lk-safe-control max-w-full rounded-[16px] border border-[rgba(244,213,141,0.060)] bg-white/[0.034] px-3 py-2 text-xs font-semibold text-white/62 shadow-[inset_0_1px_0_rgba(255,247,223,0.032)]"
+  chip: "lk-safe-control max-w-full rounded-[16px] border border-[rgba(244,213,141,0.070)] bg-white/[0.038] px-3 py-2 text-xs font-semibold text-white/64 shadow-[inset_0_1px_0_rgba(255,247,223,0.040)]"
 };
 
 export function v6Cx(...parts: Array<string | false | null | undefined>) {

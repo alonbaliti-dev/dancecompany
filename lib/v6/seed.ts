@@ -266,6 +266,7 @@ export const safeInitialV6Database: V6Database = {
     eventMode: true,
     attendance: true,
     payments: false,
+    v6TimetableSupabasePersistence: false,
     publicLegacyGallery: false,
     adultGroups: true,
     studentUploads: true,

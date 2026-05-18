@@ -6,13 +6,15 @@ import { motion } from "framer-motion";
 import { ChevronLeft, WandSparkles } from "lucide-react";
 import { aiSafetyNotice } from "@/lib/ai/ai-orchestrator";
 import type { AIInsight } from "@/lib/ai/ai-types";
-import { v6Control, v6Cx, v6Safe, v6Surface, v6Tone, v6Type, v6Visual, type V6Tone } from "./tokens";
+import { v6Control, v6Cx, v6Interactive, v6Motion, v6Radius, v6Safe, v6Surface, v6Tone, v6Type, v6Visual, type V6Tone } from "./tokens";
 
 type RtlRowProps = {
   children: ReactNode;
   className?: string;
   align?: "center" | "start";
 };
+
+type SurfaceVariant = keyof typeof v6Surface;
 
 export function RtlText({ children, className, as: Component = "span" }: { children: ReactNode; className?: string; as?: ElementType }) {
   return <Component dir="auto" className={v6Cx("rtl-text lk-hebrew-text", v6Safe.text, className)}>{children}</Component>;
@@ -48,7 +50,7 @@ export function SafeBadgeGroup({ children, className }: { children: ReactNode; c
 
 export function BadgeCount({ value, className, label }: { value: number | string; className?: string; label?: string }) {
   return (
-    <span className={v6Cx("inline-flex min-h-4 min-w-4 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold leading-none shadow-[0_0_0_1px_rgba(255,247,223,0.10)]", className)} aria-label={label}>
+    <span className={v6Cx("inline-flex min-h-4 min-w-4 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold leading-none shadow-[0_0_0_1px_rgba(255,247,223,0.10)]", v6Motion.gentle, className)} aria-label={label}>
       <BidiNumber>{value}</BidiNumber>
     </span>
   );
@@ -65,7 +67,7 @@ export function RtlRow({ children, className, align = "center" }: RtlRowProps) {
 export function IconLabelRow({ icon: Icon, title, subtitle, tone = "studio", trailing, className }: { icon: ElementType; title: ReactNode; subtitle?: ReactNode; tone?: V6Tone; trailing?: ReactNode; className?: string }) {
   return (
     <RtlRow className={className}>
-      <span className={v6Cx("grid h-11 w-11 shrink-0 place-items-center rounded-[21px] border border-white/[0.035] shadow-[inset_0_1px_0_rgba(255,247,223,0.050)]", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={15} strokeWidth={1.85} /></span>
+      <span className={v6Cx("grid h-11 w-11 shrink-0 place-items-center rounded-[21px] border border-white/[0.045] shadow-[inset_0_1px_0_rgba(255,247,223,0.060)]", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={15} strokeWidth={1.85} /></span>
       <span className="min-w-0 flex-1 text-start">
         <SafeTitle as="span" className="block text-[15px] font-semibold leading-snug tracking-[-0.025em] text-white/88">{title}</SafeTitle>
         {subtitle ? <SafeMeta as="span" className="mt-1 block text-[12px] text-white/46">{subtitle}</SafeMeta> : null}
@@ -75,9 +77,9 @@ export function IconLabelRow({ icon: Icon, title, subtitle, tone = "studio", tra
   );
 }
 
-export function Surface({ children, tone = "studio", className }: { children: ReactNode; tone?: V6Tone; className?: string }) {
+export function Surface({ children, tone = "studio", variant = "base", interactive = false, className }: { children: ReactNode; tone?: V6Tone; variant?: SurfaceVariant; interactive?: boolean; className?: string }) {
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[22px] border p-3.5", v6Surface.base, className)}>
+    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden border p-3.5", v6Radius.card, v6Surface[variant], interactive && v6Interactive.card, interactive && v6Motion.hoverGlow, className)}>
       <div className={v6Cx("pointer-events-none absolute -right-14 -top-14 z-0 h-28 w-28 rounded-full opacity-6 blur-3xl", v6Tone[tone].beam)} />
       <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/14 to-transparent" />
       <SurfaceContent>{children}</SurfaceContent>
@@ -87,8 +89,9 @@ export function Surface({ children, tone = "studio", className }: { children: Re
 
 export function HeroSurface({ children, tone = "studio", className }: { children: ReactNode; tone?: V6Tone; className?: string }) {
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[24px] border border-[rgba(244,213,141,0.085)] bg-gradient-to-br px-3.5 py-3.5 text-start shadow-[0_12px_36px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,247,223,0.060)] sm:px-4 sm:py-4", v6Tone[tone].grad, v6Visual.texture, className)}>
+    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden border border-[rgba(244,213,141,0.095)] bg-gradient-to-br px-3.5 py-3.5 text-start shadow-[0_18px_50px_rgba(0,0,0,0.34),0_10px_34px_rgba(244,213,141,0.035),inset_0_1px_0_rgba(255,247,223,0.072)] sm:px-4 sm:py-4", v6Radius.hero, v6Tone[tone].grad, v6Visual.texture, className)}>
       <div className={v6Cx("pointer-events-none absolute -left-10 -top-14 z-0 h-28 w-28 rounded-full opacity-8 blur-3xl", v6Tone[tone].beam)} />
+      <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-l from-transparent via-[#fff7df]/20 to-transparent" />
       <SurfaceContent>{children}</SurfaceContent>
     </section>
   );
@@ -96,7 +99,7 @@ export function HeroSurface({ children, tone = "studio", className }: { children
 
 export function EditorialSection({ title, kicker, tone = "studio", children, className }: { title: string; kicker?: string; tone?: V6Tone; children: ReactNode; className?: string }) {
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[22px] border p-3.5", v6Surface.editorial, className)}>
+    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden border p-3.5", v6Radius.card, v6Surface.editorial, className)}>
       <div className={v6Cx("pointer-events-none absolute -left-16 top-0 z-0 h-24 w-24 rounded-full opacity-6 blur-3xl", v6Tone[tone].beam)} />
       <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/10 to-transparent" />
       <SurfaceContent className="mb-2.5 flex items-center justify-start gap-2 px-1 text-start">
@@ -112,7 +115,7 @@ export function EditorialSection({ title, kicker, tone = "studio", children, cla
 
 export function OpenCluster({ children, tone = "studio", className }: { children: ReactNode; tone?: V6Tone; className?: string }) {
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[22px] border px-3.5 py-3", v6Surface.open, className)}>
+    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden border px-3.5 py-3", v6Radius.card, v6Surface.open, className)}>
       <div className={v6Cx("pointer-events-none absolute -right-14 top-3 z-0 h-24 w-24 rounded-full opacity-6 blur-3xl", v6Tone[tone].beam)} />
       <SurfaceContent>{children}</SurfaceContent>
     </section>
@@ -121,7 +124,7 @@ export function OpenCluster({ children, tone = "studio", className }: { children
 
 export function InlineMetric({ label, value, meta, tone = "studio", className }: { label: ReactNode; value: ReactNode; meta?: ReactNode; tone?: V6Tone; className?: string }) {
   return (
-    <div dir="rtl" className={v6Cx("lk-safe-surface min-w-0 max-w-full rounded-[20px] border border-white/[0.035] bg-black/[0.10] px-2.5 py-2 text-start shadow-[inset_0_1px_0_rgba(255,247,223,0.026)] sm:px-3 sm:py-2.5", className)}>
+    <div dir="rtl" className={v6Cx("lk-safe-surface min-w-0 max-w-full rounded-[20px] border px-2.5 py-2 text-start sm:px-3 sm:py-2.5", v6Surface.inset, className)}>
       <SafeMeta as="p" className="text-[10px] font-semibold text-white/34">{label}</SafeMeta>
       <p className={v6Cx("lk-safe-text mt-1 max-w-full break-words text-[1.08rem] font-semibold tracking-[-0.044em] sm:text-[1.28rem]", v6Tone[tone].text)}>{value}</p>
       {meta ? <SafeMeta as="p" className="mt-1 text-[10px] text-white/34">{meta}</SafeMeta> : null}
@@ -144,7 +147,7 @@ export function StageImage({ tone = "shop", label, icon: Icon, className }: { to
 
 export function Widget({ title, kicker, icon: Icon, tone = "studio", children }: { title: string; kicker: string; icon: ElementType; tone?: V6Tone; children: ReactNode }) {
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden rounded-[26px] border p-4", v6Surface.elevated)}>
+    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden border p-4", v6Radius.hero, v6Surface.elevated)}>
       <div className={v6Cx("pointer-events-none absolute -left-16 top-0 z-0 h-24 w-24 rounded-full opacity-7 blur-3xl", v6Tone[tone].beam)} />
       <SurfaceContent className="mb-4 flex items-center gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-2 text-start">
@@ -160,36 +163,36 @@ export function Widget({ title, kicker, icon: Icon, tone = "studio", children }:
 
 export function FeedRow({ icon: Icon, title, body, meta, tone = "studio" }: { icon: ElementType; title: string; body: string; meta: string; tone?: V6Tone }) {
   return (
-    <SafeRow className={v6Cx("rounded-[14px] border px-2.5 py-2 transition hover:bg-white/[0.018]", v6Surface.whisper)}>
-      <span className={v6Cx("mt-px grid h-[26px] w-[26px] shrink-0 place-items-center rounded-[11px]", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={11.5} strokeWidth={1.9} /></span>
+    <SafeRow className={v6Cx("rounded-[14px] border px-2 py-1.5", v6Surface.whisper, v6Motion.standard, "hover:bg-white/[0.020]")}>
+      <span className={v6Cx("mt-px grid h-[22px] w-[22px] shrink-0 place-items-center rounded-[9px]", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={10.5} strokeWidth={1.9} /></span>
       <span className="min-w-0 flex-1 text-start">
-        <SafeTitle as="span" className="block truncate text-[12.5px] font-semibold tracking-[-0.012em] text-white/84">{title}</SafeTitle>
-        <RtlText as="span" className="mt-0.5 block truncate text-[10.5px] leading-relaxed text-white/45">{body}</RtlText>
+        <SafeTitle as="span" className="block truncate text-[11.5px] font-semibold tracking-[-0.008em] text-white/84">{title}</SafeTitle>
+        <RtlText as="span" className="mt-px block truncate text-[9.4px] leading-snug text-white/42">{body}</RtlText>
       </span>
-      <SafeMeta as="span" className="rtl-row-trailing min-w-[3rem] max-w-full shrink text-[9.5px] font-semibold text-white/34 sm:max-w-[8rem]">{meta}</SafeMeta>
+      <SafeMeta as="span" className="rtl-row-trailing min-w-[2.6rem] max-w-full shrink text-[8.8px] font-semibold text-white/32 sm:max-w-[8rem]">{meta}</SafeMeta>
     </SafeRow>
   );
 }
 
 export function ActionPill({ icon: Icon, title, subtitle, tone = "studio", onClick }: { icon: ElementType; title: string; subtitle?: string; tone?: V6Tone; onClick?: () => void }) {
   return (
-    <button dir="rtl" onClick={onClick} className={v6Cx("lk-safe-surface group flex min-h-[43px] w-full min-w-0 items-center gap-2 rounded-[14px] border px-2.5 py-2 text-start transition duration-200 active:scale-[0.98]", v6Surface.whisper)}>
-      <span className={v6Cx("grid h-[26px] w-[26px] shrink-0 place-items-center rounded-[11px] transition group-active:scale-95", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={12} strokeWidth={1.9} /></span>
+    <button dir="rtl" onClick={onClick} className={v6Cx("lk-safe-surface group flex min-h-[36px] w-full min-w-0 items-center gap-1.5 rounded-[12px] border px-2 py-1.5 text-start", v6Surface.whisper, v6Motion.standard, v6Motion.press, v6Motion.focusRing, v6Interactive.row)}>
+      <span className={v6Cx("grid h-[22px] w-[22px] shrink-0 place-items-center rounded-[9px]", v6Motion.iconPress, v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={10.5} strokeWidth={1.9} /></span>
       <span className="min-w-0 flex-1">
-        <SafeTitle as="span" className="block max-w-full truncate text-[12px] font-semibold text-white/82">{title}</SafeTitle>
-        {subtitle ? <SafeMeta as="span" className="mt-px block max-w-full truncate text-[9.5px] font-medium text-white/36">{subtitle}</SafeMeta> : null}
+        <SafeTitle as="span" className="block max-w-full truncate text-[11.2px] font-semibold text-white/82">{title}</SafeTitle>
+        {subtitle ? <SafeMeta as="span" className="mt-px block max-w-full truncate text-[8.8px] font-medium text-white/34">{subtitle}</SafeMeta> : null}
       </span>
     </button>
   );
 }
 
 export function StatusBadge({ children, tone = "studio" }: { children: ReactNode; tone?: V6Tone }) {
-  return <span dir="auto" className={v6Cx("bidi-plain mx-0.5 inline-flex min-h-6 max-w-full min-w-0 items-center justify-center rounded-[14px] border border-white/[0.035] px-2.5 py-1 text-center text-[10px] font-semibold shadow-[inset_0_1px_0_rgba(255,247,223,0.032)]", v6Safe.control, v6Tone[tone].soft, v6Tone[tone].text)}>{children}</span>;
+  return <span dir="auto" className={v6Cx("bidi-plain mx-0.5 inline-flex min-h-6 max-w-full min-w-0 items-center justify-center border border-white/[0.045] px-2.5 py-1 text-center text-[10px] font-semibold shadow-[inset_0_1px_0_rgba(255,247,223,0.040)]", v6Radius.chip, v6Safe.control, v6Tone[tone].soft, v6Tone[tone].text)}>{children}</span>;
 }
 
 export function Button({ children, onClick, variant = "primary", disabled, type = "button" }: { children: ReactNode; onClick?: () => void; variant?: "primary" | "ghost" | "danger"; disabled?: boolean; type?: "button" | "submit" }) {
   return (
-    <button dir="rtl" type={type} disabled={disabled} onClick={onClick} className={v6Cx("lk-safe-control inline-flex min-h-10 max-w-full min-w-0 items-center justify-center gap-1.5 rounded-[15px] px-3.5 py-2 text-center text-[13px] font-semibold tracking-[-0.010em] transition duration-200 active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-45 focus-visible:ring-2 focus-visible:ring-[#f4d58d]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050304]", variant === "primary" && "bg-[linear-gradient(135deg,#fff9ea,#f4d58d_56%,#d7b56d)] text-zinc-950 shadow-[0_8px_18px_rgba(244,213,141,0.105),inset_0_1px_0_rgba(255,255,255,0.62)] hover:brightness-110", variant === "ghost" && "border border-[rgba(244,213,141,0.065)] bg-white/[0.030] text-white/80 shadow-[inset_0_1px_0_rgba(255,247,223,0.040)] hover:bg-white/[0.050]", variant === "danger" && "border border-rose-100/[0.075] bg-[#b72f3d]/13 text-rose-50 shadow-[inset_0_1px_0_rgba(255,247,223,0.050)] hover:bg-[#b72f3d]/18")}>
+    <button dir="rtl" type={type} disabled={disabled} onClick={onClick} className={v6Cx("lk-safe-control inline-flex min-h-10 max-w-full min-w-0 items-center justify-center gap-1.5 px-3.5 py-2 text-center text-[13px] font-semibold tracking-[-0.010em]", v6Radius.control, v6Motion.standard, v6Motion.press, v6Motion.focusRing, v6Interactive.control, variant === "primary" && "bg-[linear-gradient(135deg,#fff9ea,#f4d58d_56%,#d7b56d)] text-zinc-950 shadow-[0_10px_24px_rgba(244,213,141,0.14),inset_0_1px_0_rgba(255,255,255,0.66)] hover:brightness-110", variant === "ghost" && "border border-[rgba(244,213,141,0.075)] bg-white/[0.036] text-white/82 shadow-[inset_0_1px_0_rgba(255,247,223,0.048)] hover:bg-white/[0.056]", variant === "danger" && "border border-rose-100/[0.085] bg-[#b72f3d]/15 text-rose-50 shadow-[inset_0_1px_0_rgba(255,247,223,0.055)] hover:bg-[#b72f3d]/20")}>
       {children}
     </button>
   );
@@ -197,7 +200,7 @@ export function Button({ children, onClick, variant = "primary", disabled, type 
 
 export function SheetActions({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={v6Cx("lk-sheet-actions sticky bottom-0 z-20 -mx-1 mt-2 grid grid-cols-2 gap-2 rounded-[18px] border p-1.5", v6Surface.elevated, className)}>
+    <div className={v6Cx("lk-sheet-actions sticky bottom-0 z-20 -mx-1 mt-2 grid grid-cols-2 gap-2 rounded-[20px] border p-1.5", v6Surface.elevated, className)}>
       {children}
     </div>
   );
@@ -280,8 +283,9 @@ export function BottomSheet({ title, children, onClose }: { title: string; child
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
         style={{ zIndex: 1, height: "min(760px, calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 8px))" }}
-        className={v6Cx(v6Safe.surface, "relative flex w-[calc(100%-8px)] max-w-[430px] flex-col overflow-hidden rounded-t-[24px] border outline-none md:w-full md:max-w-[760px] md:rounded-[28px]", v6Surface.floating)}
+        className={v6Cx(v6Safe.surface, "relative flex w-[calc(100%-8px)] max-w-[430px] flex-col overflow-hidden border outline-none md:w-full md:max-w-[760px]", v6Radius.sheet, v6Surface.floating)}
       >
+        <div className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-white/15" />
         <div className="sticky top-0 z-10 flex min-h-[46px] items-center gap-2 bg-[#080506]/90 px-3 py-2 shadow-[inset_0_-1px_0_rgba(244,213,141,0.07)] backdrop-blur-2xl sm:px-5">
           <SafeTitle as="h2" className="min-w-0 flex-1 truncate text-start text-[14.5px] font-semibold leading-tight tracking-[-0.020em]">{title}</SafeTitle>
           <span className="shrink-0 [&>button]:min-h-8 [&>button]:rounded-[13px] [&>button]:px-2.5 [&>button]:py-1.5 [&>button]:text-[11px]"><Button variant="ghost" onClick={onClose}>סגירה</Button></span>
@@ -316,8 +320,8 @@ export function ConfirmDialog({ title, body, confirmLabel = "אישור", onConf
 
 export function SegmentedControl({ value, options, onChange }: { value: string; options: string[]; onChange: (value: string) => void }) {
   return (
-    <div dir="rtl" className="lk-safe-badge-group rounded-[24px] border border-[#f4d58d]/8 bg-black/18 p-1.5 shadow-[inset_0_1px_0_rgba(255,247,223,0.050)]">
-      {options.map((item) => <button key={item} onClick={() => onChange(item)} className={v6Cx("lk-safe-control min-h-10 min-w-0 rounded-full px-4 py-2 text-xs font-semibold transition active:scale-95", value === item ? "bg-[#f4d58d]/17 text-[#fff7df] shadow-[inset_0_0_0_1px_rgba(244,213,141,0.20)]" : "text-white/56")}>{item}</button>)}
+    <div dir="rtl" className={v6Cx("lk-safe-badge-group rounded-[24px] border p-1.5", v6Surface.inset)}>
+      {options.map((item) => <button key={item} onClick={() => onChange(item)} className={v6Cx("lk-safe-control min-h-10 min-w-0 rounded-full px-4 py-2 text-xs font-semibold", v6Motion.standard, v6Motion.press, v6Motion.focusRing, value === item ? "bg-[#f4d58d]/17 text-[#fff7df] shadow-[inset_0_0_0_1px_rgba(244,213,141,0.20)]" : "text-white/56 hover:bg-white/[0.035]")}>{item}</button>)}
     </div>
   );
 }

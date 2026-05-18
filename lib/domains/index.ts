@@ -1,5 +1,7 @@
 export { runDomainMutation } from "./core/mutate";
 export type { DomainMutationInput, DomainMutationResult, DomainActor } from "./core/types";
+export type * from "./core/domain-types";
+export * from "./core/domain-adapters";
 export { domainGuards } from "./core/permissions";
 
 export * as studioTasks from "./studio-tasks/operations";

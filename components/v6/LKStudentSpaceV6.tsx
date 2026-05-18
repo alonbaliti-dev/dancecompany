@@ -440,13 +440,13 @@ function PageHeader({ title, subtitle, action }: { title: string; subtitle?: str
 function ActionCard({ icon: Icon, title, subtitle, tone, onClick }: { icon: React.ElementType; title: string; subtitle: string; tone: Tone; onClick: () => void }) {
   const t = tones[tone];
   return (
-    <button dir="rtl" onClick={onClick} className={v6Cx("lk-safe-surface group relative mx-auto flex min-h-[40px] w-full min-w-0 items-center gap-2 rounded-[13px] border px-2 py-1.5 text-start transition active:scale-[0.985]", v6Surface.whisper)}>
-      <span className={cx("grid h-6 w-6 shrink-0 place-items-center rounded-[10px]", t.soft, t.text)}><Icon size={11.5} strokeWidth={1.9} /></span>
+    <button dir="rtl" onClick={onClick} className={v6Cx("lk-safe-surface group relative mx-auto flex min-h-[34px] w-full min-w-0 items-center gap-1.5 rounded-[12px] border px-2 py-1 text-start transition active:scale-[0.985]", v6Surface.whisper)}>
+      <span className={cx("grid h-5 w-5 shrink-0 place-items-center rounded-[8px]", t.soft, t.text)}><Icon size={10.5} strokeWidth={1.9} /></span>
       <span className="min-w-0 flex-1">
-        <SafeTitle as="span" className="block truncate text-[12px] font-semibold tracking-[-0.010em] text-white/82">{title}</SafeTitle>
-        <SafeMeta as="span" className="mt-px block truncate text-[9.5px] text-white/36">{subtitle}</SafeMeta>
+        <SafeTitle as="span" className="block truncate text-[11.3px] font-semibold tracking-[-0.006em] text-white/82">{title}</SafeTitle>
+        <SafeMeta as="span" className="mt-px block truncate text-[8.8px] text-white/32">{subtitle}</SafeMeta>
       </span>
-      <DirectionalChevron className="h-3.5 w-3.5 shrink-0 text-white/16 transition group-hover:text-white/34" />
+      <DirectionalChevron className="h-3 w-3 shrink-0 text-white/16 transition group-hover:text-white/34" />
     </button>
   );
 }
@@ -715,37 +715,38 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
   ) : null;
   return (
     <div className="space-y-1.5">
-      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[17px] border p-2.5 text-start", v6Surface.base)}>
+      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[15px] border p-2 text-start", v6Surface.base)}>
         <div className="flex items-center gap-2">
-          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-[10px] bg-emerald-100/10 text-emerald-50"><CalendarDays size={12} /></span>
+          <span className="grid h-5 w-5 shrink-0 place-items-center rounded-[8px] bg-emerald-100/10 text-emerald-50"><CalendarDays size={10.5} /></span>
           <div className="min-w-0 flex-1">
             <p className={v6Type.kicker}>השיעור הקרוב</p>
-            <SafeTitle as="h1" className="mt-px truncate text-[15.5px] font-semibold leading-tight tracking-[-0.020em]">{nextLesson?.title ?? "אין שיעור קרוב"}</SafeTitle>
-            <SafeMeta as="p" className="mt-px truncate text-[10px] text-white/50">{nextLesson ? `${nextLesson.weekday} · ${nextLesson.time} · ${nextLesson.room}` : "אפשר לתאם שיעור פרטי מהמסך הבא."}</SafeMeta>
+            <SafeTitle as="h1" className="mt-px truncate text-[14.5px] font-semibold leading-tight tracking-[-0.018em]">{nextLesson?.title ?? "אין שיעור קרוב"}</SafeTitle>
+            <SafeMeta as="p" className="mt-px truncate text-[9.5px] text-white/46">{nextLesson ? `${nextLesson.weekday} · ${nextLesson.time} · ${nextLesson.room}` : "אפשר לתאם שיעור פרטי מהמסך הבא."}</SafeMeta>
           </div>
         </div>
       </section>
-      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[14px] border p-1.5", v6Surface.editorial)}>
+      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[13px] border p-1", v6Surface.editorial)}>
       <div className="mb-1 px-0.5 text-start">
         <p className={v6Type.kicker}>חזרות ושיעורים</p>
-        <SafeTitle as="h2" className="mt-px text-[13px] font-semibold tracking-[-0.014em] text-white/80">קצב השבוע</SafeTitle>
+        <SafeTitle as="h2" className="mt-px text-[12px] font-semibold tracking-[-0.010em] text-white/76">קצב השבוע</SafeTitle>
       </div>
-      <div className="space-y-1">
+      <div className="space-y-0.5">
       {lessons.map((lesson) => {
         const group = db.groups.find((g) => g.id === lesson.groupId);
         const tone = toneForStyle(group?.style);
         const todayRecords = db.attendance.filter((record) => record.lessonId === lesson.id && record.classDate === classDate);
         const absentCount = todayRecords.filter((record) => record.status === "absent" || record.status === "missing").length;
         const lateCount = todayRecords.filter((record) => record.status === "late").length;
+        const isNext = lesson.id === nextLesson?.id;
         return (
-          <div key={lesson.id} className={v6Cx("lk-safe-surface rounded-[11px] border px-1.5 py-1 shadow-[inset_0_1px_0_rgba(255,247,223,0.016)]", v6Surface.quiet)}>
-            <div className="grid grid-cols-[2.8rem_1fr_auto] items-center gap-1.5 text-start">
-              <span className={v6Cx("grid h-7 shrink-0 place-items-center rounded-[9px] border border-white/[0.024] px-1 text-[10px] font-semibold tabular-nums", v6Tone[tone].soft, v6Tone[tone].text)}>{lesson.time}</span>
+          <div key={lesson.id} className={v6Cx("lk-safe-surface rounded-[10px] border px-1.5 py-1 shadow-[inset_0_1px_0_rgba(255,247,223,0.014)]", isNext ? "border-[#f4d58d]/10 bg-[#f4d58d]/[0.020]" : v6Surface.quiet)}>
+            <div className="grid grid-cols-[2.45rem_1fr_auto] items-center gap-1.5 text-start">
+              <span className={v6Cx("grid h-6 shrink-0 place-items-center rounded-[8px] border border-white/[0.022] px-1 text-[9px] font-semibold tabular-nums", v6Tone[tone].soft, v6Tone[tone].text)}>{lesson.time}</span>
               <div className="min-w-0">
-                <SafeTitle as="p" className="truncate text-[12px] font-semibold tracking-[-0.008em] text-white/84">{lesson.title}</SafeTitle>
-                <SafeMeta as="p" className="mt-px truncate text-[9px] font-medium text-white/44">{lesson.weekday} · {lesson.room} · {todayRecords.length ? `${todayRecords.length} סומנו, ${absentCount} חסרים, ${lateCount} איחורים` : "טרם סומן היום"}</SafeMeta>
+                <SafeTitle as="p" className="truncate text-[11.3px] font-semibold tracking-[-0.006em] text-white/82">{lesson.title}</SafeTitle>
+                <SafeMeta as="p" className="mt-px truncate text-[8.6px] font-medium text-white/40">{lesson.weekday} · {lesson.room} · {todayRecords.length ? `${todayRecords.length} סומנו, ${absentCount} חסרים, ${lateCount} איחורים` : "טרם סומן היום"}</SafeMeta>
               </div>
-              {(user.permissions.manageAttendance || user.role === "super_admin") ? <div className="self-center [&>button]:min-h-6 [&>button]:rounded-[9px] [&>button]:px-1.5 [&>button]:py-0.5 [&>button]:text-[9px]"><V6Button variant="ghost" onClick={() => openAttendance(lesson.id)}>נוכחות</V6Button></div> : group?.style ? <SafeMeta as="span" className={v6Cx("text-[9px] font-semibold", v6Tone[tone].text)}>{group.style}</SafeMeta> : null}
+              {(user.permissions.manageAttendance || user.role === "super_admin") ? <div className="self-center [&>button]:min-h-6 [&>button]:rounded-[8px] [&>button]:px-1.5 [&>button]:py-0.5 [&>button]:text-[8.6px]"><V6Button variant="ghost" onClick={() => openAttendance(lesson.id)}>נוכחות</V6Button></div> : group?.style ? <SafeMeta as="span" className={v6Cx("max-w-[4.2rem] truncate text-[8.5px] font-semibold", v6Tone[tone].text)}>{group.style}</SafeMeta> : null}
             </div>
           </div>
         );
@@ -757,39 +758,57 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
   );
 }
 
+function NotificationRow({ icon: Icon, title, body, source, unread, tone = "studio", onClick }: { icon: React.ElementType; title: string; body: string; source: string; unread?: boolean; tone?: V6Tone; onClick?: () => void }) {
+  const Component = onClick ? "button" : "div";
+  return (
+    <Component dir="rtl" onClick={onClick} className={v6Cx("group grid min-h-[42px] w-full grid-cols-[auto_1fr_auto] items-center gap-1.5 rounded-[12px] border px-2 py-1.5 text-start outline-none transition active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-[#f4d58d]/25", unread ? "border-[rgba(255,228,230,0.060)] bg-[rgba(255,228,230,0.024)]" : v6Surface.whisper)}>
+      <span className={v6Cx("relative grid h-[22px] w-[22px] shrink-0 place-items-center rounded-[9px]", v6Tone[tone].soft, v6Tone[tone].text)}>
+        {unread ? <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-rose-200 shadow-[0_0_0_2px_rgba(8,5,6,0.88)]" /> : null}
+        <Icon size={10.5} strokeWidth={1.9} />
+      </span>
+      <span className="min-w-0">
+        <SafeTitle as="span" className="block truncate text-[11.5px] font-semibold tracking-[-0.008em] text-white/84">{title}</SafeTitle>
+        <SafeMeta as="span" className="mt-px block truncate text-[9px] font-medium text-white/38">{body}</SafeMeta>
+      </span>
+      <span className="min-w-0 shrink-0 text-start">
+        <SafeMeta as="span" className={v6Cx("block max-w-[3.8rem] truncate text-[8.5px] font-semibold", unread ? "text-rose-100/70" : "text-white/30")}>{unread ? "לא נקרא" : "נקרא"}</SafeMeta>
+        <SafeMeta as="span" className="mt-px block max-w-[3.8rem] truncate text-[8px] text-white/26">{source}</SafeMeta>
+      </span>
+    </Component>
+  );
+}
+
 function Messages({ user, show }: { user: V6User; show: (message: string) => void }) {
   const { db, dispatch } = useV6();
   const notifications = selectV6NotificationsForActor(db, user);
   const messages = selectV6MessagesForActor(db, user);
   return (
     <div className="space-y-1.5">
-      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[17px] border p-2.5 text-start", v6Surface.base)}>
+      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[15px] border p-2 text-start", v6Surface.base)}>
         <div className="grid grid-cols-[1fr_auto] items-center gap-2">
           <div className="min-w-0">
             <p className={v6Type.kicker}>קהילה ועדכונים</p>
-            <SafeTitle as="h1" className="mt-px truncate text-[17px] font-semibold tracking-[-0.022em]">הודעות</SafeTitle>
-            <SafeMeta as="p" className="mt-px truncate text-[10.5px] leading-relaxed text-white/50">מהסטודיו ומהקבוצה.</SafeMeta>
+            <SafeTitle as="h1" className="mt-px truncate text-[15px] font-semibold tracking-[-0.018em]">הודעות</SafeTitle>
+            <SafeMeta as="p" className="mt-px truncate text-[9.8px] leading-snug text-white/46">מהסטודיו ומהקבוצה.</SafeMeta>
           </div>
-          <div className="[&>button]:min-h-7 [&>button]:rounded-[10px] [&>button]:px-2 [&>button]:py-1 [&>button]:text-[10px]"><V6Button variant="ghost" onClick={() => { dispatch({ type: "mark_all_read", userId: user.id }); show("הכול סומן כנקרא"); }}>סמן הכול כנקרא</V6Button></div>
+          <div className="[&>button]:min-h-6 [&>button]:rounded-[9px] [&>button]:px-2 [&>button]:py-0.5 [&>button]:text-[9px]"><V6Button variant="ghost" onClick={() => { dispatch({ type: "mark_all_read", userId: user.id }); show("הכול סומן כנקרא"); }}>סמן הכול כנקרא</V6Button></div>
         </div>
       </section>
-      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[16px] border p-2", v6Surface.editorial)}>
+      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[14px] border p-1.5", v6Surface.editorial)}>
         <div className="px-0.5 text-start">
           <p className={v6Type.kicker}>התראות</p>
-            <SafeTitle as="h2" className="mt-px text-[13px] font-semibold tracking-[-0.014em] text-white/80">לא נקראו</SafeTitle>
+            <SafeTitle as="h2" className="mt-px text-[12px] font-semibold tracking-[-0.010em] text-white/76">לא נקראו</SafeTitle>
         </div>
-        <div className="mt-1.5 space-y-1">
+        <div className="mt-1 space-y-0.5">
           {notifications.length ? notifications.map((item) => (
-            <button key={item.id} onClick={() => { dispatch({ type: "mark_notification_read", userId: user.id, notificationId: item.id }); show("ההודעה סומנה כנקראה"); }} className="w-full">
-              <V6FeedRow icon={Bell} title={item.title} body={item.body} meta={item.readBy.includes(user.id) ? "נקרא" : "לא נקרא"} tone={item.readBy.includes(user.id) ? "studio" : "urgent"} />
-            </button>
+            <NotificationRow key={item.id} icon={Bell} title={item.title} body={item.body} source="סטודיו" unread={!item.readBy.includes(user.id)} tone={item.readBy.includes(user.id) ? "studio" : "urgent"} onClick={() => { dispatch({ type: "mark_notification_read", userId: user.id, notificationId: item.id }); show("ההודעה סומנה כנקראה"); }} />
           )) : <p className="py-3 text-center text-xs text-white/42">אין התראות כרגע.</p>}
         </div>
-        <div className="mt-2 border-t border-[#f4d58d]/7 px-0.5 pt-1.5 text-start">
+        <div className="mt-1.5 border-t border-[#f4d58d]/7 px-0.5 pt-1 text-start">
           <p className={v6Type.kicker}>קבוצה וקהילה</p>
-          <SafeTitle as="h2" className="mt-px text-[13px] font-semibold tracking-[-0.014em] text-white/80">מהסטודיו</SafeTitle>
+          <SafeTitle as="h2" className="mt-px text-[12px] font-semibold tracking-[-0.010em] text-white/76">מהסטודיו</SafeTitle>
         </div>
-        <div className="mt-1.5 space-y-1">{messages.map((item) => <V6FeedRow key={item.id} icon={MessageCircle} title={item.title} body={item.body} meta="סטודיו" tone="modern" />)}</div>
+        <div className="mt-1 space-y-0.5">{messages.map((item) => <NotificationRow key={item.id} icon={MessageCircle} title={item.title} body={item.body} source="סטודיו" tone="modern" />)}</div>
       </section>
     </div>
   );
@@ -797,7 +816,7 @@ function Messages({ user, show }: { user: V6User; show: (message: string) => voi
 
 function ProductBadge({ children, tone = "shop" }: { children: ReactNode; tone?: V6Tone }) {
   return (
-    <span dir="rtl" className={v6Cx("inline-flex h-5 max-w-full shrink-0 items-center rounded-full border px-2 text-[9px] font-semibold leading-none whitespace-nowrap", v6Tone[tone].soft, v6Tone[tone].text, "border-[#f4d58d]/6")}>
+    <span dir="rtl" className={v6Cx("inline-flex h-[18px] max-w-full shrink-0 items-center rounded-full border px-1.5 text-[8.4px] font-semibold leading-none whitespace-nowrap", v6Tone[tone].soft, v6Tone[tone].text, "border-[#f4d58d]/6")}>
       {children}
     </span>
   );
@@ -826,29 +845,31 @@ function ProductCard({ product, user, show, onPrivateLesson, onEdit, variant = "
       };
   const feature = variant === "feature";
   return (
-    <article dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[16px] border p-2.5 text-start", v6Surface.base, feature && "border-[rgba(244,213,141,0.10)]")}>
-      <div className={v6Cx("grid min-w-0 gap-2", image?.localPreviewUrl ? "grid-cols-[56px_minmax(0,1fr)]" : "grid-cols-1")}>
+    <article dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[14px] border p-2 text-start", v6Surface.base, feature && "border-[rgba(244,213,141,0.10)]")}>
+      <div className={v6Cx("grid min-w-0 gap-1.5", image?.localPreviewUrl ? "grid-cols-[48px_minmax(0,1fr)]" : "grid-cols-1")}>
         {image?.localPreviewUrl ? (
-          <div role="img" aria-label={product.title} className="h-14 w-14 rounded-[13px] border border-[#f4d58d]/7 bg-cover bg-center shadow-[inset_0_1px_0_rgba(255,247,223,0.040)]" style={{ backgroundImage: `url(${image.localPreviewUrl})` }} />
+          <div role="img" aria-label={product.title} className="h-12 w-12 rounded-[11px] border border-[#f4d58d]/7 bg-cover bg-center shadow-[inset_0_1px_0_rgba(255,247,223,0.040)]" style={{ backgroundImage: `url(${image.localPreviewUrl})` }} />
         ) : null}
 
         <div className="min-w-0">
-          <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
-            <h2 className="min-w-0 truncate text-[13.5px] font-semibold leading-snug tracking-[-0.014em] text-white/90">{product.title}</h2>
-            <p className="shrink-0 text-[13px] font-semibold leading-snug tracking-[-0.012em] text-[#fff7df]/90"><BidiNumber>{priceLabel}</BidiNumber></p>
+          <div className="min-w-0">
+            <h2 className="min-w-0 truncate text-[12.6px] font-semibold leading-snug tracking-[-0.010em] text-white/90">{product.title}</h2>
           </div>
 
-          <p className="mt-1 line-clamp-2 text-[10px] leading-relaxed text-white/45">{product.description}</p>
+          <p className="mt-0.5 line-clamp-2 text-[9px] leading-snug text-white/40">{product.description}</p>
 
-          <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-1 overflow-hidden">
+          <div className="mt-1 flex min-w-0 flex-wrap items-center gap-1 overflow-hidden">
             {badges.map((badge) => <ProductBadge key={badge.id} tone={badge.tone}>{badge.label}</ProductBadge>)}
           </div>
         </div>
       </div>
 
-      <div className={v6Cx("mt-2 grid gap-1.5", onEdit ? "grid-cols-2" : "grid-cols-1")}>
-        <button type="button" disabled={!product.active} onClick={action} className="min-h-8 rounded-[11px] bg-[#f4d58d] px-3 py-1 text-[11px] font-semibold leading-none text-zinc-950 transition active:scale-[0.985] disabled:opacity-45">{privateLesson ? "זמינות" : "הזמנה"}</button>
-        {onEdit ? <button type="button" onClick={onEdit} className="min-h-8 rounded-[11px] border border-[#f4d58d]/8 bg-white/[0.022] px-3 py-1 text-[11px] font-semibold leading-none text-white/62 transition active:scale-[0.985]">עריכה</button> : null}
+      <div className="mt-1.5 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-1.5">
+        <p className="shrink-0 text-[12.2px] font-semibold leading-snug tracking-[-0.010em] text-[#fff7df]/90"><BidiNumber>{priceLabel}</BidiNumber></p>
+        <div className={v6Cx("grid min-w-0 gap-1", onEdit ? "grid-cols-2" : "grid-cols-1")}>
+          <button type="button" disabled={!product.active} onClick={action} className="min-h-7 rounded-[10px] bg-[#f4d58d] px-3 py-0.5 text-[10px] font-semibold leading-none text-zinc-950 outline-none transition active:scale-[0.985] disabled:opacity-45 focus-visible:ring-2 focus-visible:ring-[#f4d58d]/35">{privateLesson ? "זמינות" : "הזמנה"}</button>
+          {onEdit ? <button type="button" onClick={onEdit} className="min-h-7 rounded-[10px] border border-[#f4d58d]/8 bg-white/[0.022] px-3 py-0.5 text-[10px] font-semibold leading-none text-white/62 outline-none transition active:scale-[0.985] focus-visible:ring-2 focus-visible:ring-[#f4d58d]/25">עריכה</button> : null}
+        </div>
       </div>
     </article>
   );
@@ -1029,38 +1050,38 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
   );
   return (
     <div className="space-y-1.5">
-      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[17px] border p-2.5 text-start", v6Surface.base)}>
+      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[15px] border p-2 text-start", v6Surface.base)}>
         <div className="grid grid-cols-[1fr_auto] items-start gap-2">
           <div className="min-w-0">
             <p className={v6Type.kicker}>חנות</p>
-            <SafeTitle as="h1" className="mt-px truncate text-[17px] font-semibold tracking-[-0.022em] text-white">חנות הסטודיו</SafeTitle>
-            <SafeMeta as="p" className="mt-px line-clamp-1 text-[10.5px] leading-relaxed text-white/50">מוצרים, כרטיסים ושיעורים פרטיים.</SafeMeta>
+            <SafeTitle as="h1" className="mt-px truncate text-[15px] font-semibold tracking-[-0.018em] text-white">חנות הסטודיו</SafeTitle>
+            <SafeMeta as="p" className="mt-px line-clamp-1 text-[9.8px] leading-snug text-white/46">מוצרים, כרטיסים ושיעורים פרטיים.</SafeMeta>
           </div>
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[12px] bg-[#f4d58d]/10 text-yellow-50"><ShoppingBag size={13.5} strokeWidth={1.9} /></span>
+          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-[10px] bg-[#f4d58d]/10 text-yellow-50"><ShoppingBag size={12} strokeWidth={1.9} /></span>
         </div>
-        <div className="mt-2 overflow-x-auto pb-0.5 no-scrollbar [&_button]:min-h-8 [&_button]:px-3 [&_button]:py-1.5 [&_button]:text-[11px]"><SegmentedControl value={category} options={categories} onChange={setCategory} /></div>
-        <div className="mt-1.5 grid grid-cols-2 gap-1">
-          <button onClick={() => openScreen("private_lessons")} className="min-w-0 rounded-[12px] border border-[#f4d58d]/6 bg-white/[0.014] px-2 py-1.5 text-start transition active:scale-[0.99]">
+        <div className="mt-1.5 overflow-x-auto pb-0.5 no-scrollbar [&_button]:min-h-6 [&_button]:rounded-[10px] [&_button]:px-2.5 [&_button]:py-1 [&_button]:text-[9.5px]"><SegmentedControl value={category} options={categories} onChange={setCategory} /></div>
+        <div className="mt-1 grid grid-cols-2 gap-1">
+          <button onClick={() => openScreen("private_lessons")} className="min-w-0 rounded-[11px] border border-[#f4d58d]/6 bg-white/[0.014] px-2 py-1 text-start transition active:scale-[0.99]">
             <SafeMeta as="p" className={v6Type.kicker}>שיעורים פרטיים</SafeMeta>
-            <SafeTitle as="p" className="mt-px truncate text-[11.5px] font-semibold text-white/80">{lanes.privateLessons.length} {lanes.privateLessons.length === 1 ? "אפשרות" : "אפשרויות"}</SafeTitle>
+            <SafeTitle as="p" className="mt-px truncate text-[10.8px] font-semibold text-white/78">{lanes.privateLessons.length} {lanes.privateLessons.length === 1 ? "אפשרות" : "אפשרויות"}</SafeTitle>
           </button>
-          <button onClick={() => setCategory("כרטיסים")} className="min-w-0 rounded-[12px] border border-[#f4d58d]/6 bg-white/[0.014] px-2 py-1.5 text-start transition active:scale-[0.99]">
+          <button onClick={() => setCategory("כרטיסים")} className="min-w-0 rounded-[11px] border border-[#f4d58d]/6 bg-white/[0.014] px-2 py-1 text-start transition active:scale-[0.99]">
             <SafeMeta as="p" className={v6Type.kicker}>כרטיסים</SafeMeta>
-            <SafeTitle as="p" className="mt-px truncate text-[11.5px] font-semibold text-white/80">{lanes.tickets.length} במלאי</SafeTitle>
+            <SafeTitle as="p" className="mt-px truncate text-[10.8px] font-semibold text-white/78">{lanes.tickets.length} במלאי</SafeTitle>
           </button>
         </div>
         {(user.permissions.manageShop || user.role === "super_admin") ? (
-          <button onClick={() => openProductEditor()} className="mt-1.5 grid w-full grid-cols-[auto_1fr] items-center gap-2 rounded-[12px] border border-[#f4d58d]/7 bg-[#f4d58d]/[0.028] px-2.5 py-1.5 text-start transition active:scale-[0.99]">
-            <Plus size={13} className="text-[#f4d58d]/70" />
+          <button onClick={() => openProductEditor()} className="mt-1 grid w-full grid-cols-[auto_1fr] items-center gap-1.5 rounded-[11px] border border-[#f4d58d]/7 bg-[#f4d58d]/[0.028] px-2 py-1 text-start transition active:scale-[0.99]">
+            <Plus size={11.5} className="text-[#f4d58d]/70" />
             <span className="min-w-0">
-              <SafeTitle as="span" className="block text-[11.5px] font-semibold text-white/82">הוספת מוצר</SafeTitle>
-              <SafeMeta as="span" className="mt-px block truncate text-[9.5px] text-white/36">ניהול מוצר ותמונות</SafeMeta>
+              <SafeTitle as="span" className="block text-[10.8px] font-semibold text-white/80">הוספת מוצר</SafeTitle>
+              <SafeMeta as="span" className="mt-px block truncate text-[8.8px] text-white/32">ניהול מוצר ותמונות</SafeMeta>
             </span>
           </button>
         ) : null}
       </section>
       <V6SheetController activeSheet={activeSheet} title={productTitle || "מוצר חדש"} onClose={() => setActiveSheet(null)}>{productEditor}</V6SheetController>
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         {products.map((product, index) => (
           <ProductCard key={product.id} product={product} user={user} show={show} onPrivateLesson={() => openScreen("private_lessons")} onEdit={(user.permissions.manageShop || user.role === "super_admin") ? () => openProductEditor(product) : undefined} variant={index === 0 ? "feature" : "standard"} />
         ))}
@@ -1088,22 +1109,22 @@ function More({ user, openScreen, openTab }: { user: V6User; openScreen: (screen
   })).filter((s) => s.items.length);
   return (
     <div className="space-y-1.5">
-      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[17px] border p-2.5 text-start", v6Surface.base)}>
+      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[15px] border p-2 text-start", v6Surface.base)}>
         <div className="flex items-center gap-2">
-          <span className={v6Cx("grid h-7 w-7 shrink-0 place-items-center rounded-[12px]", user.role === "super_admin" ? v6Tone.admin.soft : v6Tone.management.soft, user.role === "super_admin" ? v6Tone.admin.text : v6Tone.management.text)}><Users size={13.5} strokeWidth={1.9} /></span>
+          <span className={v6Cx("grid h-6 w-6 shrink-0 place-items-center rounded-[10px]", user.role === "super_admin" ? v6Tone.admin.soft : v6Tone.management.soft, user.role === "super_admin" ? v6Tone.admin.text : v6Tone.management.text)}><Users size={12} strokeWidth={1.9} /></span>
           <div className="min-w-0 flex-1">
             <p className={v6Type.kicker}>{user.role === "super_admin" ? "ניהול" : "כלים שימושיים"}</p>
-            <SafeTitle as="h1" className="mt-px truncate text-[17px] font-semibold tracking-[-0.022em] text-white">הגדרות וכלים</SafeTitle>
-            <SafeMeta as="p" className="mt-px truncate text-[10.5px] leading-relaxed text-white/50">ניהול, סטודיו וחנות במקום אחד.</SafeMeta>
+            <SafeTitle as="h1" className="mt-px truncate text-[15px] font-semibold tracking-[-0.018em] text-white">הגדרות וכלים</SafeTitle>
+            <SafeMeta as="p" className="mt-px truncate text-[9.8px] leading-snug text-white/46">ניהול, סטודיו וחנות במקום אחד.</SafeMeta>
           </div>
         </div>
       </section>
       {sections.map((section) => (
-        <section key={section.title} dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[16px] border p-1.5", v6Surface.open)}>
-          <div className="px-1 text-start">
+        <section key={section.title} dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[13px] border p-1", v6Surface.open)}>
+          <div className="px-0.5 text-start">
             <p className={v6Type.kicker}>{section.title}</p>
           </div>
-          <div className="mt-1 space-y-0.5">
+          <div className="mt-0.5 space-y-0.5">
             {section.items.map((item) => <ActionCard key={item.title} icon={item.icon} title={item.title} subtitle={item.subtitle} tone={item.tone} onClick={() => "tab" in item ? openTab(item.tab) : openScreen(item.screen)} />)}
           </div>
         </section>

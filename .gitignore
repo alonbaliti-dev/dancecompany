@@ -63,3 +63,6 @@ database/*-backup.json
 
 # Supabase local CLI metadata
 supabase/.temp/
+
+# Local prototype import source archives
+.porting-source/

@@ -5,6 +5,31 @@
 :root {
   color-scheme: dark;
 
+  /* Lovable prototype tokens: kept additive so V6 styling remains intact. */
+  --radius: 1rem;
+  --background: oklch(0.16 0.012 270);
+  --foreground: oklch(0.97 0.005 270);
+  --surface: oklch(0.21 0.014 270);
+  --surface-elevated: oklch(0.255 0.016 270);
+  --hairline: oklch(1 0 0 / 8%);
+  --card-foreground: oklch(0.97 0.005 270);
+  --popover: oklch(0.21 0.014 270);
+  --popover-foreground: oklch(0.97 0.005 270);
+  --primary: oklch(0.82 0.09 75);
+  --primary-foreground: oklch(0.18 0.012 270);
+  --secondary: oklch(0.26 0.015 270);
+  --secondary-foreground: oklch(0.97 0.005 270);
+  --muted: oklch(0.24 0.013 270);
+  --muted-foreground: oklch(0.7 0.015 270);
+  --destructive: oklch(0.65 0.21 22);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 10%);
+  --ring: oklch(0.82 0.09 75 / 50%);
+  --gold: oklch(0.82 0.13 80);
+  --rose: oklch(0.74 0.13 15);
+  --success: var(--color-success);
+
   --bg-canvas: #020102;
   --bg-card: #0b0709;
   --bg-elevated: #151014;
@@ -683,20 +708,6 @@ textarea {
   overflow-wrap: anywhere;
 }
 
-.truncate,
-[class*="line-clamp-"],
-.lk-safe-text.truncate,
-.lk-safe-title.truncate,
-.lk-safe-meta.truncate {
-  display: block !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-  white-space: normal !important;
-  -webkit-box-orient: initial !important;
-  -webkit-line-clamp: unset !important;
-  line-clamp: unset !important;
-}
-
 .bidi-plain {
   unicode-bidi: plaintext;
 }
@@ -732,6 +743,32 @@ textarea {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.glass {
+  background: linear-gradient(180deg, oklch(1 0 0 / 6%) 0%, oklch(1 0 0 / 3%) 100%);
+  border: 1px solid var(--hairline);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+}
+
+.glass-strong {
+  background: linear-gradient(180deg, oklch(1 0 0 / 10%) 0%, oklch(1 0 0 / 4%) 100%);
+  border: 1px solid var(--hairline);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  backdrop-filter: blur(32px) saturate(180%);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.safe-top {
+  padding-top: max(env(safe-area-inset-top), 0.5rem);
+}
+
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
 }
 
 /* iOS: prevent focus zoom on inputs (requires ≥16px) */
