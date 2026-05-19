@@ -1,7 +1,9 @@
 import { selectV6LessonsForActor } from "@/lib/domains/attendance/selectors";
 import { buildV6DomainView, selectV6AttendanceRateFromRecords, selectV6AttendanceRecordsForGroupIds, selectV6AttendanceRecordsForStudent, selectV6GroupRosterViews, selectV6LessonAttendanceSummary, selectV6RosterStudentsForGroupIds, selectV6TeacherGroupIds, selectV6WeeklyScheduleViews, v6AttendanceStatusLabel, type V6GroupRosterStudentView, type V6GroupRosterView, type V6NormalizedDomainView } from "@/lib/domains/core/domain-adapters";
 import { selectV6UpcomingEvents } from "@/lib/domains/events/selectors";
+import { selectV6ActivityCenterForActor } from "@/lib/v6/activity-center";
 import { selectV6MessagesForActor, selectV6NotificationsForActor, selectV6UnreadCount } from "@/lib/domains/messages/selectors";
+import type { V6ActivityCenterViewModel } from "@/lib/v6/activity-center/types";
 import { selectV6ShopProductsForActor } from "@/lib/domains/shop/selectors";
 import { modulesForRole } from "@/lib/v6/ui-composition";
 import type { V6CalendarEvent, V6Database, V6Group, V6Lesson, V6Product, V6User } from "@/lib/v6/types";
@@ -31,6 +33,7 @@ export type V6ActorHomeContext = {
   nextEvent?: V6CalendarEvent;
   unread: number;
   homeModuleIds: Set<string>;
+  activityCenter: V6ActivityCenterViewModel;
 };
 
 export type V6AttendanceProgress = {
@@ -94,6 +97,7 @@ export type V6StudentHomeViewModel = V6ActorHomeContext & {
   feed: V6StudentFeedRow[];
   weekItems: V6StudentWeekRow[];
   todaySchedule: V6StudentTodayLessonRow[];
+  activityCenter: V6ActivityCenterViewModel;
 };
 
 export type V6TeacherGroupRow = {
@@ -162,6 +166,7 @@ export type V6TeacherHomeViewModel = V6ActorHomeContext & {
   groupMessages: V6TeacherGroupMessage[];
   todayWeekday: string;
   todayTeachingFlow: V6TeacherTodayLessonRow[];
+  activityCenter: V6ActivityCenterViewModel;
 };
 
 export type V6ManagementScheduleLessonRow = {
@@ -256,6 +261,7 @@ export type V6ManagementHomeViewModel = V6ActorHomeContext & {
   paymentsEnabled: boolean;
   attentionItems: V6ManagementAttentionItem[];
   systemRows: V6ManagementSystemRow[];
+  activityCenter: V6ActivityCenterViewModel;
 };
 
 export function normalizeV6Weekday(value: string) {
@@ -375,6 +381,8 @@ export function selectV6ActorHomeContext(db: V6Database, actor: V6User, lessons:
   const domainView = buildV6DomainView(db);
   const events = selectV6UpcomingEvents(db, actor);
 
+  const activityCenter = selectV6ActivityCenterForActor(db, actor);
+
   return {
     domainView,
     indexes: selectV6EntityIndexes(db),
@@ -383,8 +391,9 @@ export function selectV6ActorHomeContext(db: V6Database, actor: V6User, lessons:
     messages: selectV6MessagesForActor(db, actor),
     events,
     nextEvent: events[0],
-    unread: selectV6UnreadCount(db, actor),
-    homeModuleIds: new Set(modulesForRole(actor.role).map((module) => module.id))
+    unread: activityCenter.unreadCount || selectV6UnreadCount(db, actor),
+    homeModuleIds: new Set(modulesForRole(actor.role).map((module) => module.id)),
+    activityCenter
   };
 }
 
@@ -537,7 +546,8 @@ export function selectV6StudentHomeViewModel(db: V6Database, user: V6User): V6St
     membershipTone,
     feed,
     weekItems,
-    todaySchedule
+    todaySchedule,
+    activityCenter: context.activityCenter
   };
 }
 
@@ -642,7 +652,8 @@ export function selectV6TeacherHomeViewModel(db: V6Database, user: V6User): V6Te
     attentionStudents,
     groupMessages,
     todayWeekday,
-    todayTeachingFlow
+    todayTeachingFlow,
+    activityCenter: context.activityCenter
   };
 }
 
@@ -791,6 +802,7 @@ export function selectV6ManagementHomeViewModel(db: V6Database, user: V6User, to
     pendingStudents,
     paymentsEnabled,
     attentionItems,
-    systemRows
+    systemRows,
+    activityCenter: context.activityCenter
   };
 }

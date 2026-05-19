@@ -16,6 +16,7 @@ import { createTimetablePersistencePayload, hydrateTimetableSessionFromPersisten
 import { createV6TimetablePersistenceRuntime } from "@/lib/v6/timetable-persistence-runtime";
 import { AttachedPrimaryAction, BidiNumber, BottomSheet, Button, HeroSurface, InlineMetric, LiveActivityRow, ManagementSummaryTile, MobileInfoTile, MobileIntro, MobileList, MobileListRow, MobileScreen, MobileSection, OperationalAlertRow, RoomAllocationTile, SafeMeta, SafeTitle, SheetActions, StatusBadge, Surface, v6Control, v6Cx, type V6Tone } from "@/components/v6/design-system";
 import { ManagementTimetableSection, type TimetableImportNotice } from "./management-timetable-section";
+import { RecentActivitySection, useV6ActivityNavigationHandlers } from "@/components/v6/activity-center/activity-center-section";
 import { StudentHomeSection } from "./student-home-section";
 import { TeacherHomeSection } from "./teacher-home-section";
 
@@ -150,7 +151,8 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
   const [timetablePersistenceLoading, setTimetablePersistenceLoading] = useState(false);
   const [timetableAuditEvents, setTimetableAuditEvents] = useState<V6TimetableAuditEvent[]>([]);
   const viewModel = useMemo(() => selectV6ManagementHomeViewModel(db, user, today), [db, today, user]);
-  const { lessons, unread, todayLessons, liveLesson, liveGroup, liveLessonSummary, liveActivitySummary, activeGroups, activeGroupRows, teachers, teachingStaffRows, rooms, scheduleLessonRows, daySummaries, scheduleDays, roomLoads, paidProducts, privateLessonProducts, openTasks, attentionItems, systemRows, paymentsEnabled } = viewModel;
+  const { lessons, unread, todayLessons, liveLesson, liveGroup, liveLessonSummary, liveActivitySummary, activeGroups, activeGroupRows, teachers, teachingStaffRows, rooms, scheduleLessonRows, daySummaries, scheduleDays, roomLoads, paidProducts, privateLessonProducts, openTasks, attentionItems, systemRows, paymentsEnabled, activityCenter } = viewModel;
+  const { openActivityItem, openActivityCenter } = useV6ActivityNavigationHandlers(openTab, openScreen);
   const { groupsById } = viewModel.indexes;
   const lessonOverrides = timetableSession.currentOverrides;
   const timetableAuditActor = useMemo(() => selectV6TimetableAuditActor(user), [user]);
@@ -901,11 +903,17 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
         </MobileList>
       </MobileSection>
 
-      <MobileSection kicker={unread ? `${unread} חדשים` : "תקשורת"} title="הודעות מערכת" tone="management">
-        <MobileList>
-          {systemRows.length ? systemRows.map((item) => <MobileListRow key={item.id} icon={item.kind === "notification" ? Bell : MessageCircle} title={item.title} subtitle={item.subtitle} meta={item.meta} tone={item.tone} onClick={() => openTab("messages")} ariaLabel={`פתיחת הודעה: ${item.title}`} />) : <MobileListRow icon={MessageCircle} title="אין הודעות להצגה" subtitle="הודעות ועדכוני מערכת יופיעו כאן" tone="management" />}
-        </MobileList>
-      </MobileSection>
+      <RecentActivitySection
+        kicker={activityCenter.unreadCount ? `${activityCenter.unreadCount} חדשים` : "תקשורת"}
+        title="מרכז פעילות"
+        tone="management"
+        items={activityCenter.recent}
+        unreadCount={activityCenter.unreadCount}
+        emptyTitle="אין פעילות להצגה"
+        emptyDescription="הודעות, שינויי לוח, נוכחות וחריגות יופיעו כאן בצורה מסודרת."
+        onOpenItem={openActivityItem}
+        onOpenCenter={openActivityCenter}
+      />
     </MobileScreen>
   );
 }

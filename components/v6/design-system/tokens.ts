@@ -135,6 +135,15 @@ export const v6Interactive = {
     "touch-manipulation disabled:cursor-not-allowed disabled:opacity-42 disabled:saturate-[0.68] disabled:shadow-none disabled:hover:brightness-100 disabled:hover:translate-y-0 disabled:active:scale-100"
 };
 
+export const v6ActivitySurface = {
+  panel:
+    "border border-[rgba(244,213,141,0.055)] bg-[linear-gradient(180deg,rgba(255,255,255,0.034),rgba(255,255,255,0.010))] shadow-[0_12px_32px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,247,223,0.038)] backdrop-blur-xl",
+  row: "border border-[rgba(244,213,141,0.040)] bg-[linear-gradient(180deg,rgba(255,255,255,0.028),rgba(255,255,255,0.008))]",
+  rowUnread: "border-[rgba(255,228,230,0.10)] bg-[linear-gradient(180deg,rgba(255,228,230,0.040),rgba(255,255,255,0.010))]",
+  empty:
+    "border border-[rgba(244,213,141,0.036)] bg-[linear-gradient(180deg,rgba(255,255,255,0.022),rgba(255,255,255,0.006))] shadow-[inset_0_1px_0_rgba(255,247,223,0.024)]"
+};
+
 export const v6TeacherSurface = {
   greeting:
     "border border-sky-300/[0.10] bg-[linear-gradient(165deg,rgba(125,211,252,0.055),rgba(255,255,255,0.016)_48%,rgba(12,32,48,0.14))] shadow-[0_14px_36px_rgba(0,0,0,0.20),inset_0_1px_0_rgba(125,211,252,0.050)] backdrop-blur-xl",

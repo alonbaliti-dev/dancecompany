@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Bell,
   CalendarDays,
@@ -63,7 +63,8 @@ import {
 import { HomeScreen } from "@/components/v6/screens/HomeScreen";
 import { selectV6LessonsForActor, selectV6StudentsForAttendanceGroup } from "@/lib/domains/attendance/selectors";
 import { buildV6SaveAttendanceOperation } from "@/lib/domains/attendance/operations";
-import { selectV6MessagesForActor, selectV6NotificationsForActor } from "@/lib/domains/messages/selectors";
+import { selectV6ActivityCenterForActor } from "@/lib/v6/activity-center";
+import { ActivityCenterPanel, useV6ActivityNavigationHandlers } from "@/components/v6/activity-center/activity-center-section";
 import { selectV6PrivateLessonsForActor } from "@/lib/domains/private-lessons/selectors";
 import { buildV6SaveProductOperation, v6InventoryStatuses, v6ProductCategories, v6ProductTypes } from "@/lib/domains/shop/operations";
 import { selectV6ShopProductsForActor, selectV6FeaturedShopLanes } from "@/lib/domains/shop/selectors";
@@ -520,10 +521,10 @@ function Shell() {
   const [tab, setTab] = useState<V6Tab>("dashboard");
   const [screen, setScreen] = useState<V6Screen>("home");
   const { message, show } = useToast();
+  const activityCenter = useMemo(() => (user ? selectV6ActivityCenterForActor(db, user) : null), [db, user]);
+  const unread = activityCenter?.unreadCount ?? 0;
   if (!user) return <Login />;
   const studio = db.studios.find((s) => s.id === user.studioId);
-  const notifications = db.notifications.filter((n) => n.userIds.includes(user.id));
-  const unread = notifications.filter((n) => !n.readBy.includes(user.id)).length;
   const openScreen = (next: V6Screen) => {
     setScreen(next);
     setTab("more");
@@ -546,7 +547,7 @@ function Shell() {
         <div key={`${tab}-${screen}`}>
           {home && tab === "dashboard" ? <HomeScreen user={user} openScreen={openScreen} openTab={(next) => { setScreen("home"); setTab(next); window.scrollTo({ top: 0 }); }} /> : null}
           {home && tab === "lessons" ? <Lessons user={user} show={show} /> : null}
-          {home && tab === "messages" ? <Messages user={user} show={show} /> : null}
+          {home && tab === "messages" ? <Messages user={user} show={show} openScreen={openScreen} openTab={(next) => { setScreen("home"); setTab(next); window.scrollTo({ top: 0 }); }} /> : null}
           {home && tab === "shop" ? <Shop user={user} show={show} openScreen={openScreen} /> : null}
           {home && tab === "more" ? <More user={user} openScreen={openScreen} openTab={(next) => { setScreen("home"); setTab(next); window.scrollTo({ top: 0 }); }} /> : null}
           {!home && screen === "users" ? <UsersScreen actor={user} show={show} back={() => setScreen("home")} /> : null}
@@ -780,41 +781,31 @@ function NotificationRow({ icon: Icon, title, body, source, unread, tone = "stud
   );
 }
 
-function Messages({ user, show }: { user: V6User; show: (message: string) => void }) {
+function Messages({ user, show, openScreen, openTab }: { user: V6User; show: (message: string) => void; openScreen: (screen: V6Screen) => void; openTab: (tab: V6Tab) => void }) {
   const { db, dispatch } = useV6();
-  const notifications = selectV6NotificationsForActor(db, user);
-  const messages = selectV6MessagesForActor(db, user);
+  const activityCenter = useMemo(() => selectV6ActivityCenterForActor(db, user, { limit: 60 }), [db, user]);
+  const { openActivityItem } = useV6ActivityNavigationHandlers(openTab, openScreen);
+
+  const handleOpenItem = (item: (typeof activityCenter.items)[number]) => {
+    if (item.sourceKind === "notification") {
+      dispatch({ type: "mark_notification_read", userId: user.id, notificationId: item.sourceId });
+    }
+    openActivityItem(item);
+    if (item.sourceKind === "notification") show("ההודעה סומנה כנקראה");
+  };
+
   return (
-    <div className="space-y-1.5">
-      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[15px] border p-2 text-start", v6Surface.base)}>
-        <div className="grid grid-cols-[1fr_auto] items-center gap-2">
-          <div className="min-w-0">
-            <p className={v6Type.kicker}>קהילה ועדכונים</p>
-            <SafeTitle as="h1" className="mt-px truncate text-[15px] font-semibold tracking-[-0.018em]">הודעות</SafeTitle>
-            <SafeMeta as="p" className="mt-px truncate text-[9.8px] leading-snug text-white/46">מהסטודיו ומהקבוצה.</SafeMeta>
-          </div>
-          <div className="[&>button]:min-h-6 [&>button]:rounded-[9px] [&>button]:px-2 [&>button]:py-0.5 [&>button]:text-[9px]"><V6Button variant="ghost" onClick={() => { dispatch({ type: "mark_all_read", userId: user.id }); show("הכול סומן כנקרא"); }}>סמן הכול כנקרא</V6Button></div>
-        </div>
-      </section>
-      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[14px] border p-1.5", v6Surface.editorial)}>
-        <div className="px-0.5 text-start">
-          <p className={v6Type.kicker}>התראות</p>
-            <SafeTitle as="h2" className="mt-px text-[12px] font-semibold tracking-[-0.010em] text-white/76">לא נקראו</SafeTitle>
-        </div>
-        <div className="mt-1 space-y-0.5">
-          {notifications.length ? notifications.map((item) => (
-            <NotificationRow key={item.id} icon={Bell} title={item.title} body={item.body} source="סטודיו" unread={!item.readBy.includes(user.id)} tone={item.readBy.includes(user.id) ? "studio" : "urgent"} onClick={() => { dispatch({ type: "mark_notification_read", userId: user.id, notificationId: item.id }); show("ההודעה סומנה כנקראה"); }} />
-          )) : <p className="py-3 text-center text-xs text-white/42">אין התראות כרגע.</p>}
-        </div>
-        <div className="mt-1.5 border-t border-[#f4d58d]/7 px-0.5 pt-1 text-start">
-          <p className={v6Type.kicker}>קבוצה וקהילה</p>
-          <SafeTitle as="h2" className="mt-px text-[12px] font-semibold tracking-[-0.010em] text-white/76">מהסטודיו</SafeTitle>
-        </div>
-        <div className="mt-1 space-y-0.5">{messages.map((item) => <NotificationRow key={item.id} icon={MessageCircle} title={item.title} body={item.body} source="סטודיו" tone="modern" />)}</div>
-      </section>
-    </div>
+    <ActivityCenterPanel
+      viewModel={activityCenter}
+      onOpenItem={handleOpenItem}
+      onMarkAllRead={() => {
+        dispatch({ type: "mark_all_read", userId: user.id });
+        show("הכול סומן כנקרא");
+      }}
+    />
   );
 }
+
 
 function ProductBadge({ children, tone = "shop" }: { children: ReactNode; tone?: V6Tone }) {
   return (

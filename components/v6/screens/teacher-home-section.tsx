@@ -28,6 +28,7 @@ import {
   v6Tone,
   type V6Tone
 } from "@/components/v6/design-system";
+import { RecentActivitySection, useV6ActivityNavigationHandlers } from "@/components/v6/activity-center/activity-center-section";
 import type { V6AttendanceProgress, V6TeacherHomeViewModel } from "@/lib/v6/view-models";
 import type { V6Group, V6Lesson, V6Screen, V6Tab, V6User } from "@/lib/v6/types";
 
@@ -373,41 +374,29 @@ function TeacherAttendanceShortcuts({
 }
 
 function TeacherAlertsSection({
-  groupMessages,
-  unread,
+  activityCenter,
+  openScreen,
   openTab
 }: {
-  groupMessages: V6TeacherHomeViewModel["groupMessages"];
-  unread: number;
+  activityCenter: V6TeacherHomeViewModel["activityCenter"];
+  openScreen: (screen: V6Screen) => void;
   openTab: (tab: V6Tab) => void;
 }) {
-  const alertIcon = (kind: (typeof groupMessages)[number]["kind"]) => (kind === "notification" ? Bell : MessageCircle);
+  const { openActivityItem, openActivityCenter } = useV6ActivityNavigationHandlers(openTab, openScreen);
+  const alertItems = activityCenter.recent.filter((item) => item.category !== "class" || !item.isRead);
 
   return (
-    <MobileSection kicker={unread ? `${unread} חדשים` : "עדכונים"} title="התראות ושינויים" tone="modern">
-      {groupMessages.length ? (
-        <MobileList>
-          {groupMessages.map((item) => (
-            <MobileListRow
-              key={item.id}
-              icon={alertIcon(item.kind)}
-              title={item.title}
-              subtitle={item.body}
-              meta={item.meta}
-              tone={item.tone}
-              onClick={() => openTab("messages")}
-              ariaLabel={`פתיחת עדכון: ${item.title}`}
-            />
-          ))}
-        </MobileList>
-      ) : (
-        <TeacherEmptyPanel
-          icon={Bell}
-          title="אין התראות פעילות"
-          description="הודעות מהסטודיו ושינויים בלוח יופיעו כאן כשיהיו רלוונטיים לקבוצות שלך."
-        />
-      )}
-    </MobileSection>
+    <RecentActivitySection
+      kicker={activityCenter.unreadCount ? `${activityCenter.unreadCount} חדשים` : "עדכונים"}
+      title="התראות ושינויים"
+      tone="modern"
+      items={alertItems.length ? alertItems : activityCenter.recent}
+      unreadCount={activityCenter.unreadCount}
+      emptyTitle="אין התראות פעילות"
+      emptyDescription="הודעות מהסטודיו, תזכורות נוכחות ושינויים בלוח יופיעו כאן."
+      onOpenItem={openActivityItem}
+      onOpenCenter={openActivityCenter}
+    />
   );
 }
 
@@ -562,7 +551,7 @@ export type TeacherHomeSectionProps = {
   openTab: (tab: V6Tab) => void;
 };
 
-export function TeacherHomeSection({ user, viewModel, openTab }: TeacherHomeSectionProps) {
+export function TeacherHomeSection({ user, viewModel, openScreen, openTab }: TeacherHomeSectionProps) {
   const {
     todayWeekday,
     next,
@@ -580,7 +569,7 @@ export function TeacherHomeSection({ user, viewModel, openTab }: TeacherHomeSect
     teacherGroups,
     teacherStudents,
     attentionStudents,
-    groupMessages,
+    activityCenter,
     todayTeachingFlow,
     unread
   } = viewModel;
@@ -616,7 +605,7 @@ export function TeacherHomeSection({ user, viewModel, openTab }: TeacherHomeSect
         openTab={openTab}
       />
 
-      <TeacherAlertsSection groupMessages={groupMessages} unread={unread} openTab={openTab} />
+      <TeacherAlertsSection activityCenter={activityCenter} openScreen={openScreen} openTab={openTab} />
 
       <TeacherPreparationSection
         nextTransitionTitle={nextTransitionTitle}

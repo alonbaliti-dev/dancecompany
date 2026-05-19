@@ -29,6 +29,7 @@ import {
   v6Tone,
   type V6Tone
 } from "@/components/v6/design-system";
+import { RecentActivitySection, useV6ActivityNavigationHandlers } from "@/components/v6/activity-center/activity-center-section";
 import { selectV6ProductPriceLabel as productPrice, type V6StudentHomeViewModel } from "@/lib/v6/view-models";
 import type { V6CalendarEvent, V6Group, V6Lesson, V6Screen, V6Tab, V6User } from "@/lib/v6/types";
 
@@ -381,47 +382,28 @@ function StudentQuickActions({
 }
 
 function StudentAcademyFeed({
-  feed,
-  unread,
+  activityCenter,
   openScreen,
   openTab
 }: {
-  feed: V6StudentHomeViewModel["feed"];
-  unread: number;
+  activityCenter: V6StudentHomeViewModel["activityCenter"];
   openScreen: (screen: V6Screen) => void;
   openTab: (tab: V6Tab) => void;
 }) {
-  const feedIcon = (kind: (typeof feed)[number]["kind"]) => {
-    if (kind === "notification") return Bell;
-    if (kind === "message") return MessageCircle;
-    return CalendarDays;
-  };
-  const openFeedItem = (kind: (typeof feed)[number]["kind"]) => {
-    if (kind === "event") return openScreen("calendar");
-    return openTab("messages");
-  };
+  const { openActivityItem, openActivityCenter } = useV6ActivityNavigationHandlers(openTab, openScreen);
 
   return (
-    <MobileSection kicker={unread ? `${unread} חדשים` : "מהסטודיו"} title="עדכונים בשבילך" tone="studio">
-      {feed.length ? (
-        <MobileList>
-          {feed.map((item) => (
-            <MobileListRow
-              key={item.id}
-              icon={feedIcon(item.kind)}
-              title={item.title}
-              subtitle={item.body}
-              meta={item.meta}
-              tone={item.tone}
-              onClick={() => openFeedItem(item.kind)}
-              ariaLabel={`פתיחת עדכון: ${item.title}`}
-            />
-          ))}
-        </MobileList>
-      ) : (
-        <StudentEmptyPanel icon={Bell} title="הכול שקט כרגע" description="כשיהיו הודעות, אירועים או עדכונים מהסטודיו — הם יופיעו כאן." />
-      )}
-    </MobileSection>
+    <RecentActivitySection
+      kicker={activityCenter.unreadCount ? `${activityCenter.unreadCount} חדשים` : "מהסטודיו"}
+      title="עדכונים בשבילך"
+      tone="studio"
+      items={activityCenter.recent}
+      unreadCount={activityCenter.unreadCount}
+      emptyTitle="הכול שקט כרגע"
+      emptyDescription="כשיהיו הודעות, אירועים או תזכורות מהסטודיו — הן יופיעו כאן."
+      onOpenItem={openActivityItem}
+      onOpenCenter={openActivityCenter}
+    />
   );
 }
 
@@ -557,7 +539,7 @@ export function StudentHomeSection({ user, viewModel, openScreen, openTab }: Stu
     completedTasks,
     membershipStatusLabel,
     membershipTone,
-    feed,
+    activityCenter,
     weekItems,
     todaySchedule,
     unread
@@ -587,7 +569,7 @@ export function StudentHomeSection({ user, viewModel, openScreen, openTab }: Stu
         membershipTone={membershipTone}
       />
 
-      <StudentAcademyFeed feed={feed} unread={unread} openScreen={openScreen} openTab={openTab} />
+      <StudentAcademyFeed activityCenter={activityCenter} openScreen={openScreen} openTab={openTab} />
 
       <StudentQuickActions unread={unread} openScreen={openScreen} openTab={openTab} />
 
