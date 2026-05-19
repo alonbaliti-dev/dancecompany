@@ -135,6 +135,19 @@ export const v6Interactive = {
     "touch-manipulation disabled:cursor-not-allowed disabled:opacity-42 disabled:saturate-[0.68] disabled:shadow-none disabled:hover:brightness-100 disabled:hover:translate-y-0 disabled:active:scale-100"
 };
 
+export const v6TeacherSurface = {
+  greeting:
+    "border border-sky-300/[0.10] bg-[linear-gradient(165deg,rgba(125,211,252,0.055),rgba(255,255,255,0.016)_48%,rgba(12,32,48,0.14))] shadow-[0_14px_36px_rgba(0,0,0,0.20),inset_0_1px_0_rgba(125,211,252,0.050)] backdrop-blur-xl",
+  flowRow:
+    "border border-sky-300/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.034),rgba(255,255,255,0.010))] shadow-[inset_0_1px_0_rgba(125,211,252,0.028)]",
+  flowRowActive: "border-sky-300/[0.14] bg-[linear-gradient(180deg,rgba(125,211,252,0.10),rgba(255,255,255,0.018))]",
+  metric:
+    "border border-sky-300/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.030),rgba(255,255,255,0.010))] shadow-[inset_0_1px_0_rgba(125,211,252,0.026)]",
+  quickAction: "border border-sky-300/[0.09] bg-white/[0.026] shadow-[inset_0_1px_0_rgba(125,211,252,0.024)]",
+  empty:
+    "border border-sky-300/[0.07] bg-[linear-gradient(180deg,rgba(255,255,255,0.024),rgba(255,255,255,0.008))] shadow-[inset_0_1px_0_rgba(125,211,252,0.022)]"
+};
+
 export const v6StudentSurface = {
   greeting:
     "border border-[rgba(244,213,141,0.062)] bg-[linear-gradient(165deg,rgba(255,247,223,0.055),rgba(255,255,255,0.018)_48%,rgba(80,28,52,0.12))] shadow-[0_16px_40px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,247,223,0.055)] backdrop-blur-xl",
@@ -153,6 +166,8 @@ export const v6ScreenAtmosphere = {
   home: "bg-[radial-gradient(ellipse_88%_40%_at_50%_-2%,rgba(244,213,141,0.135),transparent_64%),radial-gradient(ellipse_54%_44%_at_10%_76%,rgba(100,28,63,0.23),transparent_68%),radial-gradient(ellipse_44%_30%_at_90%_12%,rgba(255,247,223,0.052),transparent_64%),linear-gradient(180deg,#020102,#090505_52%,#020102)]",
   student:
     "bg-[radial-gradient(ellipse_86%_42%_at_50%_-4%,rgba(244,213,141,0.118),transparent_62%),radial-gradient(ellipse_50%_40%_at_8%_78%,rgba(183,47,61,0.16),transparent_66%),radial-gradient(ellipse_40%_28%_at_92%_14%,rgba(255,247,223,0.048),transparent_60%),linear-gradient(180deg,#030102,#0a0506_54%,#020102)]",
+  teacher:
+    "bg-[radial-gradient(ellipse_84%_40%_at_50%_-6%,rgba(125,211,252,0.092),transparent_62%),radial-gradient(ellipse_48%_38%_at_10%_78%,rgba(16,185,129,0.08),transparent_66%),radial-gradient(ellipse_42%_30%_at_90%_12%,rgba(244,213,141,0.040),transparent_60%),linear-gradient(180deg,#020408,#060a10_54%,#020408)]",
   shop: "bg-[radial-gradient(ellipse_80%_38%_at_50%_-6%,rgba(244,213,141,0.148),transparent_66%),radial-gradient(ellipse_48%_34%_at_8%_72%,rgba(16,185,129,0.062),transparent_64%),linear-gradient(180deg,#030202,#090604_54%,#020202)]",
   management: "bg-[radial-gradient(ellipse_80%_38%_at_50%_-8%,rgba(244,213,141,0.088),transparent_60%),radial-gradient(ellipse_52%_40%_at_12%_72%,rgba(125,211,252,0.090),transparent_66%),linear-gradient(180deg,#020409,#050712_54%,#020207)]",
   admin: "bg-[radial-gradient(ellipse_80%_38%_at_50%_-8%,rgba(244,213,141,0.090),transparent_60%),radial-gradient(ellipse_54%_40%_at_12%_72%,rgba(216,210,255,0.090),transparent_66%),linear-gradient(180deg,#030208,#07040f_54%,#020207)]",

@@ -122,6 +122,19 @@ export type V6TeacherGroupMessage = {
   tone: V6Tone;
 };
 
+export type V6TeacherTodayLessonRow = {
+  id: string;
+  title: string;
+  time: string;
+  room: string;
+  groupName?: string;
+  marked: number;
+  rosterSize: number;
+  progress: V6AttendanceProgress;
+  isNext: boolean;
+  tone: V6Tone;
+};
+
 export type V6TeacherHomeViewModel = V6ActorHomeContext & {
   domainView: V6NormalizedDomainView;
   teacherGroupIds: Set<string>;
@@ -147,6 +160,8 @@ export type V6TeacherHomeViewModel = V6ActorHomeContext & {
   completeAttendanceCount: number;
   attentionStudents: V6TeacherAttentionStudent[];
   groupMessages: V6TeacherGroupMessage[];
+  todayWeekday: string;
+  todayTeachingFlow: V6TeacherTodayLessonRow[];
 };
 
 export type V6ManagementScheduleLessonRow = {
@@ -578,6 +593,27 @@ export function selectV6TeacherHomeViewModel(db: V6Database, user: V6User): V6Te
       return { kind: "message" as const, id: item.id, title: item.title, body: item.body, meta: group?.name ?? "כללי", tone: "modern" as V6Tone };
     })
   ].slice(0, 4);
+  const todayWeekday = currentV6HebrewWeekday();
+  const todayTeachingFlow: V6TeacherTodayLessonRow[] = lessons
+    .filter((lesson) => normalizeV6Weekday(lesson.weekday) === todayWeekday)
+    .map((lesson) => {
+      const group = teacherGroups.find((item) => item.id === lesson.groupId);
+      const summary = selectV6LessonAttendanceSummary(db, domainView, lesson.id, lesson.groupId);
+      const rosterSize = teacherRosterByGroupId.get(lesson.groupId)?.rosterSize ?? summary.totalStudents;
+      const marked = summary.markedCount;
+      return {
+        id: lesson.id,
+        title: group?.name ?? lesson.title,
+        time: lesson.time,
+        room: lesson.room,
+        groupName: group?.name,
+        marked,
+        rosterSize,
+        progress: selectV6AttendanceProgress(marked, rosterSize),
+        isNext: next?.id === lesson.id,
+        tone: toneForDanceStyle(group?.danceStyle ?? group?.style)
+      };
+    });
 
   return {
     ...context,
@@ -604,7 +640,9 @@ export function selectV6TeacherHomeViewModel(db: V6Database, user: V6User): V6Te
     openAttendanceCount,
     completeAttendanceCount,
     attentionStudents,
-    groupMessages
+    groupMessages,
+    todayWeekday,
+    todayTeachingFlow
   };
 }
 

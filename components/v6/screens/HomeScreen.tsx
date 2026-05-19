@@ -17,6 +17,7 @@ import { createV6TimetablePersistenceRuntime } from "@/lib/v6/timetable-persiste
 import { AttachedPrimaryAction, BidiNumber, BottomSheet, Button, HeroSurface, InlineMetric, LiveActivityRow, ManagementSummaryTile, MobileInfoTile, MobileIntro, MobileList, MobileListRow, MobileScreen, MobileSection, OperationalAlertRow, RoomAllocationTile, SafeMeta, SafeTitle, SheetActions, StatusBadge, Surface, v6Control, v6Cx, type V6Tone } from "@/components/v6/design-system";
 import { ManagementTimetableSection, type TimetableImportNotice } from "./management-timetable-section";
 import { StudentHomeSection } from "./student-home-section";
+import { TeacherHomeSection } from "./teacher-home-section";
 
 type HomeAction = {
   icon: ElementType;
@@ -127,160 +128,10 @@ function StudentHomeScreen({ user, openScreen, openTab }: { user: V6User; openSc
 }
 
 
-function TeacherNextLessonHero({ next, group, marked, totalStudents, progress, openTab }: { next?: V6Lesson; group?: V6Group; marked: number; totalStudents: number; progress: V6AttendanceProgress; openTab: (tab: V6Tab) => void }) {
-  if (!next) {
-    return (
-      <HeroSurface tone="studio" className="p-4">
-        <StatusBadge tone="studio">היום שלך בסטודיו</StatusBadge>
-        <SafeTitle as="h2" className="mt-3 text-[clamp(1.5rem,6vw,2.05rem)] font-semibold leading-tight tracking-[-0.045em] text-white">
-          אין שיעור קרוב משויך
-        </SafeTitle>
-        <SafeMeta as="p" className="mt-2 text-[12px] leading-relaxed text-white/54">
-          כששיעור משויך לקבוצות שלך, הוא יופיע כאן עם נוכחות, חדר והמעבר הבא.
-        </SafeMeta>
-      </HeroSurface>
-    );
-  }
-
-  const heroTitle = group?.name ?? next.title;
-  const heroMeta = group?.name ? `${next.title} · ${next.weekday}` : next.weekday;
-
-  return (
-    <button dir="rtl" type="button" onClick={() => openTab("lessons")} aria-label={`פתיחת סימון נוכחות עבור ${heroTitle}, ${next.time}, ${progress.statusLabel}`} className="w-full text-start">
-      <HeroSurface tone="studio" className="p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <SafeMeta as="p" className="text-[9px] font-semibold uppercase tracking-[0.16em] text-white/38">השיעור הבא לסימון</SafeMeta>
-            <SafeTitle as="h2" className="mt-2 text-[clamp(1.65rem,7vw,2.3rem)] font-semibold leading-tight tracking-[-0.052em] text-white">{heroTitle}</SafeTitle>
-            <SafeMeta as="p" className="mt-1.5 text-[12px] leading-relaxed text-white/58">
-              {heroMeta}
-            </SafeMeta>
-          </div>
-          <StatusBadge tone={progress.tone}>{progress.statusLabel}</StatusBadge>
-        </div>
-
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          <MobileInfoTile icon={Clock} label="שעה" value={next.time} tone="studio" />
-          <MobileInfoTile icon={MapPin} label="אולפן" value={next.room} tone="modern" />
-          <MobileInfoTile icon={CheckCircle2} label="נוכחות" value={totalStudents ? <><BidiNumber>{Math.min(marked, totalStudents)}</BidiNumber>/<BidiNumber>{totalStudents}</BidiNumber></> : "חסר"} tone={progress.tone} />
-        </div>
-
-        <div className="mt-3 grid min-h-11 grid-cols-[1fr_auto] items-center gap-2 rounded-[16px] border border-[#f4d58d]/10 bg-black/15 px-3 py-2">
-          <SafeMeta as="span" className="text-[11px] font-semibold text-white/58">
-            {progress.complete ? "הרוסטר מסומן, אפשר לבדוק פרטים" : progress.remaining ? `נשארו ${progress.remaining} תלמידים לסימון` : "פתחי את השיעור כדי לבנות רוסטר"}
-          </SafeMeta>
-          <span className="inline-flex min-h-8 items-center justify-center rounded-full bg-[#f4d58d] px-3 text-[11px] font-semibold text-zinc-950">סימון נוכחות</span>
-        </div>
-      </HeroSurface>
-    </button>
-  );
-}
-
-function TeacherHomeScreen({ user, openTab }: { user: V6User; openScreen: (screen: V6Screen) => void; openTab: (tab: V6Tab) => void }) {
+function TeacherHomeScreen({ user, openScreen, openTab }: { user: V6User; openScreen: (screen: V6Screen) => void; openTab: (tab: V6Tab) => void }) {
   const { db } = useV6();
   const viewModel = useMemo(() => selectV6TeacherHomeViewModel(db, user), [db, user]);
-  const { lessons, next, nextGroup, teacherGroups, teacherStudents, nextAttendance, nextAttendanceSummary, nextAttendanceProgress, nextTransition, nextTransitionTitle, nextTransitionSubtitle, nextTransitionMeta, groupTasks, groupRows, openAttendanceCount, completeAttendanceCount, attentionStudents, groupMessages, unread } = viewModel;
-  const groupMessageIcon = (kind: (typeof groupMessages)[number]["kind"]) => kind === "notification" ? Bell : MessageCircle;
-
-  return (
-    <MobileScreen>
-      <MobileIntro
-        kicker="לוח מורה"
-        title="היום שלך בסטודיו"
-        subtitle={`שלום ${firstName(user.name)} · ${openAttendanceCount ? `${openAttendanceCount} רוסטרים לסימון` : lessons.length ? "הנוכחות מסודרת" : "אין שיעורים משויכים"}`}
-        tone="studio"
-      />
-
-      <TeacherNextLessonHero next={next} group={nextGroup} marked={nextAttendance.length} totalStudents={nextAttendanceSummary?.totalStudents ?? 0} progress={nextAttendanceProgress} openTab={openTab} />
-
-      <MobileSection kicker={openAttendanceCount ? `${openAttendanceCount} פתוחים` : completeAttendanceCount ? "הכול מסומן" : "קבוצות היום"} title="מה צריך סימון עכשיו" tone={openAttendanceCount ? "urgent" : "studio"}>
-        {groupRows.length ? (
-          <MobileList>
-            {groupRows.map(({ lesson, group, progress }) => (
-              <MobileListRow
-                key={lesson.id}
-                icon={CalendarDays}
-                title={group?.name ?? lesson.title}
-                subtitle={[lesson.title, lesson.room].filter(Boolean).join(" · ")}
-                meta={lesson.time}
-                tone={progress.tone}
-                trailing={<span className={v6Cx("inline-flex min-h-7 items-center rounded-full px-2.5 py-1 text-[9.5px] font-semibold", progress.complete ? "bg-emerald-100 text-emerald-950" : "bg-[#f4d58d] text-zinc-950")}>{progress.statusLabel}</span>}
-                onClick={() => openTab("lessons")}
-                ariaLabel={`פתיחת נוכחות לקבוצת ${group?.name ?? lesson.title}, ${lesson.time}, ${progress.statusLabel}`}
-              />
-            ))}
-          </MobileList>
-        ) : (
-          <Surface tone="studio" variant="quiet" className="p-3">
-            <SafeMeta as="p" className="text-[11px] leading-relaxed text-white/52">אין קבוצות משויכות למורה הזה כרגע.</SafeMeta>
-          </Surface>
-        )}
-      </MobileSection>
-
-      <Surface tone="repertoire" variant="elevated" className="p-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <SafeMeta as="p" className="text-[9px] font-semibold uppercase tracking-[0.16em] text-white/34">נוכחות תלמידים</SafeMeta>
-            <SafeTitle as="h2" className="mt-1 text-[15px] font-semibold tracking-[-0.026em] text-white/86">תמונת מצב לפני השיעור</SafeTitle>
-          </div>
-          <StatusBadge tone={openAttendanceCount ? "urgent" : "success"}>{openAttendanceCount ? "דורש סימון" : "מסודר"}</StatusBadge>
-        </div>
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          <InlineMetric label="קבוצות" value={<BidiNumber>{teacherGroups.length}</BidiNumber>} meta="משויכות אליך" tone="studio" />
-          <InlineMetric label="תלמידים" value={<BidiNumber>{teacherStudents.length}</BidiNumber>} meta="ברוסטרים" tone="repertoire" />
-          <InlineMetric label="פתוחות" value={<BidiNumber>{openAttendanceCount}</BidiNumber>} meta="לסימון" tone={openAttendanceCount ? "urgent" : "success"} />
-        </div>
-      </Surface>
-
-      <MobileSection kicker="תשומת לב" title="תלמידים לבדיקה לפני השיעור" tone={attentionStudents.length ? "urgent" : "studio"}>
-        {attentionStudents.length ? (
-          <MobileList>
-            {attentionStudents.map(({ student, subtitle, meta }) => (
-              <MobileListRow
-                key={student.id}
-                icon={Users}
-                title={student.name}
-                subtitle={subtitle}
-                meta={meta}
-                tone="urgent"
-                onClick={() => openTab("lessons")}
-                ariaLabel={`פתיחת שיעורים לבדיקת ${student.name}`}
-              />
-            ))}
-          </MobileList>
-        ) : (
-          <Surface tone="studio" variant="quiet" className="p-3">
-            <SafeMeta as="p" className="text-[11px] leading-relaxed text-white/52">אין תלמידים שמסומנים כרגע לתשומת לב לפי הנוכחות והסטטוסים הקיימים.</SafeMeta>
-          </Surface>
-        )}
-      </MobileSection>
-
-      {groupMessages.length ? (
-        <MobileSection kicker={unread ? `${unread} חדשים` : "קבוצות"} title="הודעות לקבוצות" tone="modern">
-          <MobileList>
-            {groupMessages.map((item) => <MobileListRow key={item.id} icon={groupMessageIcon(item.kind)} title={item.title} subtitle={item.body} meta={item.meta} tone={item.tone} onClick={() => openTab("messages")} ariaLabel={`פתיחת הודעה: ${item.title}`} />)}
-          </MobileList>
-        </MobileSection>
-      ) : null}
-
-      <MobileSection kicker="המעבר הבא שלך" title={nextTransition ? `${next?.room ?? "אולפן"} → ${nextTransition.room}` : "אין מעבר נוסף"} tone="management">
-        <MobileList>
-          <MobileListRow
-            icon={MapPin}
-            title={nextTransitionTitle}
-            subtitle={nextTransitionSubtitle}
-            meta={nextTransitionMeta}
-            tone="management"
-            onClick={() => openTab("lessons")}
-            ariaLabel="פתיחת לוח השיעורים למעבר הבא"
-          />
-          {groupTasks.slice(0, 1).map((task) => (
-            <MobileListRow key={task.id} icon={ClipboardList} title={task.title} subtitle="משימה פתוחה לקבוצה שלך" meta="לפני שיעור" tone="repertoire" onClick={() => openTab("lessons")} ariaLabel={`פתיחת משימה: ${task.title}`} />
-          ))}
-        </MobileList>
-      </MobileSection>
-    </MobileScreen>
-  );
+  return <TeacherHomeSection user={user} viewModel={viewModel} openScreen={openScreen} openTab={openTab} />;
 }
 
 function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; openScreen: (screen: V6Screen) => void; openTab: (tab: V6Tab) => void }) {
