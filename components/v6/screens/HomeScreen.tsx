@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState, type ChangeEvent, type ElementType } from "react";
-import { Activity, AlertTriangle, Bell, CalendarDays, CheckCircle2, ClipboardList, Clock, Database, DoorOpen, Download, History, ImagePlus, MapPin, MessageCircle, Receipt, Shield, ShoppingBag, Sparkles, Trophy, Upload, Users } from "lucide-react";
+import { Activity, AlertTriangle, Bell, CalendarDays, CheckCircle2, ClipboardList, Clock, Database, DoorOpen, ImagePlus, MapPin, MessageCircle, Receipt, Shield, ShoppingBag, Sparkles, Trophy, Users } from "lucide-react";
 import { useV6 } from "@/lib/v6/AppProvider";
 import type { V6CalendarEvent, V6Group, V6Lesson, V6Role, V6Screen, V6Tab, V6User } from "@/lib/v6/types";
 import { selectV6LessonsForActor } from "@/lib/domains/attendance/selectors";
@@ -9,12 +9,13 @@ import { selectV6UnreadCount, selectV6NotificationsForActor, selectV6MessagesFor
 import { selectV6UpcomingEvents } from "@/lib/domains/events/selectors";
 import { modulesForRole } from "@/lib/v6/ui-composition";
 import { currentV6HebrewWeekday, formatV6LessonDuration as formatLessonDuration, selectV6ManagementHomeViewModel, selectV6PaymentModeLabel as paymentModeLabel, selectV6ProductPriceLabel as productPrice, selectV6StudentHomeViewModel, selectV6TeacherHomeViewModel, v6LessonStatusTone as lessonStatusTone, type V6AttendanceProgress, type V6ManagementScheduleLessonRow } from "@/lib/v6/view-models";
-import { applyV6ManagementTimetableEditSessionOverrides, createV6ManagementLessonDraft, createV6ManagementTimetableEditSession, discardV6ManagementTimetableEditSessionDraft, publishV6ManagementTimetableEditSession, redoV6ManagementTimetableEditSession, restoreV6ManagementTimetablePublishedOverrides, saveV6ManagementLessonDraft, selectV6ManagementLessonDisplayTitle as managementLessonDisplayTitle, selectV6ManagementLessonEndTime as managementLessonEndTime, selectV6ManagementTimetableEditingViewModel, selectV6ManagementTimetableEditSessionMeta, selectV6ManagementTimetableEditSessionTransition, selectV6ManagementTimetablePublishState, undoV6ManagementTimetableEditSession, updateV6ManagementLessonDraft, type V6ManagementLessonDraft } from "@/lib/v6/timetable-editing";
+import { applyV6ManagementTimetableEditSessionOverrides, createV6ManagementLessonDraft, createV6ManagementTimetableEditSession, discardV6ManagementTimetableEditSessionDraft, publishV6ManagementTimetableEditSession, redoV6ManagementTimetableEditSession, restoreV6ManagementTimetablePublishedOverrides, saveV6ManagementLessonDraft, selectV6ManagementLessonEndTime as managementLessonEndTime, selectV6ManagementTimetableEditingViewModel, selectV6ManagementTimetableEditSessionMeta, selectV6ManagementTimetableEditSessionTransition, selectV6ManagementTimetablePublishState, undoV6ManagementTimetableEditSession, updateV6ManagementLessonDraft, type V6ManagementLessonDraft } from "@/lib/v6/timetable-editing";
 import { createV6TimetableDraftDiscardedAuditEvent, createV6TimetablePublishAttemptedAuditEvent, createV6TimetablePublishBlockedAuditEvent, createV6TimetablePublishSucceededAuditEvent, createV6TimetableRedoAuditEvent, createV6TimetableSlotEditedAuditEvent, createV6TimetableSnapshotRestoredAuditEvent, createV6TimetableUndoAuditEvent, selectV6TimetableAuditActor, selectV6TimetableAuditConflictSummary, type V6TimetableAuditEvent } from "@/lib/v6/timetable-audit";
 import { createV6TimetableSnapshot, createV6TimetableSnapshotFilename, parseV6TimetableSnapshotJsonImport, serializeV6TimetableSnapshot } from "@/lib/v6/timetable-snapshot";
 import { createTimetablePersistencePayload, hydrateTimetableSessionFromPersistence, type V6TimetablePersistencePayload } from "@/lib/v6/timetable-persistence";
 import { createV6TimetablePersistenceRuntime } from "@/lib/v6/timetable-persistence-runtime";
-import { AttachedPrimaryAction, BidiNumber, BottomSheet, Button, HeroSurface, InlineMetric, LiveActivityRow, ManagementSummaryTile, MobileInfoTile, MobileIntro, MobileList, MobileListRow, MobileScreen, MobileSection, OperationalAlertRow, RoomAllocationTile, SafeMeta, SafeTitle, SheetActions, StatusBadge, Surface, WeeklyStudioDayLane, WeeklyStudioLessonCard, WeeklyStudioTimetableShell, v6Control, v6Cx, v6Motion, v6Surface, type V6Tone } from "@/components/v6/design-system";
+import { AttachedPrimaryAction, BidiNumber, BottomSheet, Button, HeroSurface, InlineMetric, LiveActivityRow, ManagementSummaryTile, MobileInfoTile, MobileIntro, MobileList, MobileListRow, MobileScreen, MobileSection, OperationalAlertRow, RoomAllocationTile, SafeMeta, SafeTitle, SheetActions, StatusBadge, Surface, v6Control, v6Cx, type V6Tone } from "@/components/v6/design-system";
+import { ManagementTimetableSection, type TimetableImportNotice } from "./management-timetable-section";
 
 type HomeAction = {
   icon: ElementType;
@@ -45,11 +46,6 @@ type PrimaryHomeItem = {
   title: string;
   cta: string;
   onClick: () => void;
-};
-
-type TimetableImportNotice = {
-  message: string;
-  tone: "success" | "error";
 };
 
 function roleHomeActions(input: { user: V6User; unread: number; nextEventTitle?: string; openScreen: (screen: V6Screen) => void; openTab: (tab: V6Tab) => void }): HomeAction[] {
@@ -122,52 +118,6 @@ function formatEventMeta(event: V6CalendarEvent) {
   return [event.date, event.startTime].filter(Boolean).join(" · ");
 }
 
-const timetableAuditActionCopy: Record<V6TimetableAuditEvent["action"], { title: string; tone: V6Tone }> = {
-  slot_edited: { title: "שיעור עודכן", tone: "management" },
-  undo: { title: "ביטול שינוי", tone: "modern" },
-  redo: { title: "החזרת שינוי", tone: "modern" },
-  draft_discarded: { title: "טיוטה נמחקה", tone: "urgent" },
-  publish_attempted: { title: "ניסיון פרסום", tone: "management" },
-  publish_blocked_by_conflicts: { title: "פרסום חסום", tone: "urgent" },
-  publish_succeeded: { title: "טיוטה פורסמה", tone: "success" },
-  snapshot_restored: { title: "Snapshot שוחזר", tone: "success" }
-};
-
-const timetableAuditFieldCopy: Record<string, string> = {
-  displayTitle: "שם",
-  room: "חלל",
-  teacherId: "מזהה מורה",
-  teacherName: "מורה",
-  durationMinutes: "משך",
-  status: "סטטוס"
-};
-
-function formatTimetableAuditTime(occurredAt: string) {
-  return new Intl.DateTimeFormat("he-IL", { hour: "2-digit", minute: "2-digit" }).format(new Date(occurredAt));
-}
-
-function timetableAuditSubtitle(event: V6TimetableAuditEvent) {
-  if (event.action === "slot_edited") {
-    const fields = event.metadata.changedFields?.map((field) => timetableAuditFieldCopy[field.field] ?? field.field).join(", ");
-    return [event.metadata.lesson?.title ?? event.metadata.lesson?.groupName, fields ? `שדות: ${fields}` : undefined].filter(Boolean).join(" · ");
-  }
-
-  if (event.action === "publish_blocked_by_conflicts") {
-    return `${event.metadata.conflicts?.blockingCount ?? event.metadata.conflicts?.totalCount ?? 0} התנגשויות חוסמות`;
-  }
-
-  if (event.action === "draft_discarded") {
-    return `${event.metadata.session?.unsavedEditCountBefore ?? event.metadata.session?.unsavedEditCount ?? 0} שינויים נמחקו מהטיוטה`;
-  }
-
-  if (event.action === "snapshot_restored") {
-    return event.metadata.note ?? "המערכת המפורסמת שוחזרה מקובץ מקומי";
-  }
-
-  const editCount = event.metadata.session?.unsavedEditCountAfter ?? event.metadata.session?.unsavedEditCount;
-  return typeof editCount === "number" ? `${editCount} שינויים בטיוטה` : "תועד מקומית";
-}
-
 function StudentNextLessonHero({ next, group, teachers, nextEvent, openTab, openScreen }: { next?: V6Lesson; group?: { name: string; danceStyle?: string; style: string; location?: string }; teachers?: string; nextEvent?: V6CalendarEvent; openTab: (tab: V6Tab) => void; openScreen: (screen: V6Screen) => void }) {
   if (!next) {
     return (
@@ -228,7 +178,7 @@ function StudentHomeScreen({ user, openScreen, openTab }: { user: V6User; openSc
   };
 
   return (
-    <MobileScreen className="space-y-3">
+    <MobileScreen>
       <MobileIntro
         kicker="מרחב תלמידה"
         title={`שלום ${firstName(user.name)}, טוב לראות אותך`}
@@ -364,7 +314,7 @@ function TeacherHomeScreen({ user, openTab }: { user: V6User; openScreen: (scree
   const groupMessageIcon = (kind: (typeof groupMessages)[number]["kind"]) => kind === "notification" ? Bell : MessageCircle;
 
   return (
-    <MobileScreen className="space-y-3">
+    <MobileScreen>
       <MobileIntro
         kicker="לוח מורה"
         title="היום שלך בסטודיו"
@@ -589,7 +539,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
       : await timetablePersistenceRuntime.adapter.saveDraft({ ...timetablePersistenceRuntime.context, payload });
 
     if (write.ok === false) {
-      setTimetablePersistenceNotice(`Supabase לא נשמר: ${write.error.message}`);
+      setTimetablePersistenceNotice(`השמירה בענן לא הצליחה: ${write.error.message}`);
       setTimetablePersistenceOnline(false);
       return;
     }
@@ -600,13 +550,13 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
         event
       });
       if (audit.ok === false) {
-        setTimetablePersistenceNotice(`יומן Supabase לא נשמר: ${audit.error.message}`);
+        setTimetablePersistenceNotice(`יומן הפעילות בענן לא נשמר: ${audit.error.message}`);
         setTimetablePersistenceOnline(false);
         return;
       }
     }
 
-    setTimetablePersistenceNotice(input.operation === "publish" ? "המערכת פורסמה ב-Supabase." : "הטיוטה נשמרה ב-Supabase.");
+    setTimetablePersistenceNotice(input.operation === "publish" ? "המערכת פורסמה ונשמרה בענן." : "הטיוטה נשמרה בענן.");
   };
   useEffect(() => {
     timetableSessionDirtyRef.current = timetableSessionMeta.isDirty;
@@ -617,7 +567,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
       setTimetablePersistenceLoading(false);
       if (timetablePersistenceRuntime.flagEnabled && timetablePersistenceRuntime.status === "unavailable") {
         setTimetablePersistenceOnline(false);
-        setTimetablePersistenceNotice("Supabase לא זמין, ממשיכים מקומית במסך.");
+        setTimetablePersistenceNotice("הסנכרון לענן לא זמין. ממשיכים עם העותק המקומי במסך.");
       }
       return;
     }
@@ -627,35 +577,35 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
     timetablePersistenceLoadRequestRef.current = loadRequestId;
     setTimetablePersistenceOnline(true);
     setTimetablePersistenceLoading(true);
-    setTimetablePersistenceNotice("טוענים בסיס מפורסם מ-Supabase...");
+    setTimetablePersistenceNotice("טוענים את המערכת המפורסמת...");
     timetablePersistenceRuntime.adapter.loadTimetable(timetablePersistenceRuntime.context).then((result) => {
       if (!active || loadRequestId !== timetablePersistenceLoadRequestRef.current) return;
       setTimetablePersistenceLoading(false);
       if (result.ok === false) {
         setTimetablePersistenceOnline(false);
-        setTimetablePersistenceNotice(`טעינת Supabase נכשלה, ממשיכים מקומית: ${result.error.message}`);
+        setTimetablePersistenceNotice(`לא הצלחנו לטעון מהענן. ממשיכים עם העותק המקומי: ${result.error.message}`);
         return;
       }
       if (!result.value) {
-        setTimetablePersistenceNotice("אין בסיס Supabase קיים, ממשיכים מטיוטה מקומית.");
+        setTimetablePersistenceNotice("אין עדיין מערכת שמורה בענן. ממשיכים עם מה שיש במסך.");
         return;
       }
       if (timetableSessionDirtyRef.current) {
-        setTimetablePersistenceNotice("טעינת Supabase הסתיימה, אבל הטיוטה המקומית נשמרה כדי לא לדרוס שינויים.");
+        setTimetablePersistenceNotice("הענן נטען, אבל הטיוטה המקומית נשמרה כדי לא לדרוס שינויים שלא פורסמו.");
         return;
       }
 
       const hydrated = hydrateTimetableSessionFromPersistence(result.value);
       setTimetableSession(hydrated.session);
       setTimetableAuditEvents([...hydrated.auditEvents].sort((a, b) => b.occurredAt.localeCompare(a.occurredAt)).slice(0, 8));
-      setTimetablePublishNotice("נטען בסיס מערכת מפורסמת מ-Supabase.");
-      setTimetablePersistenceNotice("Supabase מסונכרן למסך הניהול.");
+      setTimetablePublishNotice("נטענה המערכת המפורסמת מהענן.");
+      setTimetablePersistenceNotice("המערכת מסונכרנת למסך הניהול.");
     }).catch((error) => {
       if (!active || loadRequestId !== timetablePersistenceLoadRequestRef.current) return;
       setTimetablePersistenceLoading(false);
       const message = error instanceof Error ? error.message : "שגיאה לא ידועה";
       setTimetablePersistenceOnline(false);
-      setTimetablePersistenceNotice(`טעינת Supabase נכשלה, ממשיכים מקומית: ${message}`);
+      setTimetablePersistenceNotice(`לא הצלחנו לטעון מהענן. ממשיכים עם העותק המקומי: ${message}`);
     });
 
     return () => {
@@ -746,7 +696,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
       });
     }
     setTimetableSession(nextSession);
-    setTimetablePublishNotice("הטיוטה עודכנה מקומית. אפשר לפרסם אחרי בדיקת התנגשויות.");
+    setTimetablePublishNotice("השינוי נשמר בטיוטה. אפשר לפרסם אחרי בדיקת התנגשויות.");
     closeLessonEditor();
   };
   const undoTimetableDraft = () => {
@@ -815,7 +765,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
   };
   const publishTimetableDraft = () => {
     if (timetablePersistenceLoading) {
-      setTimetablePublishNotice("מחכים לסיום טעינת Supabase לפני פרסום הטיוטה.");
+      setTimetablePublishNotice("מחכים לסיום טעינת המערכת לפני פרסום הטיוטה.");
       return;
     }
 
@@ -872,12 +822,12 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
     });
     closeLessonEditor();
     setTimetableSession(nextSession);
-    setTimetablePublishNotice("הטיוטה פורסמה בתצוגה המקומית של המסך.");
+    setTimetablePublishNotice("השינויים פורסמו והמערכת על המסך עודכנה.");
   };
   const exportPublishedTimetableSnapshot = async () => {
     try {
       if (typeof window === "undefined" || typeof document === "undefined") {
-        setTimetableExportNotice("ייצוא Snapshot זמין רק בדפדפן.");
+        setTimetableExportNotice("ייצוא גיבוי זמין רק בדפדפן.");
         return;
       }
 
@@ -907,13 +857,13 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
       link.click();
       link.remove();
       URL.revokeObjectURL(url);
-      setTimetableExportNotice(`יוצא קובץ JSON עם ${snapshot.published.lessonCount} שיעורים מהמערכת המפורסמת.`);
+      setTimetableExportNotice(`קובץ הגיבוי יורד עם ${snapshot.published.lessonCount} שיעורים מהמערכת המפורסמת.`);
       if (timetablePersistenceCanUseAdapter && timetablePersistenceRuntime.context && timetablePersistenceRuntime.supabaseAdapter) {
         const persisted = await timetablePersistenceRuntime.supabaseAdapter.createSnapshot({
           ...timetablePersistenceRuntime.context,
           snapshot
         });
-        setTimetablePersistenceNotice(persisted.ok === true ? "Snapshot נשמר ב-Supabase." : `Snapshot לא נשמר ב-Supabase: ${persisted.error.message}`);
+        setTimetablePersistenceNotice(persisted.ok === true ? "הגיבוי נשמר גם בענן." : `הגיבוי לא נשמר בענן: ${persisted.error.message}`);
       }
     } catch {
       setTimetableExportNotice("לא הצלחנו לייצא כרגע. נסו שוב בעוד רגע.");
@@ -921,7 +871,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
   };
   const importPublishedTimetableSnapshot = async (event: ChangeEvent<HTMLInputElement>) => {
     if (typeof window === "undefined") {
-      setTimetableImportNotice({ tone: "error", message: "ייבוא Snapshot זמין רק בדפדפן." });
+      setTimetableImportNotice({ tone: "error", message: "ייבוא גיבוי זמין רק בדפדפן." });
       return;
     }
 
@@ -932,7 +882,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
 
     const isJsonFile = file.name.toLocaleLowerCase().endsWith(".json") && (!file.type || file.type === "application/json");
     if (!isJsonFile) {
-      setTimetableImportNotice({ tone: "error", message: "אפשר לייבא רק קובץ Snapshot מסוג JSON." });
+      setTimetableImportNotice({ tone: "error", message: "אפשר לייבא רק קובץ גיבוי מסוג JSON." });
       return;
     }
 
@@ -969,8 +919,8 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
     });
     closeLessonEditor();
     setTimetableSession(nextSession);
-    setTimetablePublishNotice("המערכת המפורסמת שוחזרה מקובץ Snapshot מקומי והטיוטה אופסה.");
-    setTimetableImportNotice({ tone: "success", message: `יובא בהצלחה: ${imported.summary.overrideCount} overrides מתוך ${imported.summary.lessonCount} שיעורים.` });
+    setTimetablePublishNotice("המערכת המפורסמת שוחזרה מקובץ הגיבוי והטיוטה אופסה.");
+    setTimetableImportNotice({ tone: "success", message: `יובא בהצלחה: ${imported.summary.lessonCount} שיעורים מהגיבוי.` });
     setTimetableExportNotice(null);
   };
 
@@ -987,7 +937,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
   };
 
   return (
-    <MobileScreen className="space-y-3">
+    <MobileScreen>
       <MobileIntro
         kicker="מרכז ניהול"
         title="הפעימה התפעולית של הסטודיו"
@@ -995,65 +945,13 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
         tone="management"
       />
 
-      <HeroSurface tone="management" className="p-4 sm:p-5">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <SafeMeta as="p" className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">מה קורה היום בסטודיו</SafeMeta>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100/[0.08] bg-emerald-100/[0.06] px-2 py-1 text-[9.5px] font-semibold text-emerald-50/78">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-200" aria-hidden="true" />
-                מתעדכן בזמן אמת
-              </span>
-            </div>
-            <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <SafeTitle as="h2" className="text-[clamp(2rem,9vw,3rem)] font-semibold leading-none tracking-[-0.070em] text-white">
-                <BidiNumber>{todayLessons.length}</BidiNumber>
-              </SafeTitle>
-              <SafeMeta as="p" className="max-w-[15rem] text-[12px] leading-relaxed text-white/58">
-                שיעורים היום · <BidiNumber>{activeGroups.length}</BidiNumber> קבוצות פעילות · <BidiNumber>{rooms.length}</BidiNumber> חללים
-              </SafeMeta>
-            </div>
-            <div className="mt-3 rounded-[20px] border border-white/[0.055] bg-white/[0.045] p-3 shadow-[inset_0_1px_0_rgba(255,247,223,0.048)]">
-              <SafeMeta as="p" className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/36">השיעור החי</SafeMeta>
-              <SafeTitle as="p" className="mt-1 truncate text-[14px] font-semibold tracking-[-0.018em] text-white/88">
-                {liveLesson ? `${liveLesson.time} · ${liveGroup?.name ?? liveLesson.title}` : "היום רגוע במערכת"}
-              </SafeTitle>
-              <SafeMeta as="p" className="mt-1 text-[11px] leading-relaxed text-white/48">
-                {liveLesson ? liveLessonSummary : "כשיוזנו שיעורים, חדרים וצוותים הם יופיעו כאן כתמונת מצב יומית."}
-              </SafeMeta>
-            </div>
-          </div>
-          <StatusBadge tone={attentionItems.length ? "urgent" : "success"}>{attentionItems.length ? "דורש תשומת לב" : "רגוע"}</StatusBadge>
-        </div>
-
-        <div className="mt-4 grid grid-cols-3 gap-2">
+      <MobileSection kicker="מתעדכן בזמן אמת" title="מה קורה היום בסטודיו" tone="management">
+        <div className="grid grid-cols-2 gap-2">
           <ManagementSummaryTile icon={CalendarDays} label="היום" value={<BidiNumber>{todayLessons.length}</BidiNumber>} meta="שיעורים" tone="management" />
+          <ManagementSummaryTile icon={Users} label="קבוצות" value={<BidiNumber>{activeGroups.length}</BidiNumber>} meta="פעילות" tone="studio" />
+          <ManagementSummaryTile icon={DoorOpen} label="חללים" value={<BidiNumber>{rooms.length}</BidiNumber>} meta="זמינים במערכת" tone="repertoire" />
           <ManagementSummaryTile icon={AlertTriangle} label="לטיפול" value={<BidiNumber>{attentionItems.length}</BidiNumber>} meta={attentionItems.length ? "פתוחים" : "אין כרגע"} tone={attentionItems.length ? "urgent" : "success"} />
-          <ManagementSummaryTile icon={DoorOpen} label="חללים" value={<BidiNumber>{rooms.length}</BidiNumber>} meta={`${activeGroups.length} קבוצות`} tone="repertoire" />
         </div>
-      </HeroSurface>
-
-      <MobileSection kicker={attentionItems.length ? `${attentionItems.length} לטיפול` : "אין חסמים ידועים"} title="מה דורש תשומת לב עכשיו" tone={attentionItems.length ? "urgent" : "success"}>
-        {attentionItems.length ? (
-          <div className="space-y-2">
-            {attentionItems.map((item) => (
-              <OperationalAlertRow
-                key={item.id}
-                icon={attentionIcon(item.kind)}
-                title={item.title}
-                subtitle={item.subtitle}
-                meta={item.meta}
-                tone={item.tone}
-                onClick={() => openAttentionItem(item.kind)}
-                ariaLabel={`פתיחת טיפול: ${item.title}`}
-              />
-            ))}
-          </div>
-        ) : (
-          <Surface tone="success" variant="quiet" className="p-3">
-            <SafeMeta as="p" className="text-[11px] leading-relaxed text-white/52">אין חריגות פתוחות לפי נוכחות, סטטוס תלמידות, משימות ואירועים קיימים.</SafeMeta>
-          </Surface>
-        )}
       </MobileSection>
 
       <MobileSection kicker={liveLesson ? `${liveLesson.time} · ${liveLesson.room}` : "סטטוס חי"} title="פעילות חיה" tone="studio">
@@ -1064,186 +962,78 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
         </div>
       </MobileSection>
 
-      <MobileSection kicker={`${lessons.length} שיעורים · ${rooms.length} חללים`} title="מערכת שבועית לסטודיו" tone="management" className="p-1.5">
-        {localScheduleLessonRows.length ? (
-          <WeeklyStudioTimetableShell
-            weekLabel={timetableSessionMeta.isDirty ? `טיוטה מקומית · ${timetableSessionMeta.unsavedEditCount} שינויים מול המערכת המפורסמת.` : "מערכת מפורסמת מקומית: הקשה על שיעור פותחת טיוטת שינוי."}
-            lessonCount={localScheduleLessonRows.length}
-            roomCount={rooms.length}
-            conflictSummary={timetableConflictSummary}
-            daySummaries={localDaySummaries.map((day) => ({ ...day, conflictCount: timetableConflictCountsByDay[day.day] ?? 0, isActive: day.day === selectedDay, onClick: day.lessonCount ? () => setSelectedScheduleDay(day.day) : undefined }))}
-            actions={
-              <div className="space-y-2">
-                <div className={v6Cx("lk-safe-surface flex flex-wrap items-center justify-between gap-2 rounded-[22px] border px-2.5 py-2.5 shadow-[inset_0_1px_0_rgba(255,247,223,0.050)] sm:px-3", v6Surface.glass)}>
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <SafeTitle as="p" className="text-[11.5px] font-semibold text-white/82">
-                        {timetablePublishState.label}
-                      </SafeTitle>
-                      <StatusBadge tone={timetablePublishTone}>
-                        {timetablePublishState.phase === "blocked_by_conflicts" ? "חסום" : timetablePublishState.phase === "published" ? "פורסם" : "טיוטה"}
-                      </StatusBadge>
-                    </div>
-                    <SafeMeta as="p" className="mt-0.5 text-[9.6px] font-medium text-white/40">
-                      {timetablePublishState.description}
-                    </SafeMeta>
-                    {timetablePublishState.conflictPolicy.warningCount ? (
-                      <SafeMeta as="p" className="mt-0.5 text-[9.3px] font-semibold text-amber-50/58">
-                        <BidiNumber>{timetablePublishState.conflictPolicy.warningCount}</BidiNumber> אזהרות לא חוסמות נשארות מוצגות במערכת.
-                      </SafeMeta>
-                    ) : null}
-                    {timetablePersistenceRuntime.flagEnabled ? (
-                      <SafeMeta as="p" className="mt-0.5 text-[9.3px] font-semibold text-white/38">
-                        {timetablePersistenceNotice ?? timetablePersistenceRuntime.statusLabel}
-                      </SafeMeta>
-                    ) : null}
-                  </div>
-                  <div className="flex shrink-0 flex-wrap gap-1">
-                    <Button variant="ghost" disabled={!timetableSessionMeta.canUndo} onClick={undoTimetableDraft}>בטל</Button>
-                    <Button variant="ghost" disabled={!timetableSessionMeta.canRedo} onClick={redoTimetableDraft}>חזור</Button>
-                    <Button variant="danger" disabled={!timetablePublishState.canDiscard} onClick={discardTimetableDraft}>מחק טיוטה</Button>
-                    <Button disabled={!timetableCanPublishNow} onClick={publishTimetableDraft}>פרסם שינויים</Button>
-                    <Button variant="ghost" onClick={exportPublishedTimetableSnapshot}><Download size={12} strokeWidth={1.9} aria-hidden="true" /> ייצוא</Button>
-                    <input id={timetableImportInputId} type="file" accept=".json,application/json" className="sr-only" onChange={importPublishedTimetableSnapshot} />
-                    <label
-                      htmlFor={timetableImportInputId}
-                      className={v6Cx(
-                        "inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-[16px] px-3.5 text-[13px] font-semibold tracking-[-0.010em]",
-                        v6Motion.standard,
-                        v6Motion.press,
-                        v6Motion.focusRing,
-                        "border border-[rgba(244,213,141,0.075)] bg-white/[0.036] text-white/82 shadow-[inset_0_1px_0_rgba(255,247,223,0.048)] hover:bg-white/[0.056]"
-                      )}
-                    >
-                      <Upload size={12} strokeWidth={1.9} aria-hidden="true" /> ייבוא
-                    </label>
-                  </div>
-                </div>
-                {timetablePublishNotice ? (
-                  <div className={v6Cx("rounded-[18px] border px-3 py-2", v6Surface.whisper, "bg-[#f4d58d]/[0.045]")}>
-                    <SafeMeta as="p" className="text-[10px] font-semibold leading-relaxed text-white/58">{timetablePublishNotice}</SafeMeta>
-                  </div>
-                ) : null}
-                {timetableExportNotice ? (
-                  <div className={v6Cx("rounded-[18px] border border-sky-100/[0.090] bg-sky-200/[0.045] px-3 py-2", v6Surface.whisper)}>
-                    <SafeMeta as="p" className="text-[10px] font-semibold leading-relaxed text-white/58">{timetableExportNotice}</SafeMeta>
-                  </div>
-                ) : null}
-                {timetableImportNotice ? (
-                  <div className={v6Cx(
-                    "rounded-[18px] border px-3 py-2 shadow-[inset_0_1px_0_rgba(255,247,223,0.038)]",
-                    timetableImportNotice.tone === "success" ? "border-emerald-100/[0.090] bg-emerald-200/[0.050]" : "border-red-100/[0.10] bg-red-300/[0.060]"
-                  )}>
-                    <SafeMeta as="p" className="text-[10px] font-semibold leading-relaxed text-white/58">{timetableImportNotice.message}</SafeMeta>
-                  </div>
-                ) : null}
-                {timetableAuditEvents.length ? (
-                  <div className={v6Cx("rounded-[22px] border p-1.5", v6Surface.inset)}>
-                    <div className="mb-1 flex items-center justify-between gap-2 px-0.5">
-                      <SafeMeta as="p" className="text-[9px] font-semibold text-white/38">פעילות מערכת אחרונה</SafeMeta>
-                      <StatusBadge tone={timetablePersistenceCanUseAdapter ? "success" : "management"}>{timetablePersistenceCanUseAdapter ? "Supabase" : "מקומי בלבד"}</StatusBadge>
-                    </div>
-                    <MobileList>
-                      {timetableAuditEvents.slice(0, 3).map((event) => {
-                        const actionCopy = timetableAuditActionCopy[event.action];
-                        return (
-                          <MobileListRow
-                            key={event.id}
-                            icon={History}
-                            title={actionCopy.title}
-                            subtitle={timetableAuditSubtitle(event)}
-                            tone={actionCopy.tone}
-                            trailing={<StatusBadge tone={actionCopy.tone}>{formatTimetableAuditTime(event.occurredAt)}</StatusBadge>}
-                          />
-                        );
-                      })}
-                    </MobileList>
-                  </div>
-                ) : null}
-              </div>
-            }
-          >
-            {visibleScheduleDays.map((day) => (
-              <WeeklyStudioDayLane
-                key={day.day}
-                day={day.day}
-                isToday={day.isToday}
-                lessonCount={day.rows.length}
-                conflictCount={timetableConflictCountsByDay[day.day] ?? 0}
-                rooms={day.rooms}
-                totalStudents={day.totalStudents}
-                densityLabel={day.densityLabel}
-              >
-                {day.rows.map((row) => (
-                  <WeeklyStudioLessonCard
-                    key={row.lesson.id}
-                    groupName={managementLessonDisplayTitle(row)}
-                    groupMeta={[row.group?.ageGroup, row.group?.schedule].filter(Boolean).join(" · ")}
-                    danceStyle={row.danceStyle}
-                    teacher={row.teacherNames || "צוות לא משויך"}
-                    room={row.roomName}
-                    startTime={row.lesson.time}
-                    endTime={row.endTime}
-                    durationLabel={formatLessonDuration(row.durationMinutes)}
-                    durationMinutes={row.durationMinutes}
-                    studentCount={row.studentCount}
-                    status={row.status}
-                    statusTone={lessonStatusTone(row.status)}
-                    tone={row.tone}
-                    conflictIndicators={timetableConflictIndicatorsByLessonId[row.lesson.id]}
-                    onClick={() => openLessonEditor(row)}
-                    ariaLabel={`פתיחת עריכה מקומית לשיעור ${managementLessonDisplayTitle(row)}, ${row.lesson.time} עד ${row.endTime}, ${row.roomName}, ${row.teacherNames || "ללא צוות משויך"}`}
-                  />
-                ))}
-              </WeeklyStudioDayLane>
-            ))}
-          </WeeklyStudioTimetableShell>
-        ) : (
-          <Surface tone="management" variant="quiet" className="p-3">
-            <SafeMeta as="p" className="text-[11px] leading-relaxed text-white/52">אין שיעורים במערכת הסטודיו כרגע.</SafeMeta>
-          </Surface>
-        )}
-      </MobileSection>
+      <ManagementTimetableSection
+        localScheduleLessonRows={localScheduleLessonRows}
+        localDaySummaries={localDaySummaries}
+        visibleScheduleDays={visibleScheduleDays}
+        selectedDay={selectedDay}
+        roomCount={rooms.length}
+        conflictSummary={timetableConflictSummary}
+        conflictCountsByDay={timetableConflictCountsByDay}
+        conflictIndicatorsByLessonId={timetableConflictIndicatorsByLessonId}
+        sessionMeta={timetableSessionMeta}
+        publishState={timetablePublishState}
+        publishTone={timetablePublishTone}
+        canPublishNow={timetableCanPublishNow}
+        importInputId={timetableImportInputId}
+        publishNotice={timetablePublishNotice}
+        exportNotice={timetableExportNotice}
+        importNotice={timetableImportNotice}
+        persistenceFlagEnabled={timetablePersistenceRuntime.flagEnabled}
+        persistenceNotice={timetablePersistenceNotice}
+        persistenceStatusLabel={timetablePersistenceRuntime.statusLabel}
+        persistenceCanUseAdapter={timetablePersistenceCanUseAdapter}
+        persistenceLoading={timetablePersistenceLoading}
+        auditEvents={timetableAuditEvents}
+        onSelectDay={setSelectedScheduleDay}
+        onOpenLesson={openLessonEditor}
+        onUndoDraft={undoTimetableDraft}
+        onRedoDraft={redoTimetableDraft}
+        onDiscardDraft={discardTimetableDraft}
+        onPublishDraft={publishTimetableDraft}
+        onExportSnapshot={exportPublishedTimetableSnapshot}
+        onImportSnapshot={importPublishedTimetableSnapshot}
+      />
 
       {selectedLesson && lessonDraft ? (
         <BottomSheet title="עריכת שיעור שבועי" onClose={closeLessonEditor}>
           <div className="space-y-2.5">
-            <Surface tone={selectedLesson.tone} variant="elevated" className="p-3.5">
+            <Surface tone={selectedLesson.tone} variant="elevated" className="p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <SafeMeta as="p" className="text-[9px] font-semibold uppercase tracking-[0.16em] text-white/38">שיעור קבוע · עריכה מקומית</SafeMeta>
-                  <SafeTitle as="h2" className="mt-1.5 text-[clamp(1.35rem,5.6vw,1.9rem)] font-semibold leading-tight tracking-[-0.040em] text-white">
+                  <SafeMeta as="p" className="text-[11px] font-semibold text-white/40">שיעור קבוע · עריכה מקומית</SafeMeta>
+                  <SafeTitle as="h2" className="mt-2 text-[clamp(1.45rem,5.8vw,1.95rem)] font-semibold leading-tight tracking-[-0.042em] text-white">
                     {lessonDraft.displayTitle}
                   </SafeTitle>
-                  <SafeMeta as="p" className="mt-1.5 text-[11.5px] leading-relaxed text-white/54">
+                  <SafeMeta as="p" className="mt-1.5 text-xs leading-relaxed text-white/54">
                     {[selectedLesson.danceStyle, selectedLesson.group?.ageGroup, lessonDraft.teacherName || "צוות לא משויך"].filter(Boolean).join(" · ")}
                   </SafeMeta>
                 </div>
                 <StatusBadge tone={lessonStatusTone(lessonDraft.status)}>{lessonDraft.status}</StatusBadge>
               </div>
 
-              <div className="mt-3 grid grid-cols-3 gap-1.5">
+              <div className="mt-4 grid grid-cols-3 gap-2">
                 <InlineMetric label="זמן" value={`${selectedLesson.lesson.time}-${managementLessonEndTime(selectedLesson, lessonDraft.durationMinutes)}`} meta={formatLessonDuration(lessonDraft.durationMinutes)} tone="management" className="px-2 py-1.5" />
                 <InlineMetric label="חלל" value={lessonDraft.room} meta="הקצאה" tone="repertoire" className="px-2 py-1.5" />
                 <InlineMetric label="רוסטר" value={<BidiNumber>{selectedLesson.studentCount}</BidiNumber>} meta="תלמידות" tone={selectedLesson.studentCount ? "studio" : "urgent"} className="px-2 py-1.5" />
               </div>
 
-              <div className="mt-2 grid grid-cols-2 gap-1.5">
+              <div className="mt-2.5 grid grid-cols-2 gap-2">
                 <InlineMetric label="סגנון" value={selectedLesson.danceStyle} meta="שפת צבע" tone={selectedLesson.tone} className="px-2 py-1.5" />
                 <InlineMetric label="צוות" value={lessonDraft.teacherName || "לא משויך"} meta="מורה" tone={lessonDraft.teacherName ? "modern" : "urgent"} className="px-2 py-1.5" />
               </div>
             </Surface>
 
-            <Surface tone="management" variant="glass" className="space-y-3 p-3">
+            <Surface tone="management" variant="glass" className="space-y-3.5 p-3.5">
               <div>
-                <SafeTitle as="h3" className="text-[12.5px] font-semibold text-white/82">פרטים לעריכה</SafeTitle>
-                <SafeMeta as="p" className="mt-1 text-[10.8px] leading-relaxed text-white/50">
+                <SafeTitle as="h3" className="text-sm font-semibold text-white/84">פרטים לעריכה</SafeTitle>
+                <SafeMeta as="p" className="mt-1.5 text-xs leading-relaxed text-white/50">
                   השינויים נשמרים בתצוגה המקומית של המסך בלבד ומתעדכנים מיד אחרי שמירה.
                 </SafeMeta>
               </div>
 
               <label className="block space-y-1.5">
-                <SafeMeta as="span" className="block text-[10px] font-semibold text-white/42">שם/פרט תצוגה</SafeMeta>
+                <SafeMeta as="span" className="block text-[11px] font-semibold text-white/44">שם/פרט תצוגה</SafeMeta>
                 <input
                   dir="rtl"
                   value={lessonDraft.displayTitle}
@@ -1254,7 +1044,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
 
               <div className="grid grid-cols-2 gap-2">
                 <label className="block space-y-1.5">
-                  <SafeMeta as="span" className="block text-[10px] font-semibold text-white/42">חלל</SafeMeta>
+                  <SafeMeta as="span" className="block text-[11px] font-semibold text-white/44">חלל</SafeMeta>
                   <select
                     dir="rtl"
                     value={lessonDraft.room}
@@ -1266,7 +1056,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
                 </label>
 
                 <label className="block space-y-1.5">
-                  <SafeMeta as="span" className="block text-[10px] font-semibold text-white/42">משך</SafeMeta>
+                  <SafeMeta as="span" className="block text-[11px] font-semibold text-white/44">משך</SafeMeta>
                   <select
                     dir="rtl"
                     value={lessonDraft.durationMinutes}
@@ -1279,7 +1069,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
               </div>
 
               <label className="block space-y-1.5">
-                <SafeMeta as="span" className="block text-[10px] font-semibold text-white/42">מורה</SafeMeta>
+                <SafeMeta as="span" className="block text-[11px] font-semibold text-white/44">מורה</SafeMeta>
                 <select
                   dir="rtl"
                   value={lessonDraft.teacherName ? lessonDraft.teacherId || "__current" : "__none"}
@@ -1302,7 +1092,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
               </label>
 
               <label className="block space-y-1.5">
-                <SafeMeta as="span" className="block text-[10px] font-semibold text-white/42">סטטוס</SafeMeta>
+                <SafeMeta as="span" className="block text-[11px] font-semibold text-white/44">סטטוס</SafeMeta>
                 <select
                   dir="rtl"
                   value={lessonDraft.status}
@@ -1358,6 +1148,29 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
           {teachingStaffRows.slice(0, 5).map(({ teacher, subtitle, meta }) => <MobileListRow key={teacher.id} icon={Users} title={teacher.displayName} subtitle={subtitle} meta={meta} tone="modern" onClick={() => openScreen("users")} ariaLabel={`פתיחת פרטי צוות עבור ${teacher.displayName}`} />)}
           {!teachers.length ? <MobileListRow icon={Users} title="אין צוות משויך" subtitle="שיוך מורות לקבוצות יופיע כאן" tone="modern" /> : null}
         </MobileList>
+      </MobileSection>
+
+      <MobileSection kicker={attentionItems.length ? `${attentionItems.length} לטיפול` : "אין חסמים ידועים"} title="חריגות ותשומת לב" tone={attentionItems.length ? "urgent" : "success"}>
+        {attentionItems.length ? (
+          <MobileList>
+            {attentionItems.map((item) => (
+              <OperationalAlertRow
+                key={item.id}
+                icon={attentionIcon(item.kind)}
+                title={item.title}
+                subtitle={item.subtitle}
+                meta={item.meta}
+                tone={item.tone}
+                onClick={() => openAttentionItem(item.kind)}
+                ariaLabel={`פתיחת טיפול: ${item.title}`}
+              />
+            ))}
+          </MobileList>
+        ) : (
+          <Surface tone="success" variant="quiet" className="p-3">
+            <SafeMeta as="p" className="text-[11px] leading-relaxed text-white/52">אין חריגות פתוחות לפי נוכחות, סטטוס תלמידות, משימות ואירועים קיימים.</SafeMeta>
+          </Surface>
+        )}
       </MobileSection>
 
       <MobileSection kicker={paymentsEnabled ? "גבייה פעילה" : "מעקב בלבד"} title="תשלומים ומעקב" tone="shop">
