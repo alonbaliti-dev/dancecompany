@@ -65,7 +65,19 @@ export type V6StudentGroupRow = {
   teacherNames: string;
 };
 
+export type V6StudentTodayLessonRow = {
+  id: string;
+  title: string;
+  time: string;
+  room: string;
+  groupName?: string;
+  danceStyle?: string;
+  isNext: boolean;
+  tone: V6Tone;
+};
+
 export type V6StudentHomeViewModel = V6ActorHomeContext & {
+  todayWeekday: string;
   next?: V6Lesson;
   attendance: ReturnType<typeof selectV6AttendanceRecordsForStudent>;
   attendanceRate: number;
@@ -81,6 +93,7 @@ export type V6StudentHomeViewModel = V6ActorHomeContext & {
   membershipTone: V6Tone;
   feed: V6StudentFeedRow[];
   weekItems: V6StudentWeekRow[];
+  todaySchedule: V6StudentTodayLessonRow[];
 };
 
 export type V6TeacherGroupRow = {
@@ -450,8 +463,27 @@ export function selectV6StudentHomeViewModel(db: V6Database, user: V6User): V6St
     ...messages.slice(0, 2).map((item) => ({ kind: "message" as const, id: item.id, title: item.title, body: item.body, meta: "סטודיו", tone: "modern" as V6Tone })),
     ...events.slice(0, 1).map((item) => ({ kind: "event" as const, id: item.id, title: item.title, body: item.parentInstructions ?? item.adultInstructions ?? item.location ?? "בלוח הסטודיו.", meta: item.startTime ?? item.date, tone: item.status === "needs_attention" ? "urgent" as V6Tone : "management" as V6Tone }))
   ].slice(0, 4);
+  const todayWeekday = currentV6HebrewWeekday();
+  const todaySchedule: V6StudentTodayLessonRow[] = lessons
+    .filter((lesson) => normalizeV6Weekday(lesson.weekday) === todayWeekday)
+    .map((lesson) => {
+      const group = studentGroups.find((item) => item.id === lesson.groupId);
+      return {
+        id: lesson.id,
+        title: group?.name ?? lesson.title,
+        time: lesson.time,
+        room: lesson.room,
+        groupName: group?.name,
+        danceStyle: group?.danceStyle ?? group?.style,
+        isNext: next?.id === lesson.id,
+        tone: "classic" as V6Tone
+      };
+    });
   const weekItems: V6StudentWeekRow[] = [
-    ...lessons.slice(1, 4).map((lesson) => {
+    ...lessons
+      .filter((lesson) => normalizeV6Weekday(lesson.weekday) !== todayWeekday)
+      .slice(0, 4)
+      .map((lesson) => {
       const group = studentGroups.find((item) => item.id === lesson.groupId);
       return {
         kind: "lesson" as const,
@@ -474,6 +506,7 @@ export function selectV6StudentHomeViewModel(db: V6Database, user: V6User): V6St
 
   return {
     ...context,
+    todayWeekday,
     next,
     attendance,
     attendanceRate,
@@ -488,7 +521,8 @@ export function selectV6StudentHomeViewModel(db: V6Database, user: V6User): V6St
     membershipStatusLabel,
     membershipTone,
     feed,
-    weekItems
+    weekItems,
+    todaySchedule
   };
 }
 

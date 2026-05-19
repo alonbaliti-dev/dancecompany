@@ -536,6 +536,7 @@ function Shell() {
     home && tab === "shop" ? "shop" :
     home && tab === "more" && user.role === "super_admin" ? "admin" :
     home && tab === "more" && user.role === "management" ? "management" :
+    home && user.role === "student" ? "student" :
     "home";
   return (
     <>

@@ -135,8 +135,24 @@ export const v6Interactive = {
     "touch-manipulation disabled:cursor-not-allowed disabled:opacity-42 disabled:saturate-[0.68] disabled:shadow-none disabled:hover:brightness-100 disabled:hover:translate-y-0 disabled:active:scale-100"
 };
 
+export const v6StudentSurface = {
+  greeting:
+    "border border-[rgba(244,213,141,0.062)] bg-[linear-gradient(165deg,rgba(255,247,223,0.055),rgba(255,255,255,0.018)_48%,rgba(80,28,52,0.12))] shadow-[0_16px_40px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,247,223,0.055)] backdrop-blur-xl",
+  scheduleRow:
+    "border border-[rgba(244,213,141,0.044)] bg-[linear-gradient(180deg,rgba(255,255,255,0.038),rgba(255,255,255,0.012))] shadow-[inset_0_1px_0_rgba(255,247,223,0.034)]",
+  scheduleRowNext: "border-[rgba(244,213,141,0.12)] bg-[linear-gradient(180deg,rgba(244,213,141,0.10),rgba(255,255,255,0.020))]",
+  progress:
+    "border border-[rgba(244,213,141,0.052)] bg-[linear-gradient(180deg,rgba(255,247,223,0.040),rgba(255,255,255,0.014))] shadow-[0_10px_28px_rgba(0,0,0,0.16),inset_0_1px_0_rgba(255,247,223,0.042)]",
+  quickAction:
+    "border border-[rgba(244,213,141,0.050)] bg-white/[0.028] shadow-[inset_0_1px_0_rgba(255,247,223,0.030)]",
+  empty:
+    "border border-[rgba(244,213,141,0.040)] bg-[linear-gradient(180deg,rgba(255,255,255,0.026),rgba(255,255,255,0.008))] shadow-[inset_0_1px_0_rgba(255,247,223,0.026)]"
+};
+
 export const v6ScreenAtmosphere = {
   home: "bg-[radial-gradient(ellipse_88%_40%_at_50%_-2%,rgba(244,213,141,0.135),transparent_64%),radial-gradient(ellipse_54%_44%_at_10%_76%,rgba(100,28,63,0.23),transparent_68%),radial-gradient(ellipse_44%_30%_at_90%_12%,rgba(255,247,223,0.052),transparent_64%),linear-gradient(180deg,#020102,#090505_52%,#020102)]",
+  student:
+    "bg-[radial-gradient(ellipse_86%_42%_at_50%_-4%,rgba(244,213,141,0.118),transparent_62%),radial-gradient(ellipse_50%_40%_at_8%_78%,rgba(183,47,61,0.16),transparent_66%),radial-gradient(ellipse_40%_28%_at_92%_14%,rgba(255,247,223,0.048),transparent_60%),linear-gradient(180deg,#030102,#0a0506_54%,#020102)]",
   shop: "bg-[radial-gradient(ellipse_80%_38%_at_50%_-6%,rgba(244,213,141,0.148),transparent_66%),radial-gradient(ellipse_48%_34%_at_8%_72%,rgba(16,185,129,0.062),transparent_64%),linear-gradient(180deg,#030202,#090604_54%,#020202)]",
   management: "bg-[radial-gradient(ellipse_80%_38%_at_50%_-8%,rgba(244,213,141,0.088),transparent_60%),radial-gradient(ellipse_52%_40%_at_12%_72%,rgba(125,211,252,0.090),transparent_66%),linear-gradient(180deg,#020409,#050712_54%,#020207)]",
   admin: "bg-[radial-gradient(ellipse_80%_38%_at_50%_-8%,rgba(244,213,141,0.090),transparent_60%),radial-gradient(ellipse_54%_40%_at_12%_72%,rgba(216,210,255,0.090),transparent_66%),linear-gradient(180deg,#030208,#07040f_54%,#020207)]",
