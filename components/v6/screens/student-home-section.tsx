@@ -24,14 +24,18 @@ import {
   SafeTitle,
   StatusBadge,
   v6Cx,
+  v6Lovable,
   v6Motion,
   v6StudentSurface,
+  V6ShopProductCard,
+  V6ShopProductGrid,
   v6Tone,
   type V6Tone
 } from "@/components/v6/design-system";
+import { useV6 } from "@/lib/v6/AppProvider";
 import { RecentActivitySection, useV6ActivityNavigationHandlers } from "@/components/v6/activity-center/activity-center-section";
 import { V6_ACTIVITY_COPY } from "@/lib/v6/activity-center/copy";
-import { selectV6ProductPriceLabel as productPrice, type V6StudentHomeViewModel } from "@/lib/v6/view-models";
+import { resolveV6ProductImageUrl, selectV6ProductPriceLabel as productPrice, type V6StudentHomeViewModel } from "@/lib/v6/view-models";
 import type { V6CalendarEvent, V6Group, V6Lesson, V6Screen, V6Tab, V6User } from "@/lib/v6/types";
 
 function firstName(name: string) {
@@ -61,7 +65,7 @@ function StudentEmptyPanel({
   description: ReactNode;
 }) {
   return (
-    <div className={v6Cx(v6StudentSurface.empty, "rounded-[20px] p-4 text-start")} role="status">
+    <div className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")} role="status">
       <span className="grid h-10 w-10 place-items-center rounded-2xl bg-white/[0.040] text-white/50" aria-hidden="true">
         <Icon size={17} strokeWidth={1.9} />
       </span>
@@ -85,7 +89,7 @@ function StudentGreetingHero({
   openTab: (tab: V6Tab) => void;
 }) {
   return (
-    <section dir="rtl" className={v6Cx(v6StudentSurface.greeting, "relative overflow-hidden rounded-[28px] p-4 sm:p-5", v6Motion.gentle)}>
+    <section dir="rtl" className={v6Cx(v6Lovable.hero, "p-5", v6Motion.gentle)}>
       <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/22 to-transparent" />
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
@@ -481,38 +485,28 @@ function StudentShopTeaser({
   visibleProducts: V6StudentHomeViewModel["visibleProducts"];
   openTab: (tab: V6Tab) => void;
 }) {
+  const { db } = useV6();
   if (!visibleProducts.length) return null;
 
   return (
     <MobileSection kicker="מהסטודיו" title="מהחנות" tone="shop">
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {visibleProducts.map((product) => (
-          <button
-            key={product.id}
-            dir="rtl"
-            type="button"
-            onClick={() => openTab("shop")}
-            aria-label={`פתיחת מוצר בחנות: ${product.title}`}
-            className={v6Cx(
-              "flex min-h-[72px] w-full items-center gap-3 rounded-[20px] p-3.5 text-start",
-              v6StudentSurface.quickAction,
-              v6Motion.standard,
-              v6Motion.pressSoft,
-              v6Motion.focusRing,
-              "touch-manipulation motion-safe:hover:bg-white/[0.038]"
-            )}
-          >
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-[#f4d58d]/[0.12] text-yellow-50">
-              <ShoppingBag size={16} strokeWidth={1.9} aria-hidden="true" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <SafeTitle as="span" className="block truncate text-sm font-semibold text-white/86">{product.title}</SafeTitle>
-              <SafeMeta as="span" className="mt-0.5 block truncate text-[11px] text-white/42">{product.category}</SafeMeta>
-            </span>
-            <SafeMeta as="span" className="shrink-0 text-[11px] font-semibold text-white/48">{productPrice(product)}</SafeMeta>
-          </button>
-        ))}
+      <div className="flex justify-end">
+        <button type="button" onClick={() => openTab("shop")} className="text-xs font-medium text-[#f4d58d]/80 touch-manipulation">
+          לכל המוצרים
+        </button>
       </div>
+      <V6ShopProductGrid>
+        {visibleProducts.slice(0, 4).map((product) => (
+          <V6ShopProductCard
+            key={product.id}
+            product={product}
+            imageUrl={resolveV6ProductImageUrl(db, product)}
+            priceLabel={productPrice(product)}
+            actionLabel="לחנות"
+            onPress={() => openTab("shop")}
+          />
+        ))}
+      </V6ShopProductGrid>
     </MobileSection>
   );
 }

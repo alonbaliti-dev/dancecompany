@@ -118,6 +118,18 @@ export const v6Space = {
   navBottom: "pb-[calc(var(--nav-offset)+1rem)]"
 };
 
+/** Lovable-port layout rhythm — visual source of truth for v6 runtime shells. */
+export const v6Lovable = {
+  screen: "flex flex-col gap-7 px-5 pb-32 pt-1",
+  card: "glass rounded-2xl",
+  cardStrong: "glass-strong rounded-3xl",
+  hero: "glass-strong relative overflow-hidden rounded-[28px]",
+  productCard: "glass relative flex w-full flex-col gap-3 overflow-hidden rounded-3xl p-4 text-right",
+  productMedia: "relative grid h-28 w-full place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-rose-500/10 to-transparent",
+  sectionTitle: "text-base font-semibold tracking-tight text-white/92",
+  eyebrow: "text-[11px] uppercase tracking-[0.16em] text-white/40"
+};
+
 export const v6Motion = {
   standard: "transition-[transform,border-color,background,box-shadow,filter] duration-200 ease-out motion-reduce:transition-none",
   gentle: "transition-[transform,border-color,background,box-shadow,opacity] duration-300 ease-out motion-reduce:transition-none",

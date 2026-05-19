@@ -15,13 +15,11 @@ import {
   MobileSection,
   SafeMeta,
   SafeTitle,
-  v6ActivitySurface,
   v6Cx,
+  v6Lovable,
   v6Motion,
-  v6Type,
   type V6Tone
 } from "@/components/v6/design-system";
-import { V6_ACTIVITY_CATEGORY_LABELS } from "@/lib/v6/activity-center/constants";
 import { V6_ACTIVITY_COPY } from "@/lib/v6/activity-center/copy";
 import { selectV6ActivityItemNavigation } from "@/lib/v6/activity-center/selectors";
 import type { V6ActivityCategory, V6ActivityCenterViewModel, V6ActivityItem } from "@/lib/v6/activity-center/types";
@@ -51,7 +49,7 @@ function severityLabel(item: V6ActivityItem) {
 
 export function ActivityEmptyPanel({ title, description }: { title: string; description: string }) {
   return (
-    <div className={v6Cx(v6ActivitySurface.empty, "rounded-[18px] p-4 text-start")} role="status">
+    <div className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")} role="status">
       <SafeTitle as="p" className="text-sm font-semibold tracking-[-0.014em] text-white/82">{title}</SafeTitle>
       <SafeMeta as="p" className="mt-1.5 text-xs leading-relaxed text-white/46">{description}</SafeMeta>
     </div>
@@ -91,27 +89,26 @@ export function ActivityCenterRow({
       onClick={onOpen ? () => onOpen(item) : undefined}
       aria-label={`פתיחת פעילות: ${item.title}`}
       className={v6Cx(
-        "grid w-full grid-cols-[auto_1fr_auto] items-center gap-2.5 rounded-[14px] border px-3 py-2.5 text-start",
+        "glass grid w-full grid-cols-[auto_1fr_auto] items-center gap-2.5 rounded-2xl px-3 py-2.5 text-start",
         v6Motion.standard,
         v6Motion.pressSoft,
         v6Motion.focusRing,
         "touch-manipulation",
-        unread ? v6ActivitySurface.rowUnread : v6ActivitySurface.row,
+        unread && "ring-1 ring-rose-200/20",
         onOpen && "motion-safe:hover:bg-white/[0.034]"
       )}
     >
-      <span className={v6Cx("relative grid h-9 w-9 shrink-0 place-items-center rounded-xl", unread ? "bg-rose-400/12 text-rose-100" : "bg-white/[0.040] text-white/52")}>
+      <span className={v6Cx("relative grid h-10 w-10 shrink-0 place-items-center rounded-2xl", unread ? "bg-rose-400/12 text-rose-100" : "bg-white/[0.050] text-white/60")}>
         {unread ? <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-rose-200" aria-hidden="true" /> : null}
         {renderActivityIcon(item.category)}
       </span>
       <span className="min-w-0">
-        <SafeTitle as="span" className="block truncate text-[12.5px] font-semibold tracking-[-0.012em] text-white/86">{item.title}</SafeTitle>
-        <SafeMeta as="span" className="mt-0.5 block truncate text-[10.5px] text-white/44">{item.body}</SafeMeta>
+        <SafeTitle as="span" className="block truncate text-sm font-semibold tracking-[-0.012em] text-white/90">{item.title}</SafeTitle>
+        <SafeMeta as="span" className="mt-0.5 block truncate text-[12px] text-white/48">{item.body}</SafeMeta>
       </span>
-      <span className="min-w-0 shrink-0 text-start">
-        <SafeMeta as="span" className={v6Cx("block text-[9.5px] font-semibold", unread ? "text-rose-100/72" : "text-white/34")}>{severityLabel(item)}</SafeMeta>
-        <SafeMeta as="span" className="mt-0.5 block text-[8.5px] text-white/28">{V6_ACTIVITY_CATEGORY_LABELS[item.category]}</SafeMeta>
-      </span>
+      <SafeMeta as="span" className={v6Cx("min-w-0 shrink-0 text-[11px] font-medium", unread ? "text-rose-100/72" : "text-white/40")}>
+        {severityLabel(item)}
+      </SafeMeta>
     </button>
   );
 }
@@ -182,22 +179,22 @@ export function ActivityCenterPanel({
   const unreadGroups = viewModel.groups.filter((group) => group.unreadCount > 0);
 
   return (
-    <div className="space-y-2">
-      <section dir="rtl" className={v6Cx(v6ActivitySurface.panel, "overflow-hidden rounded-[18px] p-3 text-start")}>
+    <div className="flex flex-col gap-5 px-5 pt-1">
+      <section dir="rtl" className={v6Cx(v6Lovable.cardStrong, "overflow-hidden p-5 text-start")}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className={v6Type.kicker}>{V6_ACTIVITY_COPY.centerKicker}</p>
-            <SafeTitle as="h1" className="mt-1 text-[15px] font-semibold tracking-[-0.018em] text-white/88">{V6_ACTIVITY_COPY.centerTitle}</SafeTitle>
-            <SafeMeta as="p" className="mt-1 text-[10px] leading-relaxed text-white/46">
+            <SafeMeta as="p" className={v6Cx("text-[11px] font-semibold uppercase tracking-[0.16em] text-white/40") }>{V6_ACTIVITY_COPY.centerKicker}</SafeMeta>
+            <SafeTitle as="h1" className="mt-1.5 text-lg font-semibold tracking-tight text-white/92">{V6_ACTIVITY_COPY.centerTitle}</SafeTitle>
+            <SafeMeta as="p" className="mt-1.5 text-sm leading-relaxed text-white/48">
               {viewModel.unreadCount ? V6_ACTIVITY_COPY.needsAttention(viewModel.unreadCount) : V6_ACTIVITY_COPY.calmStatus}
             </SafeMeta>
           </div>
-          {showMarkAllRead && onMarkAllRead ? (
+          {showMarkAllRead && onMarkAllRead && viewModel.unreadCount ? (
             <button
               type="button"
               onClick={onMarkAllRead}
               className={v6Cx(
-                "shrink-0 rounded-full border border-[#f4d58d]/12 bg-white/[0.030] px-3 py-1.5 text-[10px] font-semibold text-white/62",
+                "shrink-0 rounded-full bg-[#f4d58d] px-3 py-1.5 text-[11px] font-semibold text-zinc-950",
                 v6Motion.standard,
                 v6Motion.pressSoft,
                 v6Motion.focusRing,
@@ -211,12 +208,12 @@ export function ActivityCenterPanel({
       </section>
 
       {unreadGroups.length ? (
-        <section dir="rtl" className="space-y-2">
-          <SafeMeta as="p" className="px-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/34">דורש תשומת לב</SafeMeta>
+        <section dir="rtl" className="flex flex-col gap-3">
+          <SafeMeta as="p" className="px-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/40">דורש תשומת לב</SafeMeta>
           {unreadGroups.map((group) => (
-            <section key={group.category} className={v6Cx(v6ActivitySurface.panel, "rounded-[16px] p-2")}>
-              <SafeMeta as="p" className="px-1 text-[10px] font-semibold text-white/42">{group.label}</SafeMeta>
-              <div className="mt-1.5 flex flex-col gap-1">
+            <section key={group.category} className={v6Cx(v6Lovable.card, "rounded-2xl p-4")}>
+              <SafeMeta as="p" className="px-1 text-[11px] font-semibold text-white/46">{group.label}</SafeMeta>
+              <div className="mt-2 flex flex-col gap-1.5">
                 {group.items
                   .filter((item) => !item.isRead)
                   .slice(0, 6)
@@ -230,12 +227,12 @@ export function ActivityCenterPanel({
       ) : null}
 
       {viewModel.groups.map((group) => (
-        <section key={group.category} dir="rtl" className={v6Cx(v6ActivitySurface.panel, "rounded-[16px] p-2")}>
+        <section key={group.category} dir="rtl" className={v6Cx(v6Lovable.card, "rounded-2xl p-4")}>
           <div className="flex items-center justify-between gap-2 px-1">
-            <SafeTitle as="h2" className="text-[12px] font-semibold text-white/76">{group.label}</SafeTitle>
-            {group.unreadCount ? <SafeMeta as="span" className="text-[10px] font-semibold text-[#f4d58d]">{V6_ACTIVITY_COPY.unreadKicker(group.unreadCount)}</SafeMeta> : null}
+            <SafeTitle as="h2" className={v6Lovable.sectionTitle}>{group.label}</SafeTitle>
+            {group.unreadCount ? <SafeMeta as="span" className="text-[11px] font-semibold text-[#f4d58d]">{V6_ACTIVITY_COPY.unreadKicker(group.unreadCount)}</SafeMeta> : null}
           </div>
-          <div className="mt-1.5 flex flex-col gap-1">
+          <div className="mt-2 flex flex-col gap-1.5">
             {group.items.length ? (
               group.items.slice(0, 8).map((item) => <ActivityCenterRow key={item.id} item={item} onOpen={onOpenItem} />)
             ) : (

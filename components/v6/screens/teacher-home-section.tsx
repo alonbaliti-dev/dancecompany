@@ -23,6 +23,7 @@ import {
   SafeTitle,
   StatusBadge,
   v6Cx,
+  v6Lovable,
   v6Motion,
   v6TeacherSurface,
   v6Tone,
@@ -92,7 +93,7 @@ function TeacherGreetingHero({
         : "אין שיעורים משויכים כרגע";
 
   return (
-    <section dir="rtl" className={v6Cx(v6TeacherSurface.greeting, "relative overflow-hidden rounded-[24px] p-4", v6Motion.gentle)}>
+    <section dir="rtl" className={v6Cx(v6Lovable.hero, "p-5", v6Motion.gentle)}>
       <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-l from-transparent via-sky-300/20 to-transparent" />
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="min-w-0 flex-1">

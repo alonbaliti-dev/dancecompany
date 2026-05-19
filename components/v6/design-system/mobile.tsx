@@ -2,7 +2,7 @@
 
 import { type ElementType, type ReactNode } from "react";
 import { AlertTriangle, CalendarDays, ChevronLeft, DoorOpen, PencilLine, Sparkles, Users } from "lucide-react";
-import { v6Cx, v6Interactive, v6Motion, v6Safe, v6TimetableInteraction, v6TimetableSurface, v6Tone, type V6Tone } from "./tokens";
+import { v6Cx, v6Interactive, v6Lovable, v6Motion, v6Safe, v6TimetableInteraction, v6TimetableSurface, v6Tone, type V6Tone } from "./tokens";
 import { BidiNumber, SafeMeta, SafeTitle } from "./primitives";
 
 export function MobileScreen({ children, className }: { children: ReactNode; className?: string }) {
@@ -108,6 +108,85 @@ export function MobileListRow({
     <div dir="rtl" className={className}>
       {content}
     </div>
+  );
+}
+
+export function LovableActionRow({
+  icon: Icon,
+  title,
+  subtitle,
+  trailing,
+  tone = "studio",
+  onClick,
+  ariaLabel
+}: {
+  icon: ElementType;
+  title: ReactNode;
+  subtitle?: ReactNode;
+  trailing?: ReactNode;
+  tone?: V6Tone;
+  onClick?: () => void;
+  ariaLabel?: string;
+}) {
+  const Component = onClick ? "button" : "div";
+  return (
+    <Component
+      dir="rtl"
+      type={onClick ? "button" : undefined}
+      onClick={onClick}
+      aria-label={onClick ? ariaLabel ?? (typeof title === "string" ? title : undefined) : undefined}
+      className={v6Cx(
+        v6Lovable.card,
+        "group grid w-full min-h-[60px] grid-cols-[auto_1fr_auto] items-center gap-3 rounded-2xl p-4 text-start",
+        v6Motion.standard,
+        onClick && v6Motion.pressSoft,
+        onClick && v6Motion.focusRing,
+        onClick && "touch-manipulation motion-safe:hover:bg-white/[0.060]"
+      )}
+    >
+      <span className={v6Cx("grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#f4d58d]/20 to-rose-200/10", v6Tone[tone].text)}>
+        <Icon size={17} strokeWidth={1.8} aria-hidden="true" />
+      </span>
+      <span className="min-w-0">
+        <SafeTitle as="span" className="block truncate text-sm font-semibold tracking-[-0.012em] text-white/92">{title}</SafeTitle>
+        {subtitle ? <SafeMeta as="span" className="mt-0.5 block truncate text-[11px] text-white/48">{subtitle}</SafeMeta> : null}
+      </span>
+      <span className="flex shrink-0 items-center gap-1.5 text-white/30">
+        {trailing ?? (onClick ? <ChevronLeft size={15} strokeWidth={1.8} className="text-white/26 transition group-hover:text-white/46" aria-hidden="true" /> : null)}
+      </span>
+    </Component>
+  );
+}
+
+export function LovableEditorialPanel({
+  kicker,
+  title,
+  description,
+  trailing,
+  children,
+  className
+}: {
+  kicker?: ReactNode;
+  title?: ReactNode;
+  description?: ReactNode;
+  trailing?: ReactNode;
+  children?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section dir="rtl" className={v6Cx(v6Lovable.cardStrong, "flex flex-col gap-3 overflow-hidden p-5 text-start", className)}>
+      {(kicker || title || description || trailing) ? (
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            {kicker ? <SafeMeta as="p" className={v6Lovable.eyebrow}>{kicker}</SafeMeta> : null}
+            {title ? <SafeTitle as="h2" className={v6Cx("mt-1 text-base font-semibold tracking-tight text-white/92", kicker && "mt-1.5") }>{title}</SafeTitle> : null}
+            {description ? <SafeMeta as="p" className="mt-1.5 text-sm leading-relaxed text-white/48">{description}</SafeMeta> : null}
+          </div>
+          {trailing ? <div className="shrink-0">{trailing}</div> : null}
+        </div>
+      ) : null}
+      {children}
+    </section>
   );
 }
 
@@ -312,14 +391,15 @@ export function WeeklyStudioTimetableShell({
   children: ReactNode;
 }) {
   return (
-    <div dir="rtl" className="flex min-w-0 flex-col gap-4 text-start">
-      <div className="flex min-w-0 flex-col gap-2.5 min-[380px]:flex-row min-[380px]:items-end min-[380px]:justify-between min-[380px]:gap-4">
+    <div dir="rtl" className={v6Cx(v6Lovable.cardStrong, "flex min-w-0 flex-col gap-5 overflow-hidden p-5 text-start")}>
+      <div className="flex min-w-0 flex-col gap-3 min-[380px]:flex-row min-[380px]:items-end min-[380px]:justify-between min-[380px]:gap-4">
         <div className="min-w-0">
-          <SafeTitle as="h2" className="text-lg font-semibold tracking-[-0.026em] text-white/94">מערכת שבועית לסטודיו</SafeTitle>
-          <SafeMeta as="p" className="mt-1.5 max-w-[21rem] text-xs leading-relaxed text-white/48">{weekLabel}</SafeMeta>
+          <SafeMeta as="p" className={v6Lovable.eyebrow}>מערכת שבועית</SafeMeta>
+          <SafeTitle as="h2" className="mt-1.5 text-lg font-semibold tracking-tight text-white/94">סטודיו · עריכה חיה</SafeTitle>
+          <SafeMeta as="p" className="mt-1.5 max-w-[22rem] text-sm leading-relaxed text-white/48">{weekLabel}</SafeMeta>
         </div>
-        <span className="inline-flex min-h-7 shrink-0 items-center gap-1.5 self-start rounded-full bg-white/[0.030] px-2.5 text-xs font-medium text-white/48 min-[380px]:self-auto">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-200/80 motion-safe:animate-pulse" />
+        <span className="inline-flex min-h-8 shrink-0 items-center gap-2 self-start rounded-full bg-emerald-200/[0.08] px-3 text-[11px] font-semibold text-emerald-100/88 min-[380px]:self-auto">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 motion-safe:animate-pulse" />
           עריכה חיה
         </span>
       </div>

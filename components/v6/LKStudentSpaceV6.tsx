@@ -52,8 +52,15 @@ import {
   Surface,
   Toast as V6Toast,
   Widget,
+  LovableActionRow,
+  LovableEditorialPanel,
+  MobileScreen,
+  V6ShopProductCard,
+  V6ShopProductGrid,
   v6Control,
   v6Cx,
+  v6Lovable,
+  v6Motion,
   v6Surface,
   v6Tone,
   v6Type,
@@ -74,6 +81,7 @@ import { selectV6EventOperatingSummary, selectV6SchoolYearEvents } from "@/lib/d
 import { buildV6ResetPasswordOperation, buildV6UpsertUserOperation } from "@/lib/domains/users/v6-operations";
 import { groupUsersByRole, selectV6UsersByRole, sortByHebrewName } from "@/lib/domains/users/selectors";
 import { selectV6SystemIssues } from "@/lib/domains/system/selectors";
+import { resolveV6ProductImageUrl, selectV6ProductPriceLabel } from "@/lib/v6/view-models";
 import { computeV6ManagementHealth, computeV6PrivateLessonCoordination, summarizeV6Audit } from "@/lib/engines/v6";
 import type { V6AttendanceRecord, V6AttendanceStatus, V6CalendarEvent, V6MediaItem, V6Permissions, V6Product, V6Role, V6Screen, V6Tab, V6User } from "@/lib/v6/types";
 
@@ -424,31 +432,16 @@ function toneForRole(role: V6Role): Tone {
 
 function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
   return (
-    <header dir="rtl" className={v6Cx("lk-safe-surface relative isolate mx-auto w-full max-w-full overflow-hidden rounded-[22px] border p-3.5 text-start", v6Surface.base)}>
-      <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/14 to-transparent" />
-      <SurfaceContent className="flex flex-col gap-2.5 sm:flex-row sm:items-start">
+    <header dir="rtl" className={v6Cx(v6Lovable.card, "mx-auto w-full max-w-full overflow-hidden rounded-3xl p-4 text-start")}>
+      <SurfaceContent className="flex flex-col gap-3 sm:flex-row sm:items-start">
         <div className="min-w-0 flex-1">
-          <p className={v6Type.kicker}>ניהול</p>
-          <SafeTitle as="h1" className={v6Cx("mt-1 max-w-full", v6Type.screenTitle)}>{title}</SafeTitle>
-          {subtitle ? <SafeMeta as="p" className={v6Cx("mt-2 max-w-[22rem]", v6Type.subtitle)}>{subtitle}</SafeMeta> : null}
+          <SafeMeta as="p" className={v6Lovable.eyebrow}>ניהול</SafeMeta>
+          <SafeTitle as="h1" className="mt-1.5 text-balance text-lg font-semibold tracking-tight text-white/92">{title}</SafeTitle>
+          {subtitle ? <SafeMeta as="p" className="mt-1.5 max-w-[22rem] text-sm leading-relaxed text-white/48">{subtitle}</SafeMeta> : null}
         </div>
         {action ? <div className="lk-safe-action-zone shrink-0 sm:max-w-[45%]">{action}</div> : null}
       </SurfaceContent>
     </header>
-  );
-}
-
-function ActionCard({ icon: Icon, title, subtitle, tone, onClick }: { icon: React.ElementType; title: string; subtitle: string; tone: Tone; onClick: () => void }) {
-  const t = tones[tone];
-  return (
-    <button dir="rtl" onClick={onClick} className={v6Cx("lk-safe-surface group relative mx-auto flex min-h-[34px] w-full min-w-0 items-center gap-1.5 rounded-[12px] border px-2 py-1 text-start transition active:scale-[0.985]", v6Surface.whisper)}>
-      <span className={cx("grid h-5 w-5 shrink-0 place-items-center rounded-[8px]", t.soft, t.text)}><Icon size={10.5} strokeWidth={1.9} /></span>
-      <span className="min-w-0 flex-1">
-        <SafeTitle as="span" className="block truncate text-[11.3px] font-semibold tracking-[-0.006em] text-white/82">{title}</SafeTitle>
-        <SafeMeta as="span" className="mt-px block truncate text-[8.8px] text-white/32">{subtitle}</SafeMeta>
-      </span>
-      <DirectionalChevron className="h-3 w-3 shrink-0 text-white/16 transition group-hover:text-white/34" />
-    </button>
   );
 }
 
@@ -666,47 +659,46 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
     show("הנוכחות נשמרה");
   }
   const attendanceEditor = attendanceLesson && attendanceGroup ? (
-    <div className="space-y-3">
-      <Surface tone="studio" className="p-4">
-        <p className={v6Cx(v6Type.kicker, "text-emerald-100/52")}>נוכחות שיעור</p>
-        <SafeTitle as="h3" className="mt-1.5 text-[17px] font-semibold tracking-[-0.030em]">{attendanceGroup.name} · {attendanceLesson.time}</SafeTitle>
-        <p className="lk-safe-meta mt-2 text-xs leading-relaxed text-white/48">
-          {attendanceGroup.danceStyle ?? attendanceGroup.style} · {db.users.filter((teacher) => attendanceGroup.teacherIds.includes(teacher.id)).map((teacher) => teacher.name).join(", ") || "מורה לא שויך"} · {attendanceStudents.length} תלמידים
-        </p>
-        <p className="lk-safe-meta mt-1 text-xs leading-relaxed text-white/48">
+    <div className="flex flex-col gap-3">
+      <LovableEditorialPanel
+        kicker="נוכחות שיעור"
+        title={`${attendanceGroup.name} · ${attendanceLesson.time}`}
+        description={`${attendanceGroup.danceStyle ?? attendanceGroup.style} · ${db.users.filter((teacher) => attendanceGroup.teacherIds.includes(teacher.id)).map((teacher) => teacher.name).join(", ") || "מורה לא שויך"} · ${attendanceStudents.length} תלמידים`}
+      >
+        <SafeMeta as="p" className="text-xs leading-relaxed text-white/48">
           סומנו {attendanceMarkedCount}/{attendanceStudents.length} · {attendanceLastSaved ? `נשמר לאחרונה ${new Date(attendanceLastSaved).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}` : "טרם נשמר היום"}
-        </p>
-      </Surface>
-      <div className="grid grid-cols-2 gap-2 rounded-[22px] border border-[#f4d58d]/8 bg-black/[0.12] p-2 shadow-[inset_0_1px_0_rgba(255,247,223,0.036)] [&>button]:w-full">
+        </SafeMeta>
+      </LovableEditorialPanel>
+      <div className={v6Cx(v6Lovable.card, "grid grid-cols-2 gap-2 rounded-2xl p-2 [&>button]:w-full")}>
         <V6Button onClick={saveAttendance}>שמירת נוכחות</V6Button>
         <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
       </div>
-      <div className={v6Cx("grid gap-3 rounded-[22px] border p-3", v6Surface.quiet)}>
+      <div className={v6Cx(v6Lovable.card, "grid gap-3 rounded-2xl p-4")}>
         <FormField label="תאריך שיעור" value={classDate} onChange={setClassDate} type="date" />
         <V6Button variant="ghost" onClick={markAllPresent}>סמן כולם נוכחים</V6Button>
       </div>
-      <div className="space-y-3">
+      <div className="flex flex-col gap-2">
         {attendanceStudents.map((student) => {
           const draft = attendanceDraft[student.id] ?? { status: "present" as V6AttendanceStatus, note: "" };
           const recentAbsences = db.attendance.filter((record) => record.studentId === student.id && (record.status === "absent" || record.status === "missing")).length;
           const parent = db.users.find((item) => item.role === "parent" && (item.linkedStudentIds.includes(student.id) || student.linkedParentIds?.includes(item.id)));
           const openTasks = db.tasks.filter((task) => student.groupIds.includes(task.groupId) && !task.doneByUserIds.includes(student.id)).length;
           return (
-            <div key={student.id} className={v6Cx("lk-safe-surface rounded-[22px] border p-3 text-start shadow-[inset_0_1px_0_rgba(255,247,223,0.030)]", v6Surface.quiet)}>
-              <div className="lk-safe-row flex items-start gap-3">
+            <article key={student.id} className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")}>
+              <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
-                  <SafeTitle as="p" className="text-[15px] font-semibold tracking-[-0.020em]">{student.name}</SafeTitle>
-                  <SafeMeta as="p" className={v6Cx("mt-1 text-[11px] font-semibold", draft.status === "absent" || draft.status === "missing" ? "text-rose-100" : draft.status === "late" ? "text-yellow-100" : "text-emerald-100")}>{attendanceStatusLabel[draft.status]}</SafeMeta>
+                  <SafeTitle as="p" className="text-base font-semibold tracking-tight text-white/92">{student.name}</SafeTitle>
+                  <SafeMeta as="p" className={v6Cx("mt-1 text-[12px] font-semibold", draft.status === "absent" || draft.status === "missing" ? "text-rose-100" : draft.status === "late" ? "text-yellow-100" : "text-emerald-100")}>{attendanceStatusLabel[draft.status]}</SafeMeta>
                 </div>
               </div>
-              <div className="mt-2 flex flex-wrap gap-1.5 text-start text-[11px] leading-relaxed text-white/42">
+              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[12px] leading-relaxed text-white/46">
                 {recentAbsences ? <span>היעדרויות אחרונות: <BidiNumber>{recentAbsences}</BidiNumber></span> : <span>נוכחות יציבה</span>}
                 {openTasks ? <span>משימות פתוחות: <BidiNumber>{openTasks}</BidiNumber></span> : null}
                 {parent && (user.role === "management" || user.role === "super_admin" || user.permissions.manageAttendance) ? <span>טלפון הורה: <BidiNumber>{parent.phone}</BidiNumber></span> : null}
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-2">{(["present", "absent", "late", "excused"] as V6AttendanceStatus[]).map((status) => <button key={status} onClick={() => setAttendanceStatus(student.id, status)} className={v6Cx("min-h-10 rounded-[18px] px-3 py-2 text-xs font-semibold transition active:scale-95", draft.status === status ? "bg-emerald-100 text-zinc-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]" : v6Control.chip)}>{attendanceStatusLabel[status]}</button>)}</div>
+              <div className="mt-3 grid grid-cols-2 gap-2">{(["present", "absent", "late", "excused"] as V6AttendanceStatus[]).map((status) => <button key={status} onClick={() => setAttendanceStatus(student.id, status)} className={v6Cx("min-h-10 rounded-2xl px-3 py-2 text-xs font-semibold transition active:scale-95", draft.status === status ? "bg-emerald-100 text-zinc-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]" : v6Control.chip)}>{attendanceStatusLabel[status]}</button>)}</div>
               <div className="mt-3"><FormField label="הערה" value={draft.note} onChange={(value) => setAttendanceNote(student.id, value)} placeholder="למשל סיבת היעדרות או איחור" /></div>
-            </div>
+            </article>
           );
         })}
       </div>
@@ -716,48 +708,83 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
       </SheetActions>
     </div>
   ) : null;
+  const canMarkAttendance = user.permissions.manageAttendance || user.role === "super_admin";
   return (
-    <div className="space-y-1.5">
-      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[15px] border p-2 text-start", v6Surface.base)}>
-        <div className="flex items-center gap-2">
-          <span className="grid h-5 w-5 shrink-0 place-items-center rounded-[8px] bg-emerald-100/10 text-emerald-50"><CalendarDays size={10.5} /></span>
-          <div className="min-w-0 flex-1">
-            <p className={v6Type.kicker}>השיעור הקרוב</p>
-            <SafeTitle as="h1" className="mt-px truncate text-[14.5px] font-semibold leading-tight tracking-[-0.018em]">{nextLesson?.title ?? "אין שיעור קרוב"}</SafeTitle>
-            <SafeMeta as="p" className="mt-px truncate text-[9.5px] text-white/46">{nextLesson ? `${nextLesson.weekday} · ${nextLesson.time} · ${nextLesson.room}` : "אפשר לתאם שיעור פרטי מהמסך הבא."}</SafeMeta>
+    <MobileScreen className="gap-7">
+      <LovableEditorialPanel
+        kicker="השיעור הקרוב"
+        title={nextLesson?.title ?? "אין שיעור קרוב"}
+        description={nextLesson ? `${nextLesson.weekday} · ${nextLesson.time} · ${nextLesson.room}` : "אפשר לתאם שיעור פרטי מהמסך הבא."}
+        trailing={
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-emerald-100/10 text-emerald-100">
+            <CalendarDays size={17} strokeWidth={1.8} aria-hidden="true" />
+          </span>
+        }
+      />
+      <section dir="rtl" className="flex flex-col gap-3 text-start">
+        <div className="flex items-end justify-between gap-2 px-1">
+          <div>
+            <SafeMeta as="p" className={v6Lovable.eyebrow}>חזרות ושיעורים</SafeMeta>
+            <SafeTitle as="h2" className={v6Cx(v6Lovable.sectionTitle, "mt-1") }>קצב השבוע</SafeTitle>
           </div>
+          <SafeMeta as="span" className="text-[11px] font-medium text-white/40"><BidiNumber>{lessons.length}</BidiNumber></SafeMeta>
+        </div>
+        <div className="flex flex-col gap-2">
+          {lessons.map((lesson) => {
+            const group = db.groups.find((g) => g.id === lesson.groupId);
+            const tone = toneForStyle(group?.style);
+            const todayRecords = db.attendance.filter((record) => record.lessonId === lesson.id && record.classDate === classDate);
+            const absentCount = todayRecords.filter((record) => record.status === "absent" || record.status === "missing").length;
+            const lateCount = todayRecords.filter((record) => record.status === "late").length;
+            const isNext = lesson.id === nextLesson?.id;
+            const statusLine = todayRecords.length
+              ? `${todayRecords.length} סומנו · ${absentCount} חסרים · ${lateCount} איחורים`
+              : "טרם סומן היום";
+            return (
+              <article
+                key={lesson.id}
+                dir="rtl"
+                className={v6Cx(
+                  v6Lovable.card,
+                  "rounded-2xl p-4 text-start",
+                  isNext && "ring-1 ring-[#f4d58d]/30"
+                )}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <SafeMeta as="p" className={v6Lovable.eyebrow}>{lesson.weekday}</SafeMeta>
+                    <SafeTitle as="h3" className="mt-1 text-[15px] font-semibold tracking-[-0.012em] text-white/90">{lesson.title}</SafeTitle>
+                    <SafeMeta as="p" className="mt-1 text-[12px] leading-relaxed text-white/48">
+                      {lesson.room}
+                      {group?.style ? <span className={v6Cx("ms-1 font-semibold", v6Tone[tone].text)}> · {group.style}</span> : null}
+                    </SafeMeta>
+                  </div>
+                  <span className={v6Cx("inline-flex shrink-0 items-center rounded-full px-3 py-1 text-[11px] font-semibold tabular-nums", v6Tone[tone].soft, v6Tone[tone].text)}>
+                    <BidiNumber>{lesson.time}</BidiNumber>
+                  </span>
+                </div>
+                <div className="mt-3 flex items-center justify-between gap-2">
+                  <SafeMeta as="span" className="text-[11px] text-white/42">{statusLine}</SafeMeta>
+                  {canMarkAttendance ? (
+                    <button
+                      type="button"
+                      onClick={() => openAttendance(lesson.id)}
+                      className={v6Cx("inline-flex min-h-9 items-center rounded-full bg-[#f4d58d] px-3 text-[11px] font-semibold text-zinc-950", v6Motion.pressSoft, v6Motion.focusRing, "touch-manipulation")}
+                    >
+                      סימון נוכחות
+                    </button>
+                  ) : null}
+                </div>
+              </article>
+            );
+          })}
+          {lessons.length === 0 ? (
+            <LovableEditorialPanel description="אין שיעורים מתוזמנים כרגע. אפשר לבדוק שוב אחרי שמורה הוסיף שיעור." />
+          ) : null}
         </div>
       </section>
-      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[13px] border p-1", v6Surface.editorial)}>
-      <div className="mb-1 px-0.5 text-start">
-        <p className={v6Type.kicker}>חזרות ושיעורים</p>
-        <SafeTitle as="h2" className="mt-px text-[12px] font-semibold tracking-[-0.010em] text-white/76">קצב השבוע</SafeTitle>
-      </div>
-      <div className="space-y-0.5">
-      {lessons.map((lesson) => {
-        const group = db.groups.find((g) => g.id === lesson.groupId);
-        const tone = toneForStyle(group?.style);
-        const todayRecords = db.attendance.filter((record) => record.lessonId === lesson.id && record.classDate === classDate);
-        const absentCount = todayRecords.filter((record) => record.status === "absent" || record.status === "missing").length;
-        const lateCount = todayRecords.filter((record) => record.status === "late").length;
-        const isNext = lesson.id === nextLesson?.id;
-        return (
-          <div key={lesson.id} className={v6Cx("lk-safe-surface rounded-[10px] border px-1.5 py-1 shadow-[inset_0_1px_0_rgba(255,247,223,0.014)]", isNext ? "border-[#f4d58d]/10 bg-[#f4d58d]/[0.020]" : v6Surface.quiet)}>
-            <div className="grid grid-cols-[2.45rem_1fr_auto] items-center gap-1.5 text-start">
-              <span className={v6Cx("grid h-6 shrink-0 place-items-center rounded-[8px] border border-white/[0.022] px-1 text-[9px] font-semibold tabular-nums", v6Tone[tone].soft, v6Tone[tone].text)}>{lesson.time}</span>
-              <div className="min-w-0">
-                <SafeTitle as="p" className="truncate text-[11.3px] font-semibold tracking-[-0.006em] text-white/82">{lesson.title}</SafeTitle>
-                <SafeMeta as="p" className="mt-px truncate text-[8.6px] font-medium text-white/40">{lesson.weekday} · {lesson.room} · {todayRecords.length ? `${todayRecords.length} סומנו, ${absentCount} חסרים, ${lateCount} איחורים` : "טרם סומן היום"}</SafeMeta>
-              </div>
-              {(user.permissions.manageAttendance || user.role === "super_admin") ? <div className="self-center [&>button]:min-h-6 [&>button]:rounded-[8px] [&>button]:px-1.5 [&>button]:py-0.5 [&>button]:text-[8.6px]"><V6Button variant="ghost" onClick={() => openAttendance(lesson.id)}>נוכחות</V6Button></div> : group?.style ? <SafeMeta as="span" className={v6Cx("max-w-[4.2rem] truncate text-[8.5px] font-semibold", v6Tone[tone].text)}>{group.style}</SafeMeta> : null}
-            </div>
-          </div>
-        );
-      })}
-      </div>
-      </section>
       <V6SheetController activeSheet={attendanceEditor ? activeSheet : null} title="סימון נוכחות" onClose={() => setActiveSheet(null)}>{attendanceEditor}</V6SheetController>
-    </div>
+    </MobileScreen>
   );
 }
 
@@ -805,67 +832,6 @@ function Messages({ user, show, openScreen, openTab }: { user: V6User; show: (me
   );
 }
 
-
-function ProductBadge({ children, tone = "shop" }: { children: ReactNode; tone?: V6Tone }) {
-  return (
-    <span dir="rtl" className={v6Cx("inline-flex h-[18px] max-w-full shrink-0 items-center rounded-full border px-1.5 text-[8.4px] font-semibold leading-none whitespace-nowrap", v6Tone[tone].soft, v6Tone[tone].text, "border-[#f4d58d]/6")}>
-      {children}
-    </span>
-  );
-}
-
-function ProductCard({ product, user, show, onPrivateLesson, onEdit, variant = "standard" }: { product: V6Product; user: V6User; show: (message: string) => void; onPrivateLesson: () => void; onEdit?: () => void; variant?: "feature" | "standard" }) {
-  const { db, dispatch } = useV6();
-  const privateLesson = product.category.includes("שיעורים");
-  const ticket = product.category.includes("כרטיסים");
-  const tone: V6Tone = privateLesson ? "studio" : ticket ? "repertoire" : "shop";
-  const collection = product.category || (privateLesson ? "Private Studio" : ticket ? "Stage Access" : "Studio Boutique");
-  const image = product.featuredImageMediaId ? db.media.find((item) => item.id === product.featuredImageMediaId) : undefined;
-  const priceLabel = product.priceMode === "request" ? "לפי בקשה" : product.priceMode === "free" ? "חינם" : `₪ ${product.price}`;
-  const inventoryLabel = inventoryStatusLabel[product.inventoryStatus ?? (product.active ? "in_stock" : "draft")];
-  const badges = [
-    { id: "category", label: collection, tone },
-    { id: "inventory", label: inventoryLabel, tone: product.active ? tone : "urgent" as V6Tone },
-    (product.memberOnly || product.visibility === "members") ? { id: "members", label: "לחברים בלבד", tone: "management" as V6Tone } : null,
-    { id: "active", label: product.active ? "זמין" : "לא פעיל", tone: product.active ? "success" as V6Tone : "urgent" as V6Tone }
-  ].filter(Boolean) as Array<{ id: string; label: string; tone: V6Tone }>;
-  const action = privateLesson
-    ? () => onPrivateLesson()
-    : () => {
-        dispatch({ type: "shop_order", actor: user, productId: product.id });
-        show("ההזמנה נשלחה לסטודיו");
-      };
-  const feature = variant === "feature";
-  return (
-    <article dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[14px] border p-2 text-start", v6Surface.base, feature && "border-[rgba(244,213,141,0.10)]")}>
-      <div className={v6Cx("grid min-w-0 gap-1.5", image?.localPreviewUrl ? "grid-cols-[48px_minmax(0,1fr)]" : "grid-cols-1")}>
-        {image?.localPreviewUrl ? (
-          <div role="img" aria-label={product.title} className="h-12 w-12 rounded-[11px] border border-[#f4d58d]/7 bg-cover bg-center shadow-[inset_0_1px_0_rgba(255,247,223,0.040)]" style={{ backgroundImage: `url(${image.localPreviewUrl})` }} />
-        ) : null}
-
-        <div className="min-w-0">
-          <div className="min-w-0">
-            <h2 className="min-w-0 truncate text-[12.6px] font-semibold leading-snug tracking-[-0.010em] text-white/90">{product.title}</h2>
-          </div>
-
-          <p className="mt-0.5 line-clamp-2 text-[9px] leading-snug text-white/40">{product.description}</p>
-
-          <div className="mt-1 flex min-w-0 flex-wrap items-center gap-1 overflow-hidden">
-            {badges.map((badge) => <ProductBadge key={badge.id} tone={badge.tone}>{badge.label}</ProductBadge>)}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-1.5 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-1.5">
-        <p className="shrink-0 text-[12.2px] font-semibold leading-snug tracking-[-0.010em] text-[#fff7df]/90"><BidiNumber>{priceLabel}</BidiNumber></p>
-        <div className={v6Cx("grid min-w-0 gap-1", onEdit ? "grid-cols-2" : "grid-cols-1")}>
-          <button type="button" disabled={!product.active} onClick={action} className="min-h-7 rounded-[10px] bg-[#f4d58d] px-3 py-0.5 text-[10px] font-semibold leading-none text-zinc-950 outline-none transition active:scale-[0.985] disabled:opacity-45 focus-visible:ring-2 focus-visible:ring-[#f4d58d]/35">{privateLesson ? "זמינות" : "הזמנה"}</button>
-          {onEdit ? <button type="button" onClick={onEdit} className="min-h-7 rounded-[10px] border border-[#f4d58d]/8 bg-white/[0.022] px-3 py-0.5 text-[10px] font-semibold leading-none text-white/62 outline-none transition active:scale-[0.985] focus-visible:ring-2 focus-visible:ring-[#f4d58d]/25">עריכה</button> : null}
-        </div>
-      </div>
-    </article>
-  );
-}
 
 function Shop({ user, show, openScreen }: { user: V6User; show: (message: string) => void; openScreen: (screen: V6Screen) => void }) {
   const { db, dispatch } = useV6();
@@ -1041,13 +1007,13 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
     </div>
   );
   return (
-    <div className="space-y-1.5">
-      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[15px] border p-2 text-start", v6Surface.base)}>
+    <MobileScreen className="gap-5">
+      <section dir="rtl" className={v6Cx(v6Lovable.cardStrong, "flex flex-col gap-4 p-5 text-start")}>
         <div className="grid grid-cols-[1fr_auto] items-start gap-2">
           <div className="min-w-0">
-            <p className={v6Type.kicker}>חנות</p>
-            <SafeTitle as="h1" className="mt-px truncate text-[15px] font-semibold tracking-[-0.018em] text-white">חנות הסטודיו</SafeTitle>
-            <SafeMeta as="p" className="mt-px line-clamp-1 text-[9.8px] leading-snug text-white/46">מוצרים, כרטיסים ושיעורים פרטיים.</SafeMeta>
+            <SafeMeta as="p" className={v6Lovable.eyebrow}>חנות</SafeMeta>
+            <SafeTitle as="h1" className={v6Lovable.sectionTitle}>חנות הסטודיו</SafeTitle>
+            <SafeMeta as="p" className="mt-1 text-sm leading-relaxed text-white/48">מוצרים, כרטיסים ושיעורים פרטיים.</SafeMeta>
           </div>
           <span className="grid h-6 w-6 shrink-0 place-items-center rounded-[10px] bg-[#f4d58d]/10 text-yellow-50"><ShoppingBag size={12} strokeWidth={1.9} /></span>
         </div>
@@ -1073,12 +1039,32 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
         ) : null}
       </section>
       <V6SheetController activeSheet={activeSheet} title={productTitle || "מוצר חדש"} onClose={() => setActiveSheet(null)}>{productEditor}</V6SheetController>
-      <div className="space-y-1">
-        {products.map((product, index) => (
-          <ProductCard key={product.id} product={product} user={user} show={show} onPrivateLesson={() => openScreen("private_lessons")} onEdit={(user.permissions.manageShop || user.role === "super_admin") ? () => openProductEditor(product) : undefined} variant={index === 0 ? "feature" : "standard"} />
-        ))}
-      </div>
-    </div>
+      <V6ShopProductGrid>
+        {products.map((product) => {
+          const privateLesson = product.category.includes("שיעורים");
+          const canEdit = user.permissions.manageShop || user.role === "super_admin";
+          return (
+            <V6ShopProductCard
+              key={product.id}
+              product={product}
+              imageUrl={resolveV6ProductImageUrl(db, product)}
+              priceLabel={selectV6ProductPriceLabel(product)}
+              actionLabel={privateLesson ? "זמינות" : "הזמנה"}
+              actionDisabled={!product.active}
+              onPress={
+                privateLesson
+                  ? () => openScreen("private_lessons")
+                  : () => {
+                      dispatch({ type: "shop_order", actor: user, productId: product.id });
+                      show("ההזמנה נשלחה לסטודיו");
+                    }
+              }
+              onEdit={canEdit ? () => openProductEditor(product) : undefined}
+            />
+          );
+        })}
+      </V6ShopProductGrid>
+    </MobileScreen>
   );
 }
 
@@ -1100,28 +1086,35 @@ function More({ user, openScreen, openTab }: { user: V6User; openScreen: (screen
     })
   })).filter((s) => s.items.length);
   return (
-    <div className="space-y-1.5">
-      <section dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[15px] border p-2 text-start", v6Surface.base)}>
-        <div className="flex items-center gap-2">
-          <span className={v6Cx("grid h-6 w-6 shrink-0 place-items-center rounded-[10px]", user.role === "super_admin" ? v6Tone.admin.soft : v6Tone.management.soft, user.role === "super_admin" ? v6Tone.admin.text : v6Tone.management.text)}><Users size={12} strokeWidth={1.9} /></span>
-          <div className="min-w-0 flex-1">
-            <p className={v6Type.kicker}>{user.role === "super_admin" ? "ניהול" : "כלים שימושיים"}</p>
-            <SafeTitle as="h1" className="mt-px truncate text-[15px] font-semibold tracking-[-0.018em] text-white">הגדרות וכלים</SafeTitle>
-            <SafeMeta as="p" className="mt-px truncate text-[9.8px] leading-snug text-white/46">ניהול, סטודיו וחנות במקום אחד.</SafeMeta>
-          </div>
-        </div>
-      </section>
+    <MobileScreen className="gap-7">
+      <LovableEditorialPanel
+        kicker={user.role === "super_admin" ? "ניהול" : "כלים שימושיים"}
+        title="הגדרות וכלים"
+        description="ניהול, סטודיו וחנות במקום אחד."
+        trailing={
+          <span className={v6Cx("grid h-10 w-10 shrink-0 place-items-center rounded-2xl", user.role === "super_admin" ? v6Tone.admin.soft : v6Tone.management.soft, user.role === "super_admin" ? v6Tone.admin.text : v6Tone.management.text)}>
+            <Users size={17} strokeWidth={1.8} aria-hidden="true" />
+          </span>
+        }
+      />
       {sections.map((section) => (
-        <section key={section.title} dir="rtl" className={v6Cx("lk-safe-surface overflow-hidden rounded-[13px] border p-1", v6Surface.open)}>
-          <div className="px-0.5 text-start">
-            <p className={v6Type.kicker}>{section.title}</p>
-          </div>
-          <div className="mt-0.5 space-y-0.5">
-            {section.items.map((item) => <ActionCard key={item.title} icon={item.icon} title={item.title} subtitle={item.subtitle} tone={item.tone} onClick={() => "tab" in item ? openTab(item.tab) : openScreen(item.screen)} />)}
+        <section key={section.title} dir="rtl" className="flex flex-col gap-3 text-start">
+          <SafeMeta as="p" className={v6Cx(v6Lovable.eyebrow, "px-1")}>{section.title}</SafeMeta>
+          <div className="flex flex-col gap-2">
+            {section.items.map((item) => (
+              <LovableActionRow
+                key={item.title}
+                icon={item.icon}
+                title={item.title}
+                subtitle={item.subtitle}
+                tone={item.tone}
+                onClick={() => ("tab" in item ? openTab(item.tab) : openScreen(item.screen))}
+              />
+            ))}
           </div>
         </section>
       ))}
-    </div>
+    </MobileScreen>
   );
 }
 
@@ -1310,11 +1303,11 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
       <BackHeader title="ניהול משתמשים" back={back} action={<V6Button onClick={() => openNewUser("student")}>חדש</V6Button>} />
       <HeroSurface tone="management" className="min-h-[176px] p-5">
         <V6StatusBadge tone="management">זהויות</V6StatusBadge>
-        <SafeTitle as="h2" className="mt-4 max-w-[19rem] text-[clamp(1.82rem,8vw,2.55rem)] font-semibold leading-[1.04] tracking-[-0.054em]">להחזיק את הלהקה נכון</SafeTitle>
+        <SafeTitle as="h2" className="mt-4 max-w-[19rem] text-xl font-semibold leading-[1.15] tracking-tight">להחזיק את הלהקה נכון</SafeTitle>
         <SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/56">אנשים, תפקידים והרשאות. זהות ברורה לפני כלי ניהול.</SafeMeta>
       </HeroSurface>
-      <OpenCluster tone="management" className="px-4 py-4">
-      <div className="mb-3 px-1 text-start"><p className={v6Type.kicker}>חיפוש וסינון</p></div>
+      <section dir="rtl" className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")}>
+      <div className="mb-3 px-1 text-start"><SafeMeta as="p" className={v6Lovable.eyebrow}>חיפוש וסינון</SafeMeta></div>
       <div className="space-y-2.5">
         <FormField label="חיפוש" value={query} onChange={setQuery} placeholder="חיפוש לפי שם או טלפון" />
         <div className="overflow-x-auto pb-1 no-scrollbar">
@@ -1327,13 +1320,15 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
           <label className="block text-start"><span className={v6Control.label}>פעילות</span><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כולם</option><option value="active" className="bg-zinc-950">פעילים</option><option value="inactive" className="bg-zinc-950">לא פעילים</option></select></label>
         </div>
       </div>
-      </OpenCluster>
+      </section>
       <V6SheetController activeSheet={activeSheet} title={selected?.name ?? "משתמש חדש"} onClose={() => setActiveSheet(null)}>{editor}</V6SheetController>
       <div className="grid gap-3">
-        <OpenCluster tone="management" className="px-3 py-4 lg:p-3">
-          <div className="mb-4 px-2 text-start"><p className={v6Type.kicker}><BidiNumber>{filteredUsers.length}</BidiNumber> מוצגים</p><RtlText as="h2" className={v6Type.sectionTitle}>אנשי הסטודיו</RtlText></div>
-          <div className="space-y-4">{groupedUsers.map((group) => <div key={group.role} className="space-y-2.5"><p className="px-2 text-start text-[11px] font-black text-white/40">{roleLabel[group.role]}</p>{group.users.map((user) => <button key={user.id} onClick={() => openUserSheet(user)} className="w-full"><UserCard user={user} db={db} active={selected?.id === user.id} /></button>)}</div>)}</div>
-        </OpenCluster>
+        <LovableEditorialPanel
+          kicker={<><BidiNumber>{filteredUsers.length}</BidiNumber> מוצגים</>}
+          title="אנשי הסטודיו"
+        >
+          <div className="space-y-4">{groupedUsers.map((group) => <div key={group.role} className="space-y-2.5"><SafeMeta as="p" className={v6Cx(v6Lovable.eyebrow, "px-1") }>{roleLabel[group.role]}</SafeMeta>{group.users.map((user) => <button key={user.id} onClick={() => openUserSheet(user)} className="w-full"><UserCard user={user} db={db} active={selected?.id === user.id} /></button>)}</div>)}</div>
+        </LovableEditorialPanel>
       </div>
     </div>
   );
@@ -1388,7 +1383,7 @@ function PrivateLessons({ user, show, back }: { user: V6User; show: (message: st
       <BackHeader title="שיעורים פרטיים" back={back} />
       <HeroSurface tone="shop" className="min-h-[214px] p-5">
         <V6StatusBadge tone={coordination.needsAttention ? "urgent" : "shop"}>{coordination.needsAttention ? "דורש תיאום" : "זמין לתיאום"}</V6StatusBadge>
-        <SafeTitle as="h2" className="mt-4 max-w-[18rem] text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">תיאום פרטי, נקי</SafeTitle>
+        <SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">תיאום פרטי, נקי</SafeTitle>
         <SafeMeta as="p" className="mt-4 max-w-[20rem] text-sm leading-relaxed text-white/58">בקשה קצרה, מורה נכון, מועד מוצע. בלי טופס שמרגיש כבד.</SafeMeta>
       </HeroSurface>
       <EditorialSection title="בקשת שיעור" kicker="קונסיירז׳ סטודיו" tone="shop">
@@ -1543,11 +1538,11 @@ function MediaScreen({ user, show, back }: { user: V6User; show: (message: strin
         <div className="pointer-events-none absolute left-5 top-5 h-24 w-20 rotate-3 rounded-[30px] border border-[rgba(255,255,255,0.06)] bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(34,211,238,0.06),rgba(61,16,39,0.14))]" />
         <div className="pointer-events-none absolute left-11 bottom-8 h-14 w-24 rounded-full bg-cyan-100/8 blur-2xl" />
         <V6StatusBadge tone="modern">גלריה</V6StatusBadge>
-        <SafeTitle as="h2" className="mt-4 max-w-[18rem] text-[clamp(1.95rem,9vw,2.8rem)] font-semibold leading-[1.04] tracking-[-0.060em]">רגעי חזרה, במה וקהילה</SafeTitle>
+        <SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">רגעי חזרה, במה וקהילה</SafeTitle>
         <SafeMeta as="p" className="mt-4 max-w-[20rem] text-sm leading-relaxed text-white/64">תצוגת מדיה מטופלת כמו אלבום סטודיו, עם הרשאות וקבוצות מאחורי הקלעים.</SafeMeta>
       </HeroSurface>
       <V6SheetController activeSheet={activeSheet} title="העלאת מדיה" onClose={() => setActiveSheet(null)}>{mediaEditor}</V6SheetController>
-      <ActionCard icon={ImagePlus} title="העלאת מדיה" subtitle="תמונה, וידאו או מטאדאטה" tone="modern" onClick={() => setActiveSheet({ type: "upload-media", mode: "add" })} />
+      <LovableActionRow icon={ImagePlus} title="העלאת מדיה" subtitle="תמונה, וידאו או מטאדאטה" tone="modern" onClick={() => setActiveSheet({ type: "upload-media", mode: "add" })} />
       <OpenCluster tone="modern" className="grid gap-3 p-3 sm:grid-cols-4">
         <label className="block text-start"><span className={v6Control.label}>קבוצה</span><select value={groupFilter} onChange={(event) => setGroupFilter(event.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כל הקבוצות</option>{db.groups.map((group) => <option key={group.id} value={group.id} className="bg-zinc-950">{group.name}</option>)}</select></label>
         <label className="block text-start"><span className={v6Control.label}>אירוע</span><select value={eventFilter} onChange={(event) => setEventFilter(event.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כל האירועים</option>{db.events.map((event) => <option key={event.id} value={event.id} className="bg-zinc-950">{event.title}</option>)}</select></label>
@@ -1563,7 +1558,7 @@ function MediaScreen({ user, show, back }: { user: V6User; show: (message: strin
               <div className="flex items-start gap-3 text-start">
                 <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[21px] bg-cyan-100/10 text-cyan-50"><Images size={17} /></span>
                 <div className="min-w-0 flex-1">
-                  <SafeTitle as="h2" className="text-[17px] font-semibold tracking-[-0.030em]">{collection.title}</SafeTitle>
+                  <SafeTitle as="h2" className="text-base font-semibold tracking-tight text-white/92">{collection.title}</SafeTitle>
                   <SafeMeta as="p" className="mt-1 text-xs text-white/46">{event ? `${eventTypeLabel[event.type]} · ${event.date}` : groupNames || collection.schoolYear}</SafeMeta>
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     <V6StatusBadge tone="modern"><BidiNumber>{collection.itemIds.length}</BidiNumber> פריטים</V6StatusBadge>
@@ -1601,7 +1596,7 @@ function CalendarScreen({ user, back }: { user: V6User; back: () => void }) {
       <BackHeader title="לוח שנה ותחרויות" back={back} />
       <HeroSurface tone="management" className="min-h-[230px] p-5">
         <V6StatusBadge tone="management">שנת סטודיו Sep-Jul</V6StatusBadge>
-        <SafeTitle as="h2" className="mt-4 max-w-[20rem] text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">לוח שנתי שמחזיק במה, חזרות ומשפחה</SafeTitle>
+        <SafeTitle as="h2" className="mt-4 max-w-[20rem] text-xl font-semibold leading-[1.15] tracking-tight">לוח שנתי שמחזיק במה, חזרות ומשפחה</SafeTitle>
         <SafeMeta as="p" className="mt-4 max-w-[22rem] text-sm leading-relaxed text-white/62">{nextEvent ? `${nextEvent.title} · ${nextEvent.date}${nextEvent.startTime ? ` · ${nextEvent.startTime}` : ""}` : "אין אירועים להצגה."}</SafeMeta>
         <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-3">
           <InlineMetric tone="management" label="אירועים" value={<BidiNumber>{events.length}</BidiNumber>} meta="מסוננים" />
@@ -1609,10 +1604,10 @@ function CalendarScreen({ user, back }: { user: V6User; back: () => void }) {
           <InlineMetric tone="repertoire" label="מופעים" value={<BidiNumber>{events.filter((event) => event.type === "annual_show" || event.type === "competition").length}</BidiNumber>} meta="במה" />
         </div>
       </HeroSurface>
-      <OpenCluster tone="management" className="space-y-3 px-4 py-4">
-        <div className="px-1 text-start"><p className={v6Type.kicker}>סינון לפי סוג אירוע</p></div>
-        <SegmentedControl value={typeFilter === "all" ? "הכול" : eventTypeLabel[typeFilter]} options={eventTypes.map((type) => type === "all" ? "הכול" : eventTypeLabel[type as V6CalendarEvent["type"]])} onChange={(label) => setTypeFilter(label === "הכול" ? "all" : (Object.entries(eventTypeLabel).find(([, value]) => value === label)?.[0] as V6CalendarEvent["type"]) ?? "all")} />
-      </OpenCluster>
+      <section dir="rtl" className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")}>
+        <SafeMeta as="p" className={v6Cx(v6Lovable.eyebrow, "px-1") }>סינון לפי סוג אירוע</SafeMeta>
+        <div className="mt-3"><SegmentedControl value={typeFilter === "all" ? "הכול" : eventTypeLabel[typeFilter]} options={eventTypes.map((type) => type === "all" ? "הכול" : eventTypeLabel[type as V6CalendarEvent["type"]])} onChange={(label) => setTypeFilter(label === "הכול" ? "all" : (Object.entries(eventTypeLabel).find(([, value]) => value === label)?.[0] as V6CalendarEvent["type"]) ?? "all")} /></div>
+      </section>
       <div className="space-y-3">
         {events.map((event) => {
           const summary = selectV6EventOperatingSummary(db, event.id);
@@ -1627,7 +1622,7 @@ function CalendarScreen({ user, back }: { user: V6User; back: () => void }) {
                     <V6StatusBadge tone={eventStatusTone[event.status]}>{event.status === "needs_attention" ? "דורש טיפול" : event.status === "ready" ? "מוכן" : event.status === "completed" ? "הושלם" : "מתוכנן"}</V6StatusBadge>
                     <V6StatusBadge tone="management">{eventTypeLabel[event.type]}</V6StatusBadge>
                   </div>
-                  <SafeTitle as="h2" className="mt-2 text-[20px] font-semibold tracking-[-0.040em]">{event.title}</SafeTitle>
+                  <SafeTitle as="h2" className="mt-2 text-lg font-semibold leading-[1.2] tracking-tight">{event.title}</SafeTitle>
                   <SafeMeta as="p" className="mt-2 text-sm leading-relaxed text-white/56">{event.date}{event.startTime ? ` · ${event.startTime}` : ""} · {event.location ?? "מיקום יעודכן"} · {groupNames || "ללא קבוצות"}</SafeMeta>
                   <SafeMeta as="p" className="mt-1 text-xs text-white/42">צוות: {teacherNames || "טרם שויך"} · להביא: {event.whatToBring.join(", ") || "יעודכן בהמשך"}</SafeMeta>
                   <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -1656,7 +1651,7 @@ function LegacyScreen({ user, back }: { user: V6User; back: () => void }) {
       <BackHeader title="מורשת והישגים" back={back} />
       <HeroSurface tone="repertoire" className="min-h-[225px] p-5">
         <V6StatusBadge tone="repertoire">ארכיון מנוהל</V6StatusBadge>
-        <SafeTitle as="h2" className="mt-4 max-w-[19rem] text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">זיכרון סטודיו בלי המצאות</SafeTitle>
+        <SafeTitle as="h2" className="mt-4 max-w-[19rem] text-xl font-semibold leading-[1.15] tracking-tight">זיכרון סטודיו בלי המצאות</SafeTitle>
         <SafeMeta as="p" className="mt-4 max-w-[22rem] text-sm leading-relaxed text-white/62">הישגים, מופעים ותחרויות נשמרים כרשומות שההנהלה מזינה ומאשרת ידנית.</SafeMeta>
         <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-3">
           <InlineMetric tone="repertoire" label="הישגים" value={<BidiNumber>{achievements.length}</BidiNumber>} meta="מובנים" />
@@ -1671,16 +1666,16 @@ function LegacyScreen({ user, back }: { user: V6User; back: () => void }) {
             const date = "date" in item ? item.date : item.schoolYear;
             const description = "description" in item ? item.description : item.summary;
             return (
-              <div key={item.id} className={v6Cx("lk-safe-surface rounded-[30px] border p-4 text-start", v6Surface.quiet)}>
+              <article key={item.id} className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")}>
                 <div className="flex items-start gap-3">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-amber-100/10 text-amber-50"><Trophy size={15} /></span>
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-amber-100/10 text-amber-50"><Trophy size={17} strokeWidth={1.8} /></span>
                   <div className="min-w-0 flex-1">
-                    <SafeTitle as="h3" className="text-[16px] font-semibold tracking-[-0.030em]">{item.title}</SafeTitle>
+                    <SafeTitle as="h3" className="text-base font-semibold tracking-tight text-white/92">{item.title}</SafeTitle>
                     <SafeMeta as="p" className="mt-1 text-sm leading-relaxed text-white/52">{description}</SafeMeta>
-                    <SafeMeta as="p" className="mt-2 text-xs text-white/38">{date || "תאריך יוזן"} · {groupNames || "ללא שיוך קבוצה"} · {item.visibility === "management" ? "ניהול בלבד" : "גלוי לפי הרשאות"}</SafeMeta>
+                    <SafeMeta as="p" className="mt-2 text-[12px] text-white/40">{date || "תאריך יוזן"} · {groupNames || "ללא שיוך קבוצה"} · {item.visibility === "management" ? "ניהול בלבד" : "גלוי לפי הרשאות"}</SafeMeta>
                   </div>
                 </div>
-              </div>
+              </article>
             );
           })}
         </div>
@@ -1698,7 +1693,7 @@ function DatabaseScreen({ show, back }: { show: (message: string) => void; back:
       <HeroSurface tone="admin" className="min-h-[220px] p-5">
         <div className="pointer-events-none absolute left-5 top-5 h-28 w-24 rounded-[38px] border border-violet-100/10 bg-[linear-gradient(145deg,rgba(216,210,255,0.10),rgba(255,255,255,0.04),rgba(0,0,0,0.20))]" />
         <V6StatusBadge tone="admin">ניהול</V6StatusBadge>
-        <SafeTitle as="h2" className="mt-4 max-w-[19rem] text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">מסד הנתונים</SafeTitle>
+        <SafeTitle as="h2" className="mt-4 max-w-[19rem] text-xl font-semibold leading-[1.15] tracking-tight">מסד הנתונים</SafeTitle>
         <SafeMeta as="p" className="mt-4 max-w-[21rem] text-sm leading-relaxed text-white/62">ייצוא, ייבוא וגיבוי של הנתונים במקום אחד וברור.</SafeMeta>
       </HeroSurface>
       <OpenCluster tone="admin" className="grid gap-1 sm:grid-cols-3"><MiniSummary icon={Users} tone="management" label="משתמשים" title={`${db.users.length}`} meta="במאגר" /><MiniSummary icon={Bell} tone="modern" label="התראות" title={`${db.notifications.length}`} meta="פעילות" /><MiniSummary icon={Database} tone="admin" label="יומן" title={`${db.auditLog.length}`} meta="פעולות" /></OpenCluster>
@@ -1711,29 +1706,29 @@ function TextsScreen({ actor, show, back }: { actor: V6User; show: (message: str
   const { db, dispatch } = useV6();
   const [title, setTitle] = useState(db.editableTexts.loginTitle ?? "");
   const [prompt] = useState(db.aiPrompts.super_admin ?? "");
-  return <div className="space-y-4"><BackHeader title="טקסטים והצעות" back={back} /><HeroSurface tone="admin" className="min-h-[205px] p-5"><V6StatusBadge tone="admin">שפה ברורה</V6StatusBadge><SafeTitle as="h2" className="mt-4 max-w-[18rem] text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">הקול של הסטודיו נשמר כאן</SafeTitle><SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">כאן עורכים טקסטים חשובים שמופיעים באפליקציה.</SafeMeta></HeroSurface><EditorialSection title="טקסט כניסה" kicker="תוכן ניתן לעריכה" tone="repertoire"><div className="space-y-3"><FormField label="כותרת כניסה" value={title} onChange={setTitle} /><V6Button onClick={() => { dispatch({ type: "update_text", actor, key: "loginTitle", value: title }); show("הטקסט נשמר"); }}>שמירה</V6Button></div></EditorialSection><EditorialSection title="תבנית הצעה" kicker="אישור אנושי" tone="admin"><label className="block text-right"><span className="text-[11px] font-black text-white/50">תבנית למנהל האפליקציה</span><textarea value={prompt} readOnly className="mt-2 min-h-32 w-full rounded-[24px] border border-transparent bg-black/20 p-3 text-right text-[15px] leading-relaxed text-white/68 outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]" /></label><SafeMeta as="p" className="mt-3 text-xs text-white/48">תבניות הצעה מוצגות לצפייה בלבד בשלב זה. פרסום תוכן דורש אישור אנושי.</SafeMeta><div className="mt-3"><V6Button variant="ghost" onClick={() => show("עריכת תבניות הצעה לא מופעלת ב־V6 הנוכחי")}>למה לא נשמר?</V6Button></div></EditorialSection></div>;
+  return <div className="space-y-4"><BackHeader title="טקסטים והצעות" back={back} /><HeroSurface tone="admin" className="min-h-[205px] p-5"><V6StatusBadge tone="admin">שפה ברורה</V6StatusBadge><SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">הקול של הסטודיו נשמר כאן</SafeTitle><SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">כאן עורכים טקסטים חשובים שמופיעים באפליקציה.</SafeMeta></HeroSurface><EditorialSection title="טקסט כניסה" kicker="תוכן ניתן לעריכה" tone="repertoire"><div className="space-y-3"><FormField label="כותרת כניסה" value={title} onChange={setTitle} /><V6Button onClick={() => { dispatch({ type: "update_text", actor, key: "loginTitle", value: title }); show("הטקסט נשמר"); }}>שמירה</V6Button></div></EditorialSection><EditorialSection title="תבנית הצעה" kicker="אישור אנושי" tone="admin"><label className="block text-right"><span className="text-[11px] font-black text-white/50">תבנית למנהל האפליקציה</span><textarea value={prompt} readOnly className="mt-2 min-h-32 w-full rounded-[24px] border border-transparent bg-black/20 p-3 text-right text-[15px] leading-relaxed text-white/68 outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]" /></label><SafeMeta as="p" className="mt-3 text-xs text-white/48">תבניות הצעה מוצגות לצפייה בלבד בשלב זה. פרסום תוכן דורש אישור אנושי.</SafeMeta><div className="mt-3"><V6Button variant="ghost" onClick={() => show("עריכת תבניות הצעה לא מופעלת ב־V6 הנוכחי")}>למה לא נשמר?</V6Button></div></EditorialSection></div>;
 }
 
 function FlagsScreen({ actor, show, back }: { actor: V6User; show: (message: string) => void; back: () => void }) {
   const { db, dispatch } = useV6();
-  return <div className="space-y-4"><BackHeader title="אפשרויות" back={back} /><HeroSurface tone="admin" className="min-h-[205px] p-5"><V6StatusBadge tone="admin">הפעלה וכיבוי</V6StatusBadge><SafeTitle as="h2" className="mt-4 max-w-[18rem] text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">אפשרויות שנפתחות בזהירות</SafeTitle><SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">כל שינוי נשמר, כדי שיהיה ברור מה הופעל ומתי.</SafeMeta></HeroSurface><EditorialSection title="אפשרויות פעילות" kicker="כל שינוי נרשם" tone="admin"><div className="space-y-2.5">{Object.entries(db.featureFlags).map(([key, value]) => <div key={key} className="lk-safe-row flex items-center justify-between gap-3 rounded-[26px] border border-[rgba(255,255,255,0.046)] bg-white/[0.035] p-3 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.045)]"><button onClick={() => { dispatch({ type: "update_flags", actor, flags: { [key]: !value } }); show("האפשרות עודכנה"); }} className={v6Cx("shrink-0 rounded-full px-3 py-1.5 text-xs font-black shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]", value ? "bg-emerald-200 text-zinc-950" : "bg-white/10 text-white/58")}>{value ? "פעיל" : "כבוי"}</button><span className="lk-safe-meta text-sm font-black tracking-[-0.02em]">{key}</span></div>)}</div></EditorialSection></div>;
+  return <div className="space-y-4"><BackHeader title="אפשרויות" back={back} /><HeroSurface tone="admin" className="min-h-[205px] p-5"><V6StatusBadge tone="admin">הפעלה וכיבוי</V6StatusBadge><SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">אפשרויות שנפתחות בזהירות</SafeTitle><SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">כל שינוי נשמר, כדי שיהיה ברור מה הופעל ומתי.</SafeMeta></HeroSurface><EditorialSection title="אפשרויות פעילות" kicker="כל שינוי נרשם" tone="admin"><div className="space-y-2.5">{Object.entries(db.featureFlags).map(([key, value]) => <div key={key} className="lk-safe-row flex items-center justify-between gap-3 rounded-[26px] border border-[rgba(255,255,255,0.046)] bg-white/[0.035] p-3 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.045)]"><button onClick={() => { dispatch({ type: "update_flags", actor, flags: { [key]: !value } }); show("האפשרות עודכנה"); }} className={v6Cx("shrink-0 rounded-full px-3 py-1.5 text-xs font-black shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]", value ? "bg-emerald-200 text-zinc-950" : "bg-white/10 text-white/58")}>{value ? "פעיל" : "כבוי"}</button><span className="lk-safe-meta text-sm font-black tracking-[-0.02em]">{key}</span></div>)}</div></EditorialSection></div>;
 }
 
 function BrandingScreen({ show, back }: { show: (message: string) => void; back: () => void }) {
-  return <div className="space-y-4"><BackHeader title="מיתוג" back={back} /><HeroSurface tone="admin" className="min-h-[190px] p-5"><V6StatusBadge tone="admin">זהות סטודיו</V6StatusBadge><SafeTitle as="h2" className="mt-4 max-w-[18rem] text-[clamp(1.95rem,8.8vw,2.7rem)] font-semibold leading-[1.04] tracking-[-0.056em]">השם והמראה של הסטודיו</SafeTitle><SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">שם, צבעים ושפה נשמרים במקום אחד.</SafeMeta></HeroSurface><Surface tone="admin"><SafeMeta as="p" className="text-sm text-white/58">כאן יופיעו פרטי המיתוג של הסטודיו.</SafeMeta><div className="mt-3"><V6Button onClick={() => show("מיתוג מוכן לעריכה")}>בדיקת מיתוג</V6Button></div></Surface></div>;
+  return <div className="space-y-4"><BackHeader title="מיתוג" back={back} /><HeroSurface tone="admin" className="min-h-[190px] p-5"><V6StatusBadge tone="admin">זהות סטודיו</V6StatusBadge><SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">השם והמראה של הסטודיו</SafeTitle><SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">שם, צבעים ושפה נשמרים במקום אחד.</SafeMeta></HeroSurface><Surface tone="admin"><SafeMeta as="p" className="text-sm text-white/58">כאן יופיעו פרטי המיתוג של הסטודיו.</SafeMeta><div className="mt-3"><V6Button onClick={() => show("מיתוג מוכן לעריכה")}>בדיקת מיתוג</V6Button></div></Surface></div>;
 }
 
 function AuditScreen({ back }: { back: () => void }) {
   const { db } = useV6();
   const summary = summarizeV6Audit(db.auditLog);
-  return <div className="space-y-4"><BackHeader title="יומן פעולות" back={back} /><HeroSurface tone="admin" className="min-h-[205px] p-5"><V6StatusBadge tone={summary.sensitive ? "urgent" : "admin"}>{summary.sensitive ? "פעולות חשובות" : "יומן רגוע"}</V6StatusBadge><SafeTitle as="h2" className="mt-4 max-w-[18rem] text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">מה השתנה ומתי</SafeTitle><SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">רשימה קצרה וברורה של פעולות חשובות באפליקציה.</SafeMeta></HeroSurface><OpenCluster tone="admin" className="grid grid-cols-2 gap-1"><MiniSummary icon={ClipboardList} tone="management" label="פעולות" title={`${summary.total}`} meta="נרשמו" /><MiniSummary icon={Shield} tone="urgent" label="חשובות" title={`${summary.sensitive}`} meta="למעקב" /></OpenCluster><Widget title="יומן פעולות" kicker="מעקב שינויים" icon={ClipboardList} tone="management"><div className="space-y-2">{db.auditLog.map((item) => <V6FeedRow key={item.id} icon={Shield} title={item.action} body={`${item.actorName} · ${item.target}`} meta={new Date(item.createdAt).toLocaleDateString("he-IL")} tone="management" />)}</div></Widget></div>;
+  return <div className="space-y-4"><BackHeader title="יומן פעולות" back={back} /><HeroSurface tone="admin" className="min-h-[205px] p-5"><V6StatusBadge tone={summary.sensitive ? "urgent" : "admin"}>{summary.sensitive ? "פעולות חשובות" : "יומן רגוע"}</V6StatusBadge><SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">מה השתנה ומתי</SafeTitle><SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">רשימה קצרה וברורה של פעולות חשובות באפליקציה.</SafeMeta></HeroSurface><OpenCluster tone="admin" className="grid grid-cols-2 gap-1"><MiniSummary icon={ClipboardList} tone="management" label="פעולות" title={`${summary.total}`} meta="נרשמו" /><MiniSummary icon={Shield} tone="urgent" label="חשובות" title={`${summary.sensitive}`} meta="למעקב" /></OpenCluster><LovableEditorialPanel kicker="מעקב שינויים" title="יומן פעולות"><div className="flex flex-col gap-1.5">{db.auditLog.map((item) => <V6FeedRow key={item.id} icon={Shield} title={item.action} body={`${item.actorName} · ${item.target}`} meta={new Date(item.createdAt).toLocaleDateString("he-IL")} tone="management" />)}</div></LovableEditorialPanel></div>;
 }
 
 function SystemScreen({ back }: { back: () => void }) {
   const { db, sync } = useV6();
   const issues = selectV6SystemIssues(db);
   const health = computeV6ManagementHealth(db);
-  return <div className="space-y-4"><BackHeader title="פתיחה וסנכרון" back={back} /><HeroSurface tone={issues.length ? "urgent" : "studio"} className="p-5"><V6StatusBadge tone={issues.length ? "urgent" : "success"}>{issues.length ? "דורש בדיקה" : "תקין"}</V6StatusBadge><SafeTitle as="h2" className="mt-4 text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">{health.summary}</SafeTitle><SafeMeta as="p" className="mt-4 text-sm leading-relaxed text-white/64">פתיחה, נתונים וסנכרון מוצגים כאן בצורה פשוטה.</SafeMeta></HeroSurface><OpenCluster tone={issues.length ? "urgent" : "studio"} className="grid gap-1 sm:grid-cols-3"><MiniSummary icon={Check} tone="studio" label="פתיחה" title="מיידית" meta={sync} /><MiniSummary icon={Database} tone="admin" label="גרסה" title={`V${db.version}`} meta="נתונים" /><MiniSummary icon={HeartPulse} tone={issues.length ? "urgent" : "modern"} label="בדיקות" title={issues.length ? `${issues.length} לבדיקה` : "תקין"} meta={issues.length ? "צריך לבדוק" : "ללא חסימות"} /></OpenCluster><Widget title="בדיקות" kicker="מעקב יומי" icon={HeartPulse} tone={issues.length ? "urgent" : "studio"}><div className="space-y-2">{issues.length ? issues.map((issue) => <V6FeedRow key={issue.id} icon={HeartPulse} title={issue.title} body={issue.body} meta={issue.severity === "critical" ? "חשוב" : "בדיקה"} tone={issue.severity === "critical" ? "urgent" : "management"} />) : <V6FeedRow icon={CheckCircle2} title="אין חסימות פעילות" body="האפליקציה מוכנה לפתיחה ושימוש יומי." meta="תקין" tone="studio" />}</div></Widget></div>;
+  return <div className="space-y-4"><BackHeader title="פתיחה וסנכרון" back={back} /><HeroSurface tone={issues.length ? "urgent" : "studio"} className="p-5"><V6StatusBadge tone={issues.length ? "urgent" : "success"}>{issues.length ? "דורש בדיקה" : "תקין"}</V6StatusBadge><SafeTitle as="h2" className="mt-4 text-xl font-semibold leading-[1.15] tracking-tight">{health.summary}</SafeTitle><SafeMeta as="p" className="mt-4 text-sm leading-relaxed text-white/64">פתיחה, נתונים וסנכרון מוצגים כאן בצורה פשוטה.</SafeMeta></HeroSurface><OpenCluster tone={issues.length ? "urgent" : "studio"} className="grid gap-1 sm:grid-cols-3"><MiniSummary icon={Check} tone="studio" label="פתיחה" title="מיידית" meta={sync} /><MiniSummary icon={Database} tone="admin" label="גרסה" title={`V${db.version}`} meta="נתונים" /><MiniSummary icon={HeartPulse} tone={issues.length ? "urgent" : "modern"} label="בדיקות" title={issues.length ? `${issues.length} לבדיקה` : "תקין"} meta={issues.length ? "צריך לבדוק" : "ללא חסימות"} /></OpenCluster><LovableEditorialPanel kicker="מעקב יומי" title="בדיקות"><div className="flex flex-col gap-1.5">{issues.length ? issues.map((issue) => <V6FeedRow key={issue.id} icon={HeartPulse} title={issue.title} body={issue.body} meta={issue.severity === "critical" ? "חשוב" : "בדיקה"} tone={issue.severity === "critical" ? "urgent" : "management"} />) : <V6FeedRow icon={CheckCircle2} title="אין חסימות פעילות" body="האפליקציה מוכנה לפתיחה ושימוש יומי." meta="תקין" tone="studio" />}</div></LovableEditorialPanel></div>;
 }
 
 function integrationTone(status: IntegrationHealthItem["statusHe"]): V6Tone {
@@ -1783,28 +1778,27 @@ function IntegrationHealthScreen({ user, back }: { user: V6User; back: () => voi
       <BackHeader title="חיבורים" back={back} />
       <HeroSurface tone="admin" className="min-h-[210px] p-5">
         <V6StatusBadge tone={error ? "urgent" : "admin"}>{error || "בדיקה שקטה"}</V6StatusBadge>
-        <SafeTitle as="h2" className="mt-4 max-w-[19rem] text-[clamp(1.95rem,8.8vw,2.75rem)] font-semibold leading-[1.04] tracking-[-0.056em]">מצב החיבורים</SafeTitle>
+        <SafeTitle as="h2" className="mt-4 max-w-[19rem] text-xl font-semibold leading-[1.15] tracking-tight">מצב החיבורים</SafeTitle>
         <SafeMeta as="p" className="mt-4 max-w-[21rem] text-sm leading-relaxed text-white/62">תצוגה למנהל האפליקציה בלבד. אין כאן סודות, רק מצב חיבור פשוט.</SafeMeta>
       </HeroSurface>
-      <OpenCluster tone="admin" className="space-y-2">
+      <div className="flex flex-col gap-2">
         {items.length ? items.map((item) => (
-          <div key={item.id} className="lk-safe-row flex items-start justify-between gap-3 rounded-[26px] border border-white/[0.045] bg-white/[0.03] p-3 text-start">
+          <article key={item.id} className={v6Cx(v6Lovable.card, "flex items-start justify-between gap-3 rounded-2xl p-4 text-start")}>
             <div className="min-w-0 flex-1">
-              <SafeTitle as="h3" className="text-[15px] font-semibold text-white/86">{item.labelHe}</SafeTitle>
-              <SafeMeta as="p" className="mt-1 text-xs leading-relaxed text-white/46">{item.detailHe}</SafeMeta>
+              <SafeTitle as="h3" className="text-sm font-semibold tracking-tight text-white/90">{item.labelHe}</SafeTitle>
+              <SafeMeta as="p" className="mt-1 text-[12px] leading-relaxed text-white/48">{item.detailHe}</SafeMeta>
             </div>
             <V6StatusBadge tone={integrationTone(item.statusHe)}>{item.statusHe}</V6StatusBadge>
-          </div>
+          </article>
         )) : <V6FeedRow icon={HeartPulse} title={error || "בודק חיבורים"} body="הסטטוסים יופיעו כאן בעוד רגע." meta="בדיקה" tone={error ? "urgent" : "admin"} />}
-      </OpenCluster>
-      <Surface tone="admin" className="space-y-3 p-4">
-        <div className="flex items-center justify-between gap-3 text-start">
-          <SafeTitle as="h3" className="text-[15px] font-semibold text-white/86">Push בדפדפן הזה</SafeTitle>
-          <V6StatusBadge tone={pushSupported ? "success" : "admin"}>{pushSupported ? "מחובר" : "חסר"}</V6StatusBadge>
-        </div>
-        <SafeMeta as="p" className="text-xs leading-relaxed text-white/48">בקשת הרשאה תופעל רק מפעולה יזומה, לא בפתיחת האפליקציה.</SafeMeta>
-      </Surface>
-      {report?.latestErrors.length ? <Widget title="שגיאות אחרונות" kicker="חיבורים" icon={Shield} tone="urgent"><div className="space-y-2">{report.latestErrors.map((item) => <V6FeedRow key={item} icon={Shield} title="בדיקה נכשלה" body={item} meta="בדיקה" tone="urgent" />)}</div></Widget> : null}
+      </div>
+      <LovableEditorialPanel
+        kicker="Push בדפדפן הזה"
+        title={pushSupported ? "מחובר" : "חסר"}
+        description="בקשת הרשאה תופעל רק מפעולה יזומה, לא בפתיחת האפליקציה."
+        trailing={<V6StatusBadge tone={pushSupported ? "success" : "admin"}>{pushSupported ? "מחובר" : "חסר"}</V6StatusBadge>}
+      />
+      {report?.latestErrors.length ? <LovableEditorialPanel kicker="חיבורים" title="שגיאות אחרונות"><div className="flex flex-col gap-1.5">{report.latestErrors.map((item) => <V6FeedRow key={item} icon={Shield} title="בדיקה נכשלה" body={item} meta="בדיקה" tone="urgent" />)}</div></LovableEditorialPanel> : null}
     </div>
   );
 }

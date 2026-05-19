@@ -457,6 +457,15 @@ export function selectV6ProductPriceLabel(product: V6Product) {
   return `${product.price} ₪`;
 }
 
+export function resolveV6ProductImageUrl(
+  db: { media: Array<{ id: string; localPreviewUrl?: string }> },
+  product: V6Product
+) {
+  const mediaId = product.featuredImageMediaId ?? product.imageMediaIds[0];
+  if (!mediaId) return undefined;
+  return db.media.find((item) => item.id === mediaId)?.localPreviewUrl;
+}
+
 export function selectV6PaymentModeLabel(product: V6Product) {
   if (product.priceMode === "free") return "ללא גבייה";
   if (product.priceMode === "request") return "לפי בקשה";

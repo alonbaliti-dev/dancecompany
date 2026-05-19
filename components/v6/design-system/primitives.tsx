@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, WandSparkles } from "lucide-react";
 import { aiSafetyNotice } from "@/lib/ai/ai-orchestrator";
 import type { AIInsight } from "@/lib/ai/ai-types";
-import { v6Control, v6Cx, v6Interactive, v6Motion, v6Radius, v6Safe, v6Surface, v6Tone, v6Type, v6Visual, type V6Tone } from "./tokens";
+import { v6Control, v6Cx, v6Interactive, v6Lovable, v6Motion, v6Radius, v6Safe, v6Surface, v6Tone, v6Type, v6Visual, type V6Tone } from "./tokens";
 
 type RtlRowProps = {
   children: ReactNode;
@@ -78,28 +78,28 @@ export function IconLabelRow({ icon: Icon, title, subtitle, tone = "studio", tra
 }
 
 export function Surface({ children, tone = "studio", variant = "base", interactive = false, className }: { children: ReactNode; tone?: V6Tone; variant?: SurfaceVariant; interactive?: boolean; className?: string }) {
+  void variant;
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden border p-3.5", v6Radius.card, v6Surface[variant], interactive && v6Interactive.card, interactive && v6Motion.hoverGlow, className)}>
-      <div className={v6Cx("pointer-events-none absolute -right-14 -top-14 z-0 h-28 w-28 rounded-full opacity-6 blur-3xl", v6Tone[tone].beam)} />
-      <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/14 to-transparent" />
-      <SurfaceContent>{children}</SurfaceContent>
+    <section dir="rtl" className={v6Cx(v6Safe.surface, v6Lovable.card, "overflow-hidden rounded-2xl p-4 text-start", interactive && v6Interactive.card, interactive && v6Motion.hoverGlow, className)}>
+      <div className={v6Cx("pointer-events-none absolute -right-14 -top-14 z-0 h-28 w-28 rounded-full opacity-25 blur-3xl", v6Tone[tone].beam)} />
+      <SurfaceContent className="relative">{children}</SurfaceContent>
     </section>
   );
 }
 
 export function HeroSurface({ children, tone = "studio", className }: { children: ReactNode; tone?: V6Tone; className?: string }) {
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden border border-[rgba(244,213,141,0.095)] bg-gradient-to-br px-3.5 py-3.5 text-start shadow-[0_18px_50px_rgba(0,0,0,0.34),0_10px_34px_rgba(244,213,141,0.035),inset_0_1px_0_rgba(255,247,223,0.072)] sm:px-4 sm:py-4", v6Radius.hero, v6Tone[tone].grad, v6Visual.texture, className)}>
-      <div className={v6Cx("pointer-events-none absolute -left-10 -top-14 z-0 h-28 w-28 rounded-full opacity-8 blur-3xl", v6Tone[tone].beam)} />
+    <section dir="rtl" className={v6Cx(v6Safe.surface, v6Lovable.hero, "p-5 text-start", className)}>
+      <div className={v6Cx("pointer-events-none absolute -left-16 -top-16 z-0 h-40 w-40 rounded-full opacity-60 blur-3xl", v6Tone[tone].beam)} />
       <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-l from-transparent via-[#fff7df]/20 to-transparent" />
-      <SurfaceContent>{children}</SurfaceContent>
+      <SurfaceContent className="relative">{children}</SurfaceContent>
     </section>
   );
 }
 
 export function EditorialSection({ title, kicker, tone = "studio", children, className }: { title: string; kicker?: string; tone?: V6Tone; children: ReactNode; className?: string }) {
   return (
-    <section dir="rtl" className={v6Cx(v6Safe.surface, "overflow-hidden border p-3.5", v6Radius.card, v6Surface.editorial, className)}>
+    <section dir="rtl" className={v6Cx(v6Safe.surface, v6Lovable.cardStrong, "overflow-hidden p-4", className)}>
       <div className={v6Cx("pointer-events-none absolute -left-16 top-0 z-0 h-24 w-24 rounded-full opacity-6 blur-3xl", v6Tone[tone].beam)} />
       <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-l from-transparent via-[#f4d58d]/10 to-transparent" />
       <SurfaceContent className="mb-2.5 flex items-center justify-start gap-2 px-1 text-start">
@@ -283,14 +283,14 @@ export function BottomSheet({ title, children, onClose }: { title: string; child
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
         style={{ zIndex: 1, height: "min(760px, calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 8px))" }}
-        className={v6Cx(v6Safe.surface, "relative flex w-[calc(100%-8px)] max-w-[430px] flex-col overflow-hidden border outline-none md:w-full md:max-w-[760px]", v6Radius.sheet, v6Surface.floating)}
+        className={v6Cx(v6Safe.surface, v6Lovable.cardStrong, "relative flex w-[calc(100%-8px)] max-w-[430px] flex-col overflow-hidden rounded-t-[28px] outline-none md:w-full md:max-w-[760px] md:rounded-[28px]")}
       >
-        <div className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-white/15" />
-        <div className="sticky top-0 z-10 flex min-h-[46px] items-center gap-2 bg-[#080506]/90 px-3 py-2 shadow-[inset_0_-1px_0_rgba(244,213,141,0.07)] backdrop-blur-2xl sm:px-5">
-          <SafeTitle as="h2" className="min-w-0 flex-1 truncate text-start text-[14.5px] font-semibold leading-tight tracking-[-0.020em]">{title}</SafeTitle>
-          <span className="shrink-0 [&>button]:min-h-8 [&>button]:rounded-[13px] [&>button]:px-2.5 [&>button]:py-1.5 [&>button]:text-[11px]"><Button variant="ghost" onClick={onClose}>סגירה</Button></span>
+        <div className="mx-auto mt-3 h-1.5 w-10 shrink-0 rounded-full bg-white/15" />
+        <div className="sticky top-0 z-10 flex min-h-[52px] items-center gap-3 bg-[#080506]/80 px-5 py-3 backdrop-blur-2xl">
+          <SafeTitle as="h2" className="min-w-0 flex-1 truncate text-start text-base font-semibold tracking-tight text-white/92">{title}</SafeTitle>
+          <span className="shrink-0 [&>button]:min-h-9 [&>button]:rounded-full [&>button]:px-3 [&>button]:py-1.5 [&>button]:text-[11px]"><Button variant="ghost" onClick={onClose}>סגירה</Button></span>
         </div>
-        <div className="lk-sheet-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[calc(4.25rem+env(safe-area-inset-bottom,0px)+var(--keyboard-inset,0px))] sm:px-5">{children}</div>
+        <div className="lk-sheet-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4 pb-[calc(4.25rem+env(safe-area-inset-bottom,0px)+var(--keyboard-inset,0px))]">{children}</div>
       </div>
     </div>
   );
