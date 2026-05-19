@@ -15,6 +15,7 @@ import {
   WeeklyStudioLessonCard,
   WeeklyStudioTimetableShell,
   v6Cx,
+  v6Lovable,
   v6Motion,
   v6TimetableInteraction,
   v6TimetableSurface,
@@ -45,25 +46,25 @@ export type TimetableImportNotice = {
 
 type TimetableNoticeTone = "info" | "success" | "warning" | "error";
 
-const timetableNoticeToneStyles: Record<TimetableNoticeTone, { border: string; icon: ElementType; iconClass: string }> = {
-  info: { border: "border-[rgba(244,213,141,0.050)]", icon: Info, iconClass: "text-white/56" },
-  success: { border: "border-emerald-100/[0.14]", icon: CheckCircle2, iconClass: "text-emerald-100/88" },
-  warning: { border: "border-amber-100/[0.14]", icon: AlertCircle, iconClass: "text-amber-100/88" },
-  error: { border: "border-rose-100/[0.16]", icon: AlertCircle, iconClass: "text-rose-100/88" }
+const timetableNoticeToneStyles: Record<TimetableNoticeTone, { ring: string; icon: ElementType; iconClass: string }> = {
+  info: { ring: "", icon: Info, iconClass: "text-white/58" },
+  success: { ring: "ring-1 ring-emerald-100/[0.18]", icon: CheckCircle2, iconClass: "text-emerald-100/88" },
+  warning: { ring: "ring-1 ring-amber-100/[0.18]", icon: AlertCircle, iconClass: "text-amber-100/88" },
+  error: { ring: "ring-1 ring-rose-100/[0.22]", icon: AlertCircle, iconClass: "text-rose-100/88" }
 };
 
 function TimetableCalmNotice({ tone, title, children }: { tone: TimetableNoticeTone; title?: string; children: ReactNode }) {
   const style = timetableNoticeToneStyles[tone];
   const Icon = style.icon;
   return (
-    <div className={v6Cx(v6TimetableSurface.notice, style.border, "rounded-[18px] p-3.5", v6Motion.gentle)} role={tone === "error" ? "alert" : "status"}>
+    <div className={v6Cx(v6TimetableSurface.notice, "rounded-2xl p-3.5", style.ring, v6Motion.gentle)} role={tone === "error" ? "alert" : "status"}>
       <div className="flex items-start gap-2.5">
-        <span className={v6Cx("mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-white/[0.040]", style.iconClass)} aria-hidden="true">
+        <span className={v6Cx("mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-2xl bg-white/[0.050]", style.iconClass)} aria-hidden="true">
           <Icon size={15} strokeWidth={1.9} />
         </span>
         <span className="min-w-0 flex-1">
-          {title ? <SafeMeta as="p" className="text-[11px] font-semibold text-white/44">{title}</SafeMeta> : null}
-          <SafeMeta as="p" className={v6Cx("text-xs font-medium leading-relaxed text-white/62", title && "mt-1")}>{children}</SafeMeta>
+          {title ? <SafeMeta as="p" className={v6Lovable.eyebrow}>{title}</SafeMeta> : null}
+          <SafeMeta as="p" className={v6Cx("text-xs leading-relaxed text-white/62", title && "mt-1.5")}>{children}</SafeMeta>
         </span>
       </div>
     </div>
@@ -84,13 +85,13 @@ function TimetableEmptyPanel({
   tone?: V6Tone;
 }) {
   return (
-    <div className={v6Cx(v6TimetableSurface.emptyState, "rounded-[20px] p-4 text-start")} role="status">
+    <div className={v6Cx(v6TimetableSurface.emptyState, "rounded-2xl p-4 text-start")} role="status">
       <span className={v6Cx("grid h-10 w-10 place-items-center rounded-2xl", v6Tone[tone].soft, v6Tone[tone].text)} aria-hidden="true">
         <Icon size={17} strokeWidth={1.9} />
       </span>
-      <SafeTitle as="p" className="mt-3 text-sm font-semibold tracking-[-0.016em] text-white/86">{title}</SafeTitle>
+      <SafeTitle as="p" className="mt-3 text-base font-semibold tracking-tight text-white/92">{title}</SafeTitle>
       <SafeMeta as="p" className="mt-1.5 text-xs leading-relaxed text-white/52">{description}</SafeMeta>
-      {hint ? <SafeMeta as="p" className="mt-2 text-[11px] leading-relaxed text-white/40">{hint}</SafeMeta> : null}
+      {hint ? <SafeMeta as="p" className="mt-2 text-[11px] leading-relaxed text-white/42">{hint}</SafeMeta> : null}
     </div>
   );
 }
@@ -217,18 +218,18 @@ export function TimetableStatusSummary({ publishState, publishTone, persistenceL
   return (
     <div className="flex min-w-0 flex-col gap-3 min-[380px]:flex-row min-[380px]:items-start min-[380px]:justify-between">
       <div className="min-w-0">
-        <SafeMeta as="p" className="text-[11px] font-semibold text-white/42">טיוטה ופרסום</SafeMeta>
-        <SafeTitle as="p" className="mt-1.5 break-words text-[15px] font-semibold tracking-[-0.018em] text-white/92">
+        <SafeMeta as="p" className={v6Lovable.eyebrow}>טיוטה ופרסום</SafeMeta>
+        <SafeTitle as="p" className="mt-1.5 break-words text-base font-semibold tracking-tight text-white/92">
           {publishState.label}
         </SafeTitle>
-        <SafeMeta as="p" className="mt-1.5 text-xs leading-relaxed text-white/48">
+        <SafeMeta as="p" className="mt-1.5 text-xs leading-relaxed text-white/52">
           {publishState.description}
         </SafeMeta>
-        {statusHelper ? <SafeMeta as="p" className="mt-2 text-[11px] leading-relaxed text-white/40">{statusHelper}</SafeMeta> : null}
+        {statusHelper ? <SafeMeta as="p" className="mt-2 text-[11px] leading-relaxed text-white/42">{statusHelper}</SafeMeta> : null}
       </div>
       <div className="flex shrink-0 flex-col items-start gap-2 min-[380px]:items-end">
         {persistenceLoading ? (
-          <span className="inline-flex min-h-7 items-center gap-1.5 rounded-full bg-white/[0.040] px-2.5 text-[11px] font-semibold text-white/56" aria-live="polite">
+          <span className="inline-flex min-h-7 items-center gap-1.5 rounded-full bg-white/[0.060] px-2.5 text-[11px] font-medium text-white/62" aria-live="polite">
             <Loader2 size={12} strokeWidth={1.9} className="motion-safe:animate-spin" aria-hidden="true" />
             טוענים
           </span>
@@ -249,9 +250,9 @@ type TimetableActivityPanelProps = {
 export function TimetableActivityPanel({ auditEvents, persistenceCanUseAdapter }: TimetableActivityPanelProps) {
   return (
     <div className="flex flex-col gap-2.5">
-      <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
-        <SafeMeta as="p" className="text-xs font-semibold text-white/44">פעילות מערכת אחרונה</SafeMeta>
-        <SafeMeta as="span" className="text-[11px] font-medium text-white/38">{persistenceCanUseAdapter ? "סנכרון לענן" : "מקומי במסך"}</SafeMeta>
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 px-0.5">
+        <SafeMeta as="p" className={v6Lovable.eyebrow}>פעילות מערכת אחרונה</SafeMeta>
+        <SafeMeta as="span" className="text-[11px] font-medium text-white/42">{persistenceCanUseAdapter ? "סנכרון לענן" : "מקומי במסך"}</SafeMeta>
       </div>
       {auditEvents.length ? (
       <MobileList>
@@ -341,7 +342,7 @@ export function TimetableDraftToolbar({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className={v6Cx(v6TimetableSurface.toolbar, "flex min-w-0 flex-col gap-3.5 rounded-3xl p-3.5 sm:p-4", v6Motion.gentle)}>
+      <div className={v6Cx(v6TimetableSurface.toolbar, "flex min-w-0 flex-col gap-3.5 rounded-2xl p-4", v6Motion.gentle)}>
         <TimetableStatusSummary publishState={publishState} publishTone={publishTone} persistenceLoading={persistenceLoading} />
         <div className={v6Cx("grid grid-cols-1 gap-2.5 min-[360px]:grid-cols-2 [&>button]:min-h-11 [&>button]:whitespace-normal [&>button]:px-3 [&>button]:leading-snug", v6TimetableInteraction.toolbarActions)}>
           <Button variant="ghost" disabled={!sessionMeta.canUndo} onClick={onUndoDraft}>בטל</Button>
@@ -350,7 +351,7 @@ export function TimetableDraftToolbar({
           <Button disabled={!canPublishNow} onClick={onPublishDraft}>פרסם שינויים</Button>
         </div>
         {showDraftCleanHint || showUndoRedoHint || showPublishHint ? (
-          <SafeMeta as="p" className="text-[11px] leading-relaxed text-white/40">
+          <SafeMeta as="p" className="text-[11px] leading-relaxed text-white/42">
             {showPublishHint && publishState.phase === "blocked_by_conflicts"
               ? "פרסום חסום עד סידור ההתנגשויות החוסמות."
               : showPublishHint
@@ -366,7 +367,7 @@ export function TimetableDraftToolbar({
           <label
             htmlFor={importInputId}
             className={v6Cx(
-              "lk-safe-control inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded-[16px] px-3 text-center text-[13px] font-semibold leading-snug tracking-[-0.010em]",
+              "lk-safe-control inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded-2xl px-3 text-center text-[13px] font-semibold leading-snug",
               v6Motion.standard,
               v6Motion.press,
               v6Motion.focusRing,
@@ -377,9 +378,9 @@ export function TimetableDraftToolbar({
             <Upload size={12} strokeWidth={1.9} aria-hidden="true" /> ייבוא Snapshot
           </label>
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {publishState.conflictPolicy.warningCount ? (
-            <SafeMeta as="p" className="text-xs font-medium leading-relaxed text-amber-50/68">
+            <SafeMeta as="p" className="text-xs leading-relaxed text-amber-50/72">
               <BidiNumber>{publishState.conflictPolicy.warningCount}</BidiNumber> אזהרות לבדיקה — לא חוסמות פרסום, אבל כדאי לעבור עליהן.
             </SafeMeta>
           ) : null}

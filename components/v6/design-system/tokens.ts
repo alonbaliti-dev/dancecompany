@@ -43,45 +43,36 @@ export const v6Surface = {
 };
 
 export const v6TimetableSurface = {
-  summaryTile:
-    "surface-card border border-[rgba(244,213,141,0.054)] bg-[linear-gradient(180deg,rgba(255,247,223,0.044),rgba(255,255,255,0.015))] shadow-[0_8px_22px_rgba(0,0,0,0.16),inset_0_1px_0_rgba(255,247,223,0.044)] backdrop-blur-lg",
-  toolbar:
-    "surface-card border border-[rgba(244,213,141,0.066)] bg-[linear-gradient(180deg,rgba(18,22,30,0.72),rgba(8,10,16,0.68))] shadow-[0_14px_38px_rgba(0,0,0,0.24),inset_0_1px_0_rgba(255,247,223,0.052)] backdrop-blur-xl",
-  notice:
-    "border border-[rgba(244,213,141,0.050)] bg-white/[0.024] shadow-[inset_0_1px_0_rgba(255,247,223,0.030)]",
-  emptyState:
-    "border border-[rgba(244,213,141,0.046)] bg-[linear-gradient(180deg,rgba(255,255,255,0.028),rgba(255,255,255,0.010))] shadow-[inset_0_1px_0_rgba(255,247,223,0.028)]",
-  activityRow:
-    "border border-[rgba(244,213,141,0.046)] bg-black/[0.105] shadow-[inset_0_1px_0_rgba(255,247,223,0.028)]",
-  dayChip:
-    "surface-card border border-[rgba(244,213,141,0.050)] bg-[linear-gradient(180deg,rgba(255,255,255,0.040),rgba(255,255,255,0.016))] shadow-[0_8px_22px_rgba(0,0,0,0.14),inset_0_1px_0_rgba(255,247,223,0.038)] backdrop-blur-lg",
-  lessonCard:
-    "surface-card border border-[rgba(244,213,141,0.060)] bg-[linear-gradient(180deg,rgba(255,247,223,0.044),rgba(255,255,255,0.016)_70%,rgba(4,6,12,0.14))] shadow-[0_10px_26px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,247,223,0.044)] backdrop-blur-lg",
-  lessonInset:
-    "border border-[rgba(244,213,141,0.036)] bg-black/[0.135] shadow-[inset_0_1px_0_rgba(255,247,223,0.026)]",
-  lessonPill:
-    "bg-white/[0.032] shadow-[inset_0_1px_0_rgba(255,247,223,0.020)]"
+  summaryTile: "glass",
+  toolbar: "glass",
+  notice: "glass",
+  emptyState: "glass",
+  activityRow: "glass",
+  dayChip: "glass",
+  lessonCard: "glass",
+  lessonInset: "bg-white/[0.026]",
+  lessonPill: "bg-white/[0.040]"
 };
 
 /** Shared hover / press / focus patterns for management timetable controls. */
 export const v6TimetableInteraction = {
-  dayChip: "touch-manipulation rounded-[18px] text-start",
+  dayChip: "touch-manipulation rounded-2xl text-start",
   dayChipActive:
-    "bg-[#f4d58d] text-zinc-950 shadow-[0_10px_24px_rgba(244,213,141,0.14)] ring-1 ring-inset ring-zinc-950/12 motion-safe:active:scale-[0.99] motion-safe:active:shadow-[0_6px_16px_rgba(244,213,141,0.10)]",
+    "bg-[#f4d58d] text-zinc-950 shadow-[0_6px_16px_rgba(244,213,141,0.12)] ring-1 ring-inset ring-zinc-950/10 motion-safe:active:scale-[0.99]",
   dayChipInactive:
-    "text-white/64 motion-safe:hover:-translate-y-px motion-safe:hover:border-[rgba(244,213,141,0.072)] motion-safe:hover:bg-white/[0.050] motion-safe:hover:shadow-[0_10px_26px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,247,223,0.048)] motion-safe:active:translate-y-0 motion-safe:active:scale-[0.99] motion-safe:active:bg-white/[0.036]",
+    "text-white/68 motion-safe:hover:bg-white/[0.060] motion-safe:active:scale-[0.99] motion-safe:active:bg-white/[0.040]",
   dayChipDisabled: "cursor-default select-none opacity-55 saturate-[0.88]",
   lessonCard:
-    "touch-manipulation motion-safe:hover:border-[rgba(244,213,141,0.078)] motion-safe:hover:bg-white/[0.048] motion-safe:hover:shadow-[0_14px_32px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,247,223,0.052)] motion-safe:active:scale-[0.99] motion-safe:active:shadow-[0_8px_18px_rgba(0,0,0,0.16)]",
+    "touch-manipulation motion-safe:hover:bg-white/[0.060] motion-safe:active:scale-[0.99]",
   conflictChip:
-    "transition-[background-color,border-color,box-shadow] duration-200 motion-safe:hover:border-white/[0.12]",
+    "transition-[background-color,border-color] duration-200 motion-safe:hover:border-white/[0.14]",
   conflictSummaryChip:
-    "motion-safe:hover:border-white/[0.10] motion-safe:hover:bg-white/[0.028]",
+    "motion-safe:hover:bg-white/[0.048]",
   toolbarActions: "[&>button]:touch-manipulation [&>button:disabled]:pointer-events-none",
   ghostAction:
-    "border border-[rgba(244,213,141,0.060)] bg-white/[0.030] text-white/82 shadow-[inset_0_1px_0_rgba(255,247,223,0.038)] motion-safe:hover:-translate-y-px motion-safe:hover:border-[rgba(244,213,141,0.090)] motion-safe:hover:bg-white/[0.050] motion-safe:hover:shadow-[0_10px_24px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,247,223,0.050)] motion-safe:active:translate-y-0 motion-safe:active:scale-[0.985]",
+    "glass text-white/82 motion-safe:hover:bg-white/[0.060] motion-safe:active:scale-[0.99]",
   activityRow:
-    "transition-[background-color,border-color] duration-200 motion-safe:hover:bg-white/[0.032] motion-safe:hover:border-[rgba(244,213,141,0.060)]"
+    "transition-[background-color] duration-200 motion-safe:hover:bg-white/[0.050]"
 };
 
 export const v6Visual = {

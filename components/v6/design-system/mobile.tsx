@@ -580,11 +580,11 @@ export function WeeklyStudioLessonCard({
       data-conflict-count={conflictIndicators.length || undefined}
       data-conflict-kind={primaryConflict?.kind}
       style={{ minHeight: `${cardMinHeight}px` }}
-      className={v6Cx(v6TimetableSurface.lessonCard, "group relative mr-5 flex w-[calc(100%-1.25rem)] items-stretch gap-3 overflow-hidden rounded-[22px] p-3.5 text-start sm:gap-3.5 sm:p-4", primaryConflictStyle?.card, v6Motion.standard, v6Motion.pressSoft, v6Motion.focusRing, onClick && v6Interactive.card, onClick && v6TimetableInteraction.lessonCard)}
+      className={v6Cx(v6TimetableSurface.lessonCard, "group relative mr-5 flex w-[calc(100%-1.25rem)] items-stretch gap-3 overflow-hidden rounded-2xl p-3.5 text-start sm:gap-3.5 sm:p-4", primaryConflictStyle?.card, v6Motion.standard, v6Motion.pressSoft, v6Motion.focusRing, onClick && v6Interactive.card, onClick && v6TimetableInteraction.lessonCard)}
     >
       <span className={v6Cx("absolute right-[-1.38rem] top-4 h-2.5 w-2.5 rounded-full shadow-[0_0_0_4px_rgba(255,255,255,0.018)] transition-transform duration-200 motion-reduce:transition-none group-hover:scale-110", primaryConflictStyle?.dot ?? v6Tone[tone].soft)} aria-hidden="true" />
       <span className={v6Cx("relative w-1 shrink-0 rounded-full shadow-[0_0_12px_rgba(244,213,141,0.040)]", primaryConflictStyle?.dot ?? v6Tone[tone].soft)} style={{ minHeight: `${railHeight}px` }} aria-hidden="true" />
-      <span className={v6Cx("relative flex min-h-16 w-[3.9rem] shrink-0 flex-col items-center justify-center rounded-2xl py-2 transition-colors duration-200 motion-reduce:transition-none group-hover:bg-white/[0.044] sm:w-[4.35rem]", v6TimetableSurface.lessonInset)}>
+      <span className={v6Cx("relative flex min-h-16 w-[3.9rem] shrink-0 flex-col items-center justify-center rounded-2xl py-2 transition-colors duration-200 motion-reduce:transition-none group-hover:bg-white/[0.050] sm:w-[4.35rem]", v6TimetableSurface.lessonInset)}>
         <SafeMeta as="span" className="text-[11px] font-semibold text-white/40">{durationLabel}</SafeMeta>
         <SafeTitle as="span" className="mt-1 text-base font-semibold tracking-[-0.018em] text-white">{startTime}</SafeTitle>
         <SafeMeta as="span" className="mt-0.5 text-[11px] font-medium text-white/38">{endTime}</SafeMeta>
@@ -632,7 +632,7 @@ export function WeeklyStudioLessonCard({
           </span>
         </span>
 
-        <span className={v6Cx("mt-2 grid min-h-10 grid-cols-1 items-center gap-2 rounded-2xl px-2.5 py-1.5 transition-colors duration-200 motion-reduce:transition-none group-hover:bg-white/[0.046] min-[390px]:grid-cols-[1fr_auto]", v6TimetableSurface.lessonInset)}>
+        <span className={v6Cx("mt-2 grid min-h-10 grid-cols-1 items-center gap-2 rounded-2xl px-2.5 py-1.5 transition-colors duration-200 motion-reduce:transition-none group-hover:bg-white/[0.050] min-[390px]:grid-cols-[1fr_auto]", v6TimetableSurface.lessonInset)}>
           <SafeMeta as="span" className="min-w-0 break-words text-xs font-medium leading-relaxed text-white/52">מורה: {teacher}</SafeMeta>
           <span className={v6Cx("inline-flex min-h-7 max-w-full items-center gap-1.5 justify-self-start rounded-full px-2.5 py-1 text-[11px] font-semibold leading-snug min-[390px]:justify-self-end", v6Tone[statusTone].soft, v6Tone[statusTone].text)}>
             <PencilLine size={10} strokeWidth={1.8} aria-hidden="true" />
