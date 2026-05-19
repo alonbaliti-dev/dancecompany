@@ -791,7 +791,6 @@ function Messages({ user, show, openScreen, openTab }: { user: V6User; show: (me
       dispatch({ type: "mark_notification_read", userId: user.id, notificationId: item.sourceId });
     }
     openActivityItem(item);
-    if (item.sourceKind === "notification") show("ההודעה סומנה כנקראה");
   };
 
   return (

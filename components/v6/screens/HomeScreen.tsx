@@ -17,6 +17,7 @@ import { createV6TimetablePersistenceRuntime } from "@/lib/v6/timetable-persiste
 import { AttachedPrimaryAction, BidiNumber, BottomSheet, Button, HeroSurface, InlineMetric, LiveActivityRow, ManagementSummaryTile, MobileInfoTile, MobileIntro, MobileList, MobileListRow, MobileScreen, MobileSection, OperationalAlertRow, RoomAllocationTile, SafeMeta, SafeTitle, SheetActions, StatusBadge, Surface, v6Control, v6Cx, type V6Tone } from "@/components/v6/design-system";
 import { ManagementTimetableSection, type TimetableImportNotice } from "./management-timetable-section";
 import { RecentActivitySection, useV6ActivityNavigationHandlers } from "@/components/v6/activity-center/activity-center-section";
+import { V6_ACTIVITY_COPY } from "@/lib/v6/activity-center/copy";
 import { StudentHomeSection } from "./student-home-section";
 import { TeacherHomeSection } from "./teacher-home-section";
 
@@ -679,7 +680,7 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
       <MobileSection kicker={liveLesson ? `${liveLesson.time} · ${liveLesson.room}` : "סטטוס חי"} title="פעילות חיה" tone="studio">
         <div className="space-y-2">
           <LiveActivityRow icon={Activity} title={liveLesson ? liveGroup?.name ?? liveLesson.title : "אין שיעור פעיל להצגה"} subtitle={liveLesson ? liveActivitySummary : "מערכת השיעורים ריקה כרגע"} meta={liveLesson?.weekday} stateLabel={liveLesson ? "כעת" : "רגוע"} tone={liveLesson ? "studio" : "success"} pulse={Boolean(liveLesson)} onClick={() => openTab("lessons")} ariaLabel="פתיחת שיעורי הסטודיו" />
-          <LiveActivityRow icon={Bell} title={unread ? `${unread} הודעות שלא נקראו` : "אין הודעות חדשות"} subtitle={systemRows[0]?.title ?? "הודעות מערכת וקבוצות"} meta="תקשורת" stateLabel={unread ? "לטיפול" : "שקט"} tone={unread ? "urgent" : "modern"} pulse={Boolean(unread)} onClick={() => openTab("messages")} ariaLabel="פתיחת הודעות" />
+          <LiveActivityRow icon={Bell} title={unread ? V6_ACTIVITY_COPY.unreadBadgeLabel(unread) : "אין עדכונים חדשים"} subtitle={activityCenter.recent[0]?.title ?? V6_ACTIVITY_COPY.centerTitle} meta={V6_ACTIVITY_COPY.centerKicker} stateLabel={unread ? "לטיפול" : "שקט"} tone={unread ? "urgent" : "modern"} pulse={Boolean(unread)} onClick={openActivityCenter} ariaLabel={`פתיחת ${V6_ACTIVITY_COPY.centerKicker}`} />
           <LiveActivityRow icon={ClipboardList} title={openTasks.length ? `${openTasks.length} משימות פתוחות` : "אין משימות פתוחות"} subtitle={openTasks[0]?.title ?? "משימות קבוצתיות יוצגו כאן"} meta="מעקב" stateLabel={openTasks.length ? "הבא" : "מסודר"} tone={openTasks.length ? "repertoire" : "success"} onClick={() => openTab("lessons")} ariaLabel="פתיחת משימות ושיעורים" />
         </div>
       </MobileSection>
@@ -904,8 +905,8 @@ function ManagementHomeScreen({ user, openScreen, openTab }: { user: V6User; ope
       </MobileSection>
 
       <RecentActivitySection
-        kicker={activityCenter.unreadCount ? `${activityCenter.unreadCount} חדשים` : "תקשורת"}
-        title="מרכז פעילות"
+        kicker={activityCenter.unreadCount ? V6_ACTIVITY_COPY.unreadKicker(activityCenter.unreadCount) : V6_ACTIVITY_COPY.centerKicker}
+        title={V6_ACTIVITY_COPY.centerKicker}
         tone="management"
         items={activityCenter.recent}
         unreadCount={activityCenter.unreadCount}

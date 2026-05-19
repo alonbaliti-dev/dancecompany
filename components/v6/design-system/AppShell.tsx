@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { CalendarDays, MessageCircle, ShoppingBag, Sparkles, Users } from "lucide-react";
 import { roleLabel } from "@/lib/v6/seed";
 import type { V6Tab, V6User } from "@/lib/v6/types";
+import { V6_ACTIVITY_COPY } from "@/lib/v6/activity-center/copy";
 import { v6Cx, v6Motion, v6ScreenAtmosphere, v6Tone, v6Type, v6Visual, type V6Tone } from "./tokens";
 import { BadgeCount, SafeMeta, SafeTitle } from "./primitives";
 
@@ -96,7 +97,7 @@ export function BottomNavDock({ tab, unread, onTab }: { tab: V6Tab; unread: numb
               <span className={v6Cx("pointer-events-none absolute top-1 h-0.5 w-5 rounded-full bg-[#f4d58d] transition-opacity duration-200", active ? "opacity-70" : "opacity-0")} />
               <span className={v6Cx("relative grid h-5 w-5 place-items-center rounded-full transition-transform duration-200", active ? "scale-105 text-[#fff7df]" : "text-white/50 group-hover:text-white/72 motion-safe:group-hover:-translate-y-0.5")}>
                 <Icon size={15.5} strokeWidth={active ? 2.05 : 1.65} />
-                {item.id === "messages" && unread ? <BadgeCount value={unread > 9 ? "9+" : unread} label={`${unread} הודעות שלא נקראו`} className="absolute -left-2.5 -top-1.5 min-h-[15px] min-w-[15px] bg-rose-200 px-1 text-[8.5px] text-rose-950 shadow-[0_0_0_2px_rgba(8,5,6,0.92),0_6px_16px_rgba(244,63,94,0.20)]" /> : null}
+                {item.id === "messages" && unread ? <BadgeCount value={unread > 9 ? "9+" : unread} label={V6_ACTIVITY_COPY.unreadBadgeLabel(unread)} className="absolute -left-2.5 -top-1.5 min-h-[15px] min-w-[15px] bg-rose-200 px-1 text-[8.5px] text-rose-950 shadow-[0_0_0_2px_rgba(8,5,6,0.92),0_6px_16px_rgba(244,63,94,0.20)]" /> : null}
               </span>
               <span className={v6Cx("lk-safe-meta relative max-w-full text-center text-[9px] leading-tight tracking-[-0.006em]", active ? "text-white/82" : "text-white/48")}>{item.label}</span>
             </button>

@@ -29,6 +29,7 @@ import {
   type V6Tone
 } from "@/components/v6/design-system";
 import { RecentActivitySection, useV6ActivityNavigationHandlers } from "@/components/v6/activity-center/activity-center-section";
+import { V6_ACTIVITY_COPY } from "@/lib/v6/activity-center/copy";
 import type { V6AttendanceProgress, V6TeacherHomeViewModel } from "@/lib/v6/view-models";
 import type { V6Group, V6Lesson, V6Screen, V6Tab, V6User } from "@/lib/v6/types";
 
@@ -114,14 +115,14 @@ function TeacherGreetingHero({
               v6Motion.focusRing,
               "touch-manipulation bg-sky-300/[0.12] text-sky-100"
             )}
-            aria-label={`${unread} הודעות חדשות`}
+            aria-label={V6_ACTIVITY_COPY.unreadHeroLabel(unread)}
           >
             <Bell size={14} strokeWidth={1.9} aria-hidden="true" />
             <BidiNumber>{unread}</BidiNumber>
           </button>
         ) : (
           <span className="inline-flex min-h-8 shrink-0 items-center rounded-full bg-white/[0.034] px-3 text-[11px] font-medium text-white/42">
-            {todayWeekday}
+            יום {todayWeekday}
           </span>
         )}
       </div>
@@ -383,16 +384,15 @@ function TeacherAlertsSection({
   openTab: (tab: V6Tab) => void;
 }) {
   const { openActivityItem, openActivityCenter } = useV6ActivityNavigationHandlers(openTab, openScreen);
-  const alertItems = activityCenter.recent.filter((item) => item.category !== "class" || !item.isRead);
 
   return (
     <RecentActivitySection
-      kicker={activityCenter.unreadCount ? `${activityCenter.unreadCount} חדשים` : "עדכונים"}
-      title="התראות ושינויים"
+      kicker={activityCenter.unreadCount ? V6_ACTIVITY_COPY.unreadKicker(activityCenter.unreadCount) : V6_ACTIVITY_COPY.calmKicker}
+      title="עדכונים ופעילות"
       tone="modern"
-      items={alertItems.length ? alertItems : activityCenter.recent}
+      items={activityCenter.recent}
       unreadCount={activityCenter.unreadCount}
-      emptyTitle="אין התראות פעילות"
+      emptyTitle="אין עדכונים פעילים"
       emptyDescription="הודעות מהסטודיו, תזכורות נוכחות ושינויים בלוח יופיעו כאן."
       onOpenItem={openActivityItem}
       onOpenCenter={openActivityCenter}

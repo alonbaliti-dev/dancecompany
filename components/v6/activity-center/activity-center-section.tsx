@@ -22,6 +22,7 @@ import {
   type V6Tone
 } from "@/components/v6/design-system";
 import { V6_ACTIVITY_CATEGORY_LABELS } from "@/lib/v6/activity-center/constants";
+import { V6_ACTIVITY_COPY } from "@/lib/v6/activity-center/copy";
 import { selectV6ActivityItemNavigation } from "@/lib/v6/activity-center/selectors";
 import type { V6ActivityCategory, V6ActivityCenterViewModel, V6ActivityItem } from "@/lib/v6/activity-center/types";
 import type { V6Screen, V6Tab } from "@/lib/v6/types";
@@ -124,7 +125,8 @@ export function RecentActivitySection({
   emptyTitle,
   emptyDescription,
   onOpenItem,
-  onOpenCenter
+  onOpenCenter,
+  viewAllLabel = V6_ACTIVITY_COPY.viewAll
 }: {
   kicker?: string;
   title: string;
@@ -135,9 +137,10 @@ export function RecentActivitySection({
   emptyDescription: string;
   onOpenItem: (item: V6ActivityItem) => void;
   onOpenCenter?: () => void;
+  viewAllLabel?: string;
 }) {
   return (
-    <MobileSection kicker={kicker ?? (unreadCount ? `${unreadCount} חדשים` : "עדכונים")} title={title} tone={tone}>
+    <MobileSection kicker={kicker ?? (unreadCount ? V6_ACTIVITY_COPY.unreadKicker(unreadCount) : V6_ACTIVITY_COPY.calmKicker)} title={title} tone={tone}>
       {items.length ? (
         <div className="flex flex-col gap-1.5">
           {items.map((item) => (
@@ -154,7 +157,7 @@ export function RecentActivitySection({
                 "touch-manipulation motion-safe:hover:text-white/76"
               )}
             >
-              לכל העדכונים
+              {viewAllLabel}
             </button>
           ) : null}
         </div>
@@ -183,10 +186,10 @@ export function ActivityCenterPanel({
       <section dir="rtl" className={v6Cx(v6ActivitySurface.panel, "overflow-hidden rounded-[18px] p-3 text-start")}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className={v6Type.kicker}>מרכז פעילות</p>
-            <SafeTitle as="h1" className="mt-1 text-[15px] font-semibold tracking-[-0.018em] text-white/88">עדכונים והתראות</SafeTitle>
+            <p className={v6Type.kicker}>{V6_ACTIVITY_COPY.centerKicker}</p>
+            <SafeTitle as="h1" className="mt-1 text-[15px] font-semibold tracking-[-0.018em] text-white/88">{V6_ACTIVITY_COPY.centerTitle}</SafeTitle>
             <SafeMeta as="p" className="mt-1 text-[10px] leading-relaxed text-white/46">
-              {viewModel.unreadCount ? `${viewModel.unreadCount} פריטים דורשים תשומת לב` : "הכול שקט כרגע — בלי עומס מיותר"}
+              {viewModel.unreadCount ? V6_ACTIVITY_COPY.needsAttention(viewModel.unreadCount) : V6_ACTIVITY_COPY.calmStatus}
             </SafeMeta>
           </div>
           {showMarkAllRead && onMarkAllRead ? (
@@ -201,7 +204,7 @@ export function ActivityCenterPanel({
                 "touch-manipulation"
               )}
             >
-              סמן הכול כנקרא
+              {V6_ACTIVITY_COPY.markAllRead}
             </button>
           ) : null}
         </div>
@@ -230,7 +233,7 @@ export function ActivityCenterPanel({
         <section key={group.category} dir="rtl" className={v6Cx(v6ActivitySurface.panel, "rounded-[16px] p-2")}>
           <div className="flex items-center justify-between gap-2 px-1">
             <SafeTitle as="h2" className="text-[12px] font-semibold text-white/76">{group.label}</SafeTitle>
-            {group.unreadCount ? <SafeMeta as="span" className="text-[10px] font-semibold text-[#f4d58d]">{group.unreadCount} חדשים</SafeMeta> : null}
+            {group.unreadCount ? <SafeMeta as="span" className="text-[10px] font-semibold text-[#f4d58d]">{V6_ACTIVITY_COPY.unreadKicker(group.unreadCount)}</SafeMeta> : null}
           </div>
           <div className="mt-1.5 flex flex-col gap-1">
             {group.items.length ? (

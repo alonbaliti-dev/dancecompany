@@ -30,6 +30,7 @@ import {
   type V6Tone
 } from "@/components/v6/design-system";
 import { RecentActivitySection, useV6ActivityNavigationHandlers } from "@/components/v6/activity-center/activity-center-section";
+import { V6_ACTIVITY_COPY } from "@/lib/v6/activity-center/copy";
 import { selectV6ProductPriceLabel as productPrice, type V6StudentHomeViewModel } from "@/lib/v6/view-models";
 import type { V6CalendarEvent, V6Group, V6Lesson, V6Screen, V6Tab, V6User } from "@/lib/v6/types";
 
@@ -109,7 +110,7 @@ function StudentGreetingHero({
               v6Motion.focusRing,
               "touch-manipulation bg-[#f4d58d]/[0.14] text-[#f4d58d]"
             )}
-            aria-label={`${unread} הודעות חדשות`}
+            aria-label={V6_ACTIVITY_COPY.unreadHeroLabel(unread)}
           >
             <Bell size={14} strokeWidth={1.9} aria-hidden="true" />
             <BidiNumber>{unread}</BidiNumber>
@@ -394,7 +395,7 @@ function StudentAcademyFeed({
 
   return (
     <RecentActivitySection
-      kicker={activityCenter.unreadCount ? `${activityCenter.unreadCount} חדשים` : "מהסטודיו"}
+      kicker={activityCenter.unreadCount ? V6_ACTIVITY_COPY.unreadKicker(activityCenter.unreadCount) : "מהסטודיו"}
       title="עדכונים בשבילך"
       tone="studio"
       items={activityCenter.recent}
@@ -546,7 +547,7 @@ export function StudentHomeSection({ user, viewModel, openScreen, openTab }: Stu
   } = viewModel;
 
   return (
-    <MobileScreen className="gap-8">
+    <MobileScreen className="gap-7">
       <StudentGreetingHero user={user} primaryGroup={primaryGroup} unread={unread} todayWeekday={todayWeekday} openTab={openTab} />
 
       <StudentNextClassHero
