@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, WandSparkles } from "lucide-react";
 import { aiSafetyNotice } from "@/lib/ai/ai-orchestrator";
 import type { AIInsight } from "@/lib/ai/ai-types";
-import { v6Control, v6Cx, v6Interactive, v6Lovable, v6Motion, v6Radius, v6Safe, v6Surface, v6Tone, v6Type, v6Visual, type V6Tone } from "./tokens";
+import { v6Cx, v6Interactive, v6Lovable, v6LovableForm, v6Motion, v6Radius, v6Safe, v6Surface, v6Tone, v6Type, v6Visual, type V6Tone } from "./tokens";
 
 type RtlRowProps = {
   children: ReactNode;
@@ -206,23 +206,25 @@ export function SheetActions({ children, className }: { children: ReactNode; cla
   );
 }
 
-export function FormField({ label, value, onChange, type = "text", placeholder }: { label: string; value: string; onChange: (value: string) => void; type?: string; placeholder?: string }) {
+export function FormField({ label, value, onChange, type = "text", placeholder, helper }: { label: string; value: string; onChange: (value: string) => void; type?: string; placeholder?: string; helper?: string }) {
   const inputDir = type === "tel" || label.includes("טלפון") ? "ltr" : "auto";
   return (
     <label className="block text-start" dir="rtl">
-      <span className={v6Control.label}>{label}</span>
-      <input dir={inputDir} value={value} type={type} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} className={v6Cx("mt-2", v6Control.field, inputDir === "ltr" ? "text-left" : "text-start")} />
+      <span className={v6LovableForm.label}>{label}</span>
+      <input dir={inputDir} value={value} type={type} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} className={v6Cx("mt-1.5", v6LovableForm.field, inputDir === "ltr" ? "text-left" : "text-start")} />
+      {helper ? <span className={v6Cx("mt-1.5", v6LovableForm.helper)}>{helper}</span> : null}
     </label>
   );
 }
 
-export function SelectField({ label, value, onChange, children, className }: { label: string; value: string; onChange: (value: string) => void; children: ReactNode; className?: string }) {
+export function SelectField({ label, value, onChange, children, className, helper }: { label: string; value: string; onChange: (value: string) => void; children: ReactNode; className?: string; helper?: string }) {
   return (
     <label className={v6Cx("block text-start", className)} dir="rtl">
-      <span className={v6Control.label}>{label}</span>
-      <select value={value} onChange={(event) => onChange(event.target.value)} className={v6Cx("mt-2", v6Control.field, "text-start")}>
+      <span className={v6LovableForm.label}>{label}</span>
+      <select value={value} onChange={(event) => onChange(event.target.value)} className={v6Cx("mt-1.5", v6LovableForm.field, "text-start")}>
         {children}
       </select>
+      {helper ? <span className={v6Cx("mt-1.5", v6LovableForm.helper)}>{helper}</span> : null}
     </label>
   );
 }

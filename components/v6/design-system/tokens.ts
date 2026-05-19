@@ -130,6 +130,18 @@ export const v6Lovable = {
   eyebrow: "text-[11px] uppercase tracking-[0.16em] text-white/40"
 };
 
+export const v6LovableForm = {
+  group: "glass rounded-2xl p-4 space-y-3",
+  groupGrid: "glass rounded-2xl p-4 grid gap-3",
+  field: "lk-safe-control min-h-[48px] w-full max-w-full appearance-none rounded-2xl border border-white/[0.06] bg-white/[0.045] px-4 py-3 text-[15px] leading-snug text-white/92 outline-none placeholder:text-white/32 transition duration-200 focus:border-[#f4d58d]/30 focus:bg-white/[0.060] focus:shadow-[0_0_0_3px_rgba(244,213,141,0.10)]",
+  label: "lk-safe-meta block text-[12px] font-medium text-white/58",
+  helper: "lk-safe-meta block text-[11px] leading-relaxed text-white/42",
+  chip: "lk-safe-control inline-flex min-h-9 items-center rounded-full border border-white/[0.08] bg-white/[0.040] px-3 text-[12px] font-medium text-white/68 transition duration-200 motion-safe:hover:bg-white/[0.060]",
+  chipActive: "lk-safe-control inline-flex min-h-9 items-center rounded-full bg-[#f4d58d] px-3 text-[12px] font-semibold text-zinc-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.40)]",
+  toggleRow: "lk-safe-control flex w-full items-center justify-between gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.038] px-4 py-3 text-start text-[13px] font-medium text-white/82 transition",
+  toggleRowActive: "lk-safe-control flex w-full items-center justify-between gap-3 rounded-2xl border border-[#f4d58d]/30 bg-[#f4d58d]/[0.14] px-4 py-3 text-start text-[13px] font-semibold text-[#fff7df]"
+};
+
 export const v6Motion = {
   standard: "transition-[transform,border-color,background,box-shadow,filter] duration-200 ease-out motion-reduce:transition-none",
   gentle: "transition-[transform,border-color,background,box-shadow,opacity] duration-300 ease-out motion-reduce:transition-none",

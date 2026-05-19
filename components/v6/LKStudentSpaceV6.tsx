@@ -45,6 +45,7 @@ import {
   RtlText,
   SafeMeta,
   SafeTitle,
+  SelectField,
   SheetActions,
   SurfaceContent,
   SegmentedControl,
@@ -57,9 +58,9 @@ import {
   MobileScreen,
   V6ShopProductCard,
   V6ShopProductGrid,
-  v6Control,
   v6Cx,
   v6Lovable,
+  v6LovableForm,
   v6Motion,
   v6Surface,
   v6Tone,
@@ -696,7 +697,7 @@ function Lessons({ user, show }: { user: V6User; show: (message: string) => void
                 {openTasks ? <span>משימות פתוחות: <BidiNumber>{openTasks}</BidiNumber></span> : null}
                 {parent && (user.role === "management" || user.role === "super_admin" || user.permissions.manageAttendance) ? <span>טלפון הורה: <BidiNumber>{parent.phone}</BidiNumber></span> : null}
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-2">{(["present", "absent", "late", "excused"] as V6AttendanceStatus[]).map((status) => <button key={status} onClick={() => setAttendanceStatus(student.id, status)} className={v6Cx("min-h-10 rounded-2xl px-3 py-2 text-xs font-semibold transition active:scale-95", draft.status === status ? "bg-emerald-100 text-zinc-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]" : v6Control.chip)}>{attendanceStatusLabel[status]}</button>)}</div>
+              <div className="mt-3 grid grid-cols-2 gap-2">{(["present", "absent", "late", "excused"] as V6AttendanceStatus[]).map((status) => <button type="button" key={status} onClick={() => setAttendanceStatus(student.id, status)} className={v6Cx("justify-center", draft.status === status ? v6LovableForm.chipActive : v6LovableForm.chip)}>{attendanceStatusLabel[status]}</button>)}</div>
               <div className="mt-3"><FormField label="הערה" value={draft.note} onChange={(value) => setAttendanceNote(student.id, value)} placeholder="למשל סיבת היעדרות או איחור" /></div>
             </article>
           );
@@ -962,43 +963,46 @@ function Shop({ user, show, openScreen }: { user: V6User; show: (message: string
     }
   }
   const productEditor = (
-    <div className="space-y-2.5">
-      <div className={v6Cx("rounded-[18px] border p-3 text-start", v6Surface.quiet)}>
-        <p className={v6Cx(v6Type.kicker, "text-yellow-100/54")}>ניהול מוצר</p>
-        <SafeTitle as="h3" className="mt-1 truncate text-[15px] font-semibold tracking-[-0.020em]">{productTitle || "מוצר חדש"}</SafeTitle>
-        <SafeMeta as="p" className="mt-1 text-[11px] leading-relaxed text-white/45">שמירה מעדכנת את הנתונים, יומן הפעולות והחנות באותו רגע.</SafeMeta>
+    <div className="flex flex-col gap-3">
+      <div className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")}>
+        <SafeMeta as="p" className={v6Lovable.eyebrow}>ניהול מוצר</SafeMeta>
+        <SafeTitle as="h3" className="mt-1.5 truncate text-base font-semibold tracking-tight text-white/92">{productTitle || "מוצר חדש"}</SafeTitle>
+        <SafeMeta as="p" className={v6Cx("mt-1.5", v6LovableForm.helper)}>שמירה מעדכנת את הנתונים, יומן הפעולות והחנות באותו רגע.</SafeMeta>
       </div>
-      <div className={v6Cx("space-y-2.5 rounded-[18px] border p-2.5", v6Surface.quiet)}>
+      <div className={v6LovableForm.group}>
         <FormField label="שם מוצר" value={productTitle} onChange={setProductTitle} />
         <FormField label="תיאור" value={productDescription} onChange={setProductDescription} />
       </div>
-      <div className={v6Cx("grid gap-2.5 rounded-[18px] border p-2.5 sm:grid-cols-2", v6Surface.quiet)}>
-        <label className="block text-start"><span className={v6Control.label}>קטגוריה</span><select value={productCategory} onChange={(e) => setProductCategory(e.target.value)} className={v6Cx("mt-2", v6Control.field)}>{productCategories.map((item) => <option key={item} value={item} className="bg-zinc-950">{item}</option>)}</select></label>
-        <label className="block text-start"><span className={v6Control.label}>סוג מוצר</span><select value={productType} onChange={(e) => setProductType(e.target.value as NonNullable<V6Product["type"]>)} className={v6Cx("mt-2", v6Control.field)}>{v6ProductTypes.map((item) => <option key={item} value={item} className="bg-zinc-950">{productTypeLabel[item]}</option>)}</select></label>
+      <div className={v6Cx(v6LovableForm.groupGrid, "sm:grid-cols-2")}>
+        <SelectField label="קטגוריה" value={productCategory} onChange={setProductCategory}>{productCategories.map((item) => <option key={item} value={item} className="bg-zinc-950">{item}</option>)}</SelectField>
+        <SelectField label="סוג מוצר" value={productType} onChange={(next) => setProductType(next as NonNullable<V6Product["type"]>)}>{v6ProductTypes.map((item) => <option key={item} value={item} className="bg-zinc-950">{productTypeLabel[item]}</option>)}</SelectField>
       </div>
-      <div className={v6Cx("grid gap-2.5 rounded-[18px] border p-2.5 sm:grid-cols-2", v6Surface.quiet)}>
-        <label className="block text-start"><span className={v6Control.label}>תמחור</span><select value={productPriceMode} onChange={(e) => setProductPriceMode(e.target.value as NonNullable<V6Product["priceMode"]>)} className={v6Cx("mt-2", v6Control.field)}>{Object.entries(productPriceModeLabel).map(([id, label]) => <option key={id} value={id} className="bg-zinc-950">{label}</option>)}</select></label>
+      <div className={v6Cx(v6LovableForm.groupGrid, "sm:grid-cols-2")}>
+        <SelectField label="תמחור" value={productPriceMode} onChange={(next) => setProductPriceMode(next as NonNullable<V6Product["priceMode"]>)}>{Object.entries(productPriceModeLabel).map(([id, label]) => <option key={id} value={id} className="bg-zinc-950">{label}</option>)}</SelectField>
         <FormField label="מחיר ₪" value={productPrice} onChange={setProductPrice} type="number" />
       </div>
-      <div className={v6Cx("grid gap-2.5 rounded-[18px] border p-2.5 sm:grid-cols-2", v6Surface.quiet)}>
-        <label className="block text-start"><span className={v6Control.label}>סטטוס מלאי</span><select value={productInventoryStatus} onChange={(e) => { const next = e.target.value as NonNullable<V6Product["inventoryStatus"]>; setProductInventoryStatus(next); setProductActive(next !== "draft"); }} className={v6Cx("mt-2", v6Control.field)}>{v6InventoryStatuses.map((item) => <option key={item} value={item} className="bg-zinc-950">{inventoryStatusLabel[item]}</option>)}</select></label>
-        <label className="block text-start"><span className={v6Control.label}>נראות</span><select value={productVisibility} onChange={(e) => setProductVisibility(e.target.value as NonNullable<V6Product["visibility"]>)} className={v6Cx("mt-2", v6Control.field)}><option value="public" className="bg-zinc-950">גלוי בחנות</option><option value="members" className="bg-zinc-950">לחברים בלבד</option><option value="hidden" className="bg-zinc-950">מוסתר</option></select></label>
+      <div className={v6Cx(v6LovableForm.groupGrid, "sm:grid-cols-2")}>
+        <SelectField label="סטטוס מלאי" value={productInventoryStatus} onChange={(next) => { const value = next as NonNullable<V6Product["inventoryStatus"]>; setProductInventoryStatus(value); setProductActive(value !== "draft"); }}>{v6InventoryStatuses.map((item) => <option key={item} value={item} className="bg-zinc-950">{inventoryStatusLabel[item]}</option>)}</SelectField>
+        <SelectField label="נראות" value={productVisibility} onChange={(next) => setProductVisibility(next as NonNullable<V6Product["visibility"]>)}><option value="public" className="bg-zinc-950">גלוי בחנות</option><option value="members" className="bg-zinc-950">לחברים בלבד</option><option value="hidden" className="bg-zinc-950">מוסתר</option></SelectField>
       </div>
-      <div className={v6Cx("grid gap-2.5 rounded-[18px] border p-2.5 sm:grid-cols-2", v6Surface.quiet)}>
+      <div className={v6Cx(v6LovableForm.groupGrid, "sm:grid-cols-2")}>
         <FormField label="מידות (מופרד בפסיקים)" value={productSizes} onChange={setProductSizes} />
         <FormField label="צבעים (מופרד בפסיקים)" value={productColors} onChange={setProductColors} />
       </div>
-      <div className={v6Cx("space-y-2.5 rounded-[18px] border p-2.5", v6Surface.quiet)}>
+      <div className={v6LovableForm.group}>
         <FormField label="הערות מוצר" value={productNotes} onChange={setProductNotes} />
         <FormField label="הערת איסוף / משלוח" value={productPickupNote} onChange={setProductPickupNote} />
       </div>
-      <button onClick={() => setProductMemberOnly((value) => !value)} className={v6Cx("w-full rounded-[16px] px-3 py-2.5 text-start text-[12px] font-semibold", productMemberOnly ? "bg-emerald-100 text-zinc-950" : v6Control.chip)}>דרופ מוגבל לחברי סטודיו בלבד</button>
+      <button type="button" onClick={() => setProductMemberOnly((value) => !value)} className={productMemberOnly ? v6LovableForm.toggleRowActive : v6LovableForm.toggleRow}>
+        <span className="min-w-0 truncate">דרופ מוגבל לחברי סטודיו בלבד</span>
+        <span className={v6Cx("text-[11px] font-medium", productMemberOnly ? "text-zinc-950/72" : "text-white/40")}>{productMemberOnly ? "פעיל" : "כבוי"}</span>
+      </button>
       <input ref={productImageInput} type="file" accept="image/*" className="hidden" onChange={(event) => uploadProductImage(event.target.files?.[0])} />
-      <div className={v6Cx("space-y-2 rounded-[18px] border p-2.5", v6Surface.quiet)}>
+      <div className={v6Cx(v6Lovable.card, "flex flex-col gap-3 rounded-2xl p-4")}>
         <div className="flex gap-2 [&>button]:flex-1"><V6Button variant="ghost" onClick={() => productImageInput.current?.click()}><Upload size={16} /> העלאת תמונה</V6Button></div>
-        {pendingProductImageFile ? <p className="text-start text-xs text-emerald-100/70">נבחרה תמונה להעלאה בשמירה: {pendingProductImageFile.name}</p> : null}
-        {productImagePreviewUrl ? <div className="h-28 rounded-[22px] bg-cover bg-center" style={{ backgroundImage: `url(${productImagePreviewUrl})` }} /> : null}
-        {shopImages.length ? <label className="block text-start"><span className="text-[12px] font-bold text-white/50">בחירת תמונה קיימת</span><select value={productImageId} onChange={(e) => setProductImageId(e.target.value)} className="mt-2 min-h-[48px] w-full rounded-[18px] border border-transparent bg-black/24 px-3 text-white outline-none"><option value="" className="bg-zinc-950">ללא תמונה</option>{shopImages.map((item) => <option key={item.id} value={item.id} className="bg-zinc-950">{item.title}</option>)}</select></label> : <p className="text-start text-xs text-white/44">אין עדיין תמונות מוצר שמורות.</p>}
+        {pendingProductImageFile ? <SafeMeta as="p" className={v6Cx(v6LovableForm.helper, "text-emerald-100/72")}>נבחרה תמונה להעלאה בשמירה: {pendingProductImageFile.name}</SafeMeta> : null}
+        {productImagePreviewUrl ? <div className="h-28 rounded-2xl bg-cover bg-center" style={{ backgroundImage: `url(${productImagePreviewUrl})` }} role="img" aria-label="תצוגה מקדימה של תמונת מוצר" /> : null}
+        {shopImages.length ? <SelectField label="בחירת תמונה קיימת" value={productImageId} onChange={setProductImageId}><option value="" className="bg-zinc-950">ללא תמונה</option>{shopImages.map((item) => <option key={item.id} value={item.id} className="bg-zinc-950">{item.title}</option>)}</SelectField> : <SafeMeta as="p" className={v6LovableForm.helper}>אין עדיין תמונות מוצר שמורות.</SafeMeta>}
       </div>
       <SheetActions>
         <V6Button disabled={productSaving} onClick={() => void saveProduct()}>{productSaving ? "שומר…" : "שמירת מוצר"}</V6Button>
@@ -1260,37 +1264,65 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
     show("סיסמה עודכנה");
   }
   const editor = (
-    <div className="space-y-4">
-      <Surface tone="management" className="p-4">
-        <p className={v6Cx(v6Type.kicker, "text-sky-100/54")}>זהות והרשאות</p>
-        <SafeTitle as="h3" className="mt-2 text-[19px] font-semibold tracking-[-0.040em]">{selected?.name ?? (name || "משתמש חדש")}</SafeTitle>
-        <SafeMeta as="p" className="mt-2 text-xs leading-relaxed text-white/48">שינוי תפקיד מעדכן את הרשאות המשתמש דרך אותו מסלול נתונים.</SafeMeta>
-      </Surface>
-      <div className="grid grid-cols-2 gap-2 rounded-[30px] border border-[#f4d58d]/8 bg-black/[0.12] p-2 shadow-[inset_0_1px_0_rgba(255,247,223,0.036)] [&>button]:w-full">
+    <div className="flex flex-col gap-3">
+      <div className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")}>
+        <SafeMeta as="p" className={v6Lovable.eyebrow}>זהות והרשאות</SafeMeta>
+        <SafeTitle as="h3" className="mt-1.5 text-base font-semibold tracking-tight text-white/92">{selected?.name ?? (name || "משתמש חדש")}</SafeTitle>
+        <SafeMeta as="p" className={v6Cx("mt-1.5", v6LovableForm.helper)}>שינוי תפקיד מעדכן את הרשאות המשתמש דרך אותו מסלול נתונים.</SafeMeta>
+      </div>
+      <div className={v6Cx(v6Lovable.card, "grid grid-cols-2 gap-2 rounded-2xl p-2 [&>button]:w-full")}>
         <V6Button onClick={() => { if (save()) setActiveSheet(null); }}>שמירה</V6Button>
         <V6Button variant="ghost" onClick={resetPassword}>איפוס סיסמה</V6Button>
       </div>
-      <div className={v6Cx("space-y-3 rounded-[34px] border p-3.5", v6Surface.quiet)}>
+      <div className={v6LovableForm.group}>
         <FormField label="שם" value={name} onChange={setName} />
         <FormField label="טלפון" value={phone} onChange={setPhone} />
       </div>
-      <div className={v6Cx("grid gap-3 rounded-[34px] border p-3.5 sm:grid-cols-2", v6Surface.quiet)}>
-        <label className="block text-start"><span className={v6Control.label}>תפקיד</span><select value={role} onChange={(e) => setRoleAndPermissions(e.target.value as V6Role)} className={v6Cx("mt-2", v6Control.field)}>{Object.entries(roleLabel).map(([id, label]) => <option key={id} value={id} className="bg-zinc-950">{label}</option>)}</select></label>
-        <label className="block text-start"><span className={v6Control.label}>סטטוס</span><select value={active ? "active" : "inactive"} onChange={(e) => setActive(e.target.value === "active")} className={v6Cx("mt-2", v6Control.field)}><option value="active" className="bg-zinc-950">פעיל</option><option value="inactive" className="bg-zinc-950">מושבת</option></select></label>
+      <div className={v6Cx(v6LovableForm.groupGrid, "sm:grid-cols-2")}>
+        <SelectField label="תפקיד" value={role} onChange={(next) => setRoleAndPermissions(next as V6Role)}>{Object.entries(roleLabel).map(([id, label]) => <option key={id} value={id} className="bg-zinc-950">{label}</option>)}</SelectField>
+        <SelectField label="סטטוס" value={active ? "active" : "inactive"} onChange={(next) => setActive(next === "active")}><option value="active" className="bg-zinc-950">פעיל</option><option value="inactive" className="bg-zinc-950">מושבת</option></SelectField>
       </div>
-      {(role === "teacher" || role === "student") ? <div className={v6Cx("rounded-[28px] border p-3 text-start", v6Surface.quiet)}><p className="mb-2 text-[12px] font-semibold text-white/48">{role === "teacher" ? "שיוך מורה לקבוצות" : "שיוך תלמיד/ה לקבוצות"}</p><div className="flex flex-wrap gap-2">{db.groups.map((group) => <button key={group.id} onClick={() => toggleGroup(group.id)} className={v6Cx("rounded-full px-3 py-2 text-xs font-semibold", groupIds.includes(group.id) ? "bg-emerald-100 text-zinc-950" : v6Control.chip)}>{group.name}</button>)}</div></div> : null}
-      {role === "student" ? <div className={v6Cx("rounded-[34px] border p-3.5", v6Surface.quiet)}><FormField label="קבוצת גיל" value={ageGroup} onChange={setAgeGroup} placeholder="למשל נוער / בוגרות" /></div> : null}
-      {(role === "teacher" || role === "student") ? <div className={v6Cx("rounded-[28px] border p-3 text-start", v6Surface.quiet)}><p className="mb-2 text-[12px] font-semibold text-white/48">סגנונות ריקוד</p><div className="flex flex-wrap gap-2">{danceStyles.map((style) => <button key={style} onClick={() => toggleDanceStyle(style)} className={v6Cx("rounded-full px-3 py-2 text-xs font-semibold", danceStyleIds.includes(style) ? "bg-cyan-100 text-zinc-950" : v6Control.chip)}>{style}</button>)}</div></div> : null}
-      {role === "parent" ? <div className={v6Cx("rounded-[28px] border p-3 text-start", v6Surface.quiet)}><p className="mb-2 text-[12px] font-semibold text-white/48">קישור הורה לתלמיד/ה</p><div className="flex flex-wrap gap-2">{availableStudents.map((student) => <button key={student.id} onClick={() => toggleLinkedStudent(student.id)} className={v6Cx("rounded-full px-3 py-2 text-xs font-semibold", linkedStudentIds.includes(student.id) ? "bg-sky-100 text-zinc-950" : v6Control.chip)}>{student.name}</button>)}</div></div> : null}
-      {role === "parent" ? <div className={v6Cx("grid gap-3 rounded-[34px] border p-3.5 sm:grid-cols-2", v6Surface.quiet)}><FormField label="העדפות תקשורת" value={communicationPrefs} onChange={setCommunicationPrefs} /><button onClick={() => setPrimaryContact((value) => !value)} className={v6Cx("min-h-[56px] rounded-[24px] px-4 text-start text-sm font-semibold", primaryContact ? "bg-sky-100 text-zinc-950" : v6Control.chip)}>איש קשר ראשי</button></div> : null}
-      {role === "teacher" ? <button onClick={() => setPrivateLessonEnabled((value) => !value)} className={v6Cx("w-full rounded-[24px] px-4 py-3 text-start text-sm font-semibold", privateLessonEnabled ? "bg-yellow-100 text-zinc-950" : v6Control.chip)}>זמין/ה לשיעורים פרטיים</button> : null}
-      {(role === "management" || role === "super_admin") ? <div className={v6Cx("rounded-[34px] border p-3.5", v6Surface.quiet)}><FormField label="אחריות / תפקיד ניהולי" value={responsibility} onChange={setResponsibility} /></div> : null}
-      <div className={v6Cx("rounded-[34px] border p-3.5", v6Surface.quiet)}><FormField label="הערות" value={notes} onChange={setNotes} /></div>
-      <div className={v6Cx("rounded-[28px] border p-3 text-start", v6Surface.quiet)}>
-        <p className="mb-2 text-[12px] font-semibold text-white/48">הרשאות</p>
-        <div className="flex flex-wrap gap-2">{permissionLabels.map(([key, label]) => <button key={key} onClick={() => togglePermission(key)} className={v6Cx("rounded-full px-3 py-2 text-xs font-semibold", permissions[key] ? "bg-violet-100 text-zinc-950" : v6Control.chip)}>{label}</button>)}</div>
+      {(role === "teacher" || role === "student") ? (
+        <div className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")}>
+          <SafeMeta as="p" className={v6Lovable.eyebrow}>{role === "teacher" ? "שיוך מורה לקבוצות" : "שיוך תלמיד/ה לקבוצות"}</SafeMeta>
+          <div className="mt-3 flex flex-wrap gap-1.5">{db.groups.map((group) => <button type="button" key={group.id} onClick={() => toggleGroup(group.id)} className={groupIds.includes(group.id) ? v6LovableForm.chipActive : v6LovableForm.chip}>{group.name}</button>)}</div>
+        </div>
+      ) : null}
+      {role === "student" ? <div className={v6LovableForm.group}><FormField label="קבוצת גיל" value={ageGroup} onChange={setAgeGroup} placeholder="למשל נוער / בוגרות" /></div> : null}
+      {(role === "teacher" || role === "student") ? (
+        <div className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")}>
+          <SafeMeta as="p" className={v6Lovable.eyebrow}>סגנונות ריקוד</SafeMeta>
+          <div className="mt-3 flex flex-wrap gap-1.5">{danceStyles.map((style) => <button type="button" key={style} onClick={() => toggleDanceStyle(style)} className={danceStyleIds.includes(style) ? v6LovableForm.chipActive : v6LovableForm.chip}>{style}</button>)}</div>
+        </div>
+      ) : null}
+      {role === "parent" ? (
+        <div className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")}>
+          <SafeMeta as="p" className={v6Lovable.eyebrow}>קישור הורה לתלמיד/ה</SafeMeta>
+          <div className="mt-3 flex flex-wrap gap-1.5">{availableStudents.map((student) => <button type="button" key={student.id} onClick={() => toggleLinkedStudent(student.id)} className={linkedStudentIds.includes(student.id) ? v6LovableForm.chipActive : v6LovableForm.chip}>{student.name}</button>)}</div>
+        </div>
+      ) : null}
+      {role === "parent" ? (
+        <div className={v6Cx(v6LovableForm.groupGrid, "sm:grid-cols-2")}>
+          <FormField label="העדפות תקשורת" value={communicationPrefs} onChange={setCommunicationPrefs} />
+          <button type="button" onClick={() => setPrimaryContact((value) => !value)} className={primaryContact ? v6LovableForm.toggleRowActive : v6LovableForm.toggleRow}>
+            <span className="min-w-0 truncate">איש קשר ראשי</span>
+            <span className={v6Cx("text-[11px] font-medium", primaryContact ? "text-zinc-950/72" : "text-white/40")}>{primaryContact ? "פעיל" : "כבוי"}</span>
+          </button>
+        </div>
+      ) : null}
+      {role === "teacher" ? (
+        <button type="button" onClick={() => setPrivateLessonEnabled((value) => !value)} className={privateLessonEnabled ? v6LovableForm.toggleRowActive : v6LovableForm.toggleRow}>
+          <span className="min-w-0 truncate">זמין/ה לשיעורים פרטיים</span>
+          <span className={v6Cx("text-[11px] font-medium", privateLessonEnabled ? "text-zinc-950/72" : "text-white/40")}>{privateLessonEnabled ? "פעיל" : "כבוי"}</span>
+        </button>
+      ) : null}
+      {(role === "management" || role === "super_admin") ? <div className={v6LovableForm.group}><FormField label="אחריות / תפקיד ניהולי" value={responsibility} onChange={setResponsibility} /></div> : null}
+      <div className={v6LovableForm.group}><FormField label="הערות" value={notes} onChange={setNotes} /></div>
+      <div className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")}>
+        <SafeMeta as="p" className={v6Lovable.eyebrow}>הרשאות</SafeMeta>
+        <div className="mt-3 flex flex-wrap gap-1.5">{permissionLabels.map(([key, label]) => <button type="button" key={key} onClick={() => togglePermission(key)} className={permissions[key] ? v6LovableForm.chipActive : v6LovableForm.chip}>{label}</button>)}</div>
       </div>
-      <div className={v6Cx("rounded-[34px] border p-3.5", v6Surface.quiet)}><FormField label={selected ? "סיסמה חדשה לאיפוס" : "סיסמה ראשונית"} value={password} onChange={setPassword} /></div>
+      <div className={v6LovableForm.group}><FormField label={selected ? "סיסמה חדשה לאיפוס" : "סיסמה ראשונית"} value={password} onChange={setPassword} /></div>
       <SheetActions>
         <V6Button onClick={() => { if (save()) setActiveSheet(null); }}>שמירה</V6Button>
         <V6Button variant="ghost" onClick={resetPassword}>איפוס</V6Button>
@@ -1314,10 +1346,10 @@ function UsersScreen({ actor, show, back }: { actor: V6User; show: (message: str
           <SegmentedControl value={filterOptions.find((item) => item.id === filter)?.label ?? "כולם"} options={filterOptions.map((item) => item.label)} onChange={(value) => setFilter(filterOptions.find((item) => item.label === value)?.id ?? "all")} />
         </div>
         <div className="grid gap-2 sm:grid-cols-4">
-          <label className="block text-start"><span className={v6Control.label}>קבוצה</span><select value={groupFilter} onChange={(e) => setGroupFilter(e.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כל הקבוצות</option>{db.groups.map((group) => <option key={group.id} value={group.id} className="bg-zinc-950">{group.name}</option>)}</select></label>
-          <label className="block text-start"><span className={v6Control.label}>גיל</span><select value={ageFilter} onChange={(e) => setAgeFilter(e.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כל הגילים</option>{ageGroups.map((age) => <option key={age} value={age} className="bg-zinc-950">{age}</option>)}</select></label>
-          <label className="block text-start"><span className={v6Control.label}>סגנון</span><select value={styleFilter} onChange={(e) => setStyleFilter(e.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כל הסגנונות</option>{danceStyles.map((style) => <option key={style} value={style} className="bg-zinc-950">{style}</option>)}</select></label>
-          <label className="block text-start"><span className={v6Control.label}>פעילות</span><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כולם</option><option value="active" className="bg-zinc-950">פעילים</option><option value="inactive" className="bg-zinc-950">לא פעילים</option></select></label>
+          <SelectField label="קבוצה" value={groupFilter} onChange={setGroupFilter}><option value="all" className="bg-zinc-950">כל הקבוצות</option>{db.groups.map((group) => <option key={group.id} value={group.id} className="bg-zinc-950">{group.name}</option>)}</SelectField>
+          <SelectField label="גיל" value={ageFilter} onChange={setAgeFilter}><option value="all" className="bg-zinc-950">כל הגילים</option>{ageGroups.map((age) => <option key={age} value={age} className="bg-zinc-950">{age}</option>)}</SelectField>
+          <SelectField label="סגנון" value={styleFilter} onChange={setStyleFilter}><option value="all" className="bg-zinc-950">כל הסגנונות</option>{danceStyles.map((style) => <option key={style} value={style} className="bg-zinc-950">{style}</option>)}</SelectField>
+          <SelectField label="פעילות" value={statusFilter} onChange={setStatusFilter}><option value="all" className="bg-zinc-950">כולם</option><option value="active" className="bg-zinc-950">פעילים</option><option value="inactive" className="bg-zinc-950">לא פעילים</option></SelectField>
         </div>
       </div>
       </section>
@@ -1386,37 +1418,39 @@ function PrivateLessons({ user, show, back }: { user: V6User; show: (message: st
         <SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">תיאום פרטי, נקי</SafeTitle>
         <SafeMeta as="p" className="mt-4 max-w-[20rem] text-sm leading-relaxed text-white/58">בקשה קצרה, מורה נכון, מועד מוצע. בלי טופס שמרגיש כבד.</SafeMeta>
       </HeroSurface>
-      <EditorialSection title="בקשת שיעור" kicker="קונסיירז׳ סטודיו" tone="shop">
-      <div className="space-y-3">
-        <label className="block text-start"><span className={v6Control.label}>תלמיד/ה</span><select value={studentId} onChange={(e) => setStudentId(e.target.value)} className={v6Cx("mt-2", v6Control.field)}>{students.map((s) => <option key={s.id} value={s.id} className="bg-zinc-950">{s.name}</option>)}</select></label>
-        <label className="block text-start"><span className={v6Control.label}>מורה</span><select value={teacherId} onChange={(e) => setTeacherId(e.target.value)} className={v6Cx("mt-2", v6Control.field)}>{teachers.map((t) => <option key={t.id} value={t.id} className="bg-zinc-950">{t.name}</option>)}</select></label>
-        <div className="grid grid-cols-2 gap-2 [&>button]:w-full">
-          <V6Button disabled={!canRequest} onClick={() => request(30)}><BidiNumber>30</BidiNumber> דקות</V6Button>
-          <V6Button disabled={!canRequest} onClick={() => request(45)}><BidiNumber>45</BidiNumber> דקות</V6Button>
-        </div>
-        {!canRequest ? <p className="text-start text-xs text-amber-100/70">אין מספיק נתונים לשליחת בקשה. צריך תלמיד/ה ומורה פעילים.</p> : null}
-      </div>
-      </EditorialSection>
-      <EditorialSection title="בקשות פעילות" kicker="תיאום ותשלום" tone="shop">
-      <div className="space-y-3">
-        {privateLessons.length ? privateLessons.map((item) => (
-          <div key={item.id} className={v6Cx("lk-safe-surface rounded-[32px] border p-4", v6Surface.quiet)}>
-            <div className="flex items-start gap-3 text-start">
-              <div className="min-w-0 flex-1">
-                <SafeTitle as="h2" className="font-semibold tracking-[-0.020em]">{db.users.find((u) => u.id === item.studentId)?.name} · {item.duration} דקות</SafeTitle>
-                <SafeMeta as="p" className="mt-1 text-sm text-white/55"><BidiNumber>₪ {item.price}</BidiNumber> · {item.selectedSlot ?? item.suggestedSlots[0] ?? "מועד טרם נקבע"}</SafeMeta>
-              </div>
-              <V6StatusBadge tone={item.status === "paid" ? "success" : item.status === "requested" ? "urgent" : "shop"}>{item.status === "paid" ? "שולם" : item.status === "requested" ? "מבוקש" : "בתיאום"}</V6StatusBadge>
-            </div>
-            <div className="mt-3 grid gap-2 sm:grid-cols-3 [&>button]:w-full">
-              <V6Button variant="ghost" onClick={() => { dispatch({ type: "suggest_private_lesson", actor: user, requestId: item.id, slot: "יום שני 17:00" }); show("מועד הוצע"); }}>הצע מועד</V6Button>
-              <V6Button variant="ghost" onClick={() => { dispatch({ type: "select_private_lesson", actor: user, requestId: item.id, slot: "יום שני 17:00" }); show("מועד נבחר"); }}>בחר מועד</V6Button>
-              <V6Button onClick={() => { dispatch({ type: "mark_private_lesson_paid", actor: user, requestId: item.id }); show("שולם"); }}>שולם</V6Button>
-            </div>
+      <LovableEditorialPanel kicker="קונסיירז׳ סטודיו" title="בקשת שיעור">
+        <div className="flex flex-col gap-3">
+          <div className={v6Cx(v6LovableForm.groupGrid, "sm:grid-cols-2")}>
+            <SelectField label="תלמיד/ה" value={studentId} onChange={setStudentId}>{students.map((s) => <option key={s.id} value={s.id} className="bg-zinc-950">{s.name}</option>)}</SelectField>
+            <SelectField label="מורה" value={teacherId} onChange={setTeacherId}>{teachers.map((t) => <option key={t.id} value={t.id} className="bg-zinc-950">{t.name}</option>)}</SelectField>
           </div>
-        )) : <Surface tone="shop"><p className="text-center text-sm text-white/50">אין בקשות שיעור פרטי פתוחות כרגע.</p></Surface>}
-      </div>
-      </EditorialSection>
+          <div className="grid grid-cols-2 gap-2 [&>button]:w-full">
+            <V6Button disabled={!canRequest} onClick={() => request(30)}><BidiNumber>30</BidiNumber> דקות</V6Button>
+            <V6Button disabled={!canRequest} onClick={() => request(45)}><BidiNumber>45</BidiNumber> דקות</V6Button>
+          </div>
+          {!canRequest ? <SafeMeta as="p" className={v6Cx(v6LovableForm.helper, "text-amber-100/70")}>אין מספיק נתונים לשליחת בקשה. צריך תלמיד/ה ומורה פעילים.</SafeMeta> : null}
+        </div>
+      </LovableEditorialPanel>
+      <LovableEditorialPanel kicker="תיאום ותשלום" title="בקשות פעילות">
+        <div className="flex flex-col gap-2">
+          {privateLessons.length ? privateLessons.map((item) => (
+            <article key={item.id} className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")}>
+              <div className="flex items-start gap-3">
+                <div className="min-w-0 flex-1">
+                  <SafeTitle as="h2" className="text-base font-semibold tracking-tight text-white/92">{db.users.find((u) => u.id === item.studentId)?.name} · {item.duration} דקות</SafeTitle>
+                  <SafeMeta as="p" className="mt-1 text-[12px] leading-relaxed text-white/52"><BidiNumber>₪ {item.price}</BidiNumber> · {item.selectedSlot ?? item.suggestedSlots[0] ?? "מועד טרם נקבע"}</SafeMeta>
+                </div>
+                <V6StatusBadge tone={item.status === "paid" ? "success" : item.status === "requested" ? "urgent" : "shop"}>{item.status === "paid" ? "שולם" : item.status === "requested" ? "מבוקש" : "בתיאום"}</V6StatusBadge>
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-3 [&>button]:w-full">
+                <V6Button variant="ghost" onClick={() => { dispatch({ type: "suggest_private_lesson", actor: user, requestId: item.id, slot: "יום שני 17:00" }); show("מועד הוצע"); }}>הצע מועד</V6Button>
+                <V6Button variant="ghost" onClick={() => { dispatch({ type: "select_private_lesson", actor: user, requestId: item.id, slot: "יום שני 17:00" }); show("מועד נבחר"); }}>בחר מועד</V6Button>
+                <V6Button onClick={() => { dispatch({ type: "mark_private_lesson_paid", actor: user, requestId: item.id }); show("שולם"); }}>שולם</V6Button>
+              </div>
+            </article>
+          )) : <div className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-center")}><SafeMeta as="p" className={v6LovableForm.helper}>אין בקשות שיעור פרטי פתוחות כרגע.</SafeMeta></div>}
+        </div>
+      </LovableEditorialPanel>
     </div>
   );
 }
@@ -1509,22 +1543,24 @@ function MediaScreen({ user, show, back }: { user: V6User; show: (message: strin
     }
   }
   const mediaEditor = (
-    <div className="space-y-4">
-      <Surface tone="modern" className="p-4">
-        <p className={v6Cx(v6Type.kicker, "text-cyan-100/54")}>העלאת מדיה</p>
-        <SafeTitle as="h3" className="mt-2 text-[19px] font-semibold tracking-[-0.040em]">{title || "חומר חדש"}</SafeTitle>
-        <SafeMeta as="p" className="mt-2 text-xs leading-relaxed text-white/48">במצב אמיתי הקובץ עולה ל־R2 והמטאדאטה נשמרת ב־Supabase. בלי R2 מוצגת תצוגת דמו בלבד.</SafeMeta>
-      </Surface>
-      <FormField label="כותרת" value={title} onChange={setTitle} />
-      <label className="block text-start"><span className={v6Control.label}>יעד</span><select value={mediaTarget} onChange={(event) => setMediaTarget(event.target.value as "group" | "event")} className={v6Cx("mt-2", v6Control.field)}><option value="group" className="bg-zinc-950">מדיית שיעור / קבוצה</option><option value="event" className="bg-zinc-950">מדיית אירוע</option></select></label>
-      {mediaTarget === "group" ? <label className="block text-start"><span className={v6Control.label}>קבוצה</span><select value={groupId} onChange={(e) => setGroupId(e.target.value)} className={v6Cx("mt-2", v6Control.field)}>{groups.map((g) => <option key={g.id} value={g.id} className="bg-zinc-950">{g.name}</option>)}</select></label> : null}
-      {mediaTarget === "event" ? <label className="block text-start"><span className={v6Control.label}>אירוע</span><select value={eventId} onChange={(event) => setEventId(event.target.value)} className={v6Cx("mt-2", v6Control.field)}>{db.events.map((event) => <option key={event.id} value={event.id} className="bg-zinc-950">{event.title}</option>)}</select></label> : null}
+    <div className="flex flex-col gap-3">
+      <div className={v6Cx(v6Lovable.card, "rounded-2xl p-4 text-start")}>
+        <SafeMeta as="p" className={v6Lovable.eyebrow}>העלאת מדיה</SafeMeta>
+        <SafeTitle as="h3" className="mt-1.5 text-base font-semibold tracking-tight text-white/92">{title || "חומר חדש"}</SafeTitle>
+        <SafeMeta as="p" className={v6Cx("mt-1.5", v6LovableForm.helper)}>במצב אמיתי הקובץ עולה ל־R2 והמטאדאטה נשמרת ב־Supabase. בלי R2 מוצגת תצוגת דמו בלבד.</SafeMeta>
+      </div>
+      <div className={v6LovableForm.group}>
+        <FormField label="כותרת" value={title} onChange={setTitle} />
+        <SelectField label="יעד" value={mediaTarget} onChange={(next) => setMediaTarget(next as "group" | "event")}><option value="group" className="bg-zinc-950">מדיית שיעור / קבוצה</option><option value="event" className="bg-zinc-950">מדיית אירוע</option></SelectField>
+        {mediaTarget === "group" ? <SelectField label="קבוצה" value={groupId} onChange={setGroupId}>{groups.map((g) => <option key={g.id} value={g.id} className="bg-zinc-950">{g.name}</option>)}</SelectField> : null}
+        {mediaTarget === "event" ? <SelectField label="אירוע" value={eventId} onChange={setEventId}>{db.events.map((event) => <option key={event.id} value={event.id} className="bg-zinc-950">{event.title}</option>)}</SelectField> : null}
+      </div>
       <input ref={input} type="file" accept="image/*,video/*" className="hidden" onChange={(e) => void save(e.target.files?.[0])} />
       <div className="grid grid-cols-2 gap-2 [&>button]:w-full">
         <V6Button disabled={uploading} onClick={() => input.current?.click()}><Upload size={16} /> {uploading ? "מעלה…" : "בחירת קובץ"}</V6Button>
         <V6Button disabled={uploading} variant="ghost" onClick={() => void save()}>שמירת מטאדאטה</V6Button>
       </div>
-      <RtlText as="p" className="text-xs leading-relaxed text-white/44">תצוגת דמו אינה נחשבת שמירה קבועה. שמירה אמיתית דורשת סשן אקדמיה מאומת ו־R2 מוגדרים בשרת.</RtlText>
+      <SafeMeta as="p" className={v6LovableForm.helper}>תצוגת דמו אינה נחשבת שמירה קבועה. שמירה אמיתית דורשת סשן אקדמיה מאומת ו־R2 מוגדרים בשרת.</SafeMeta>
       <SheetActions>
         <V6Button disabled={uploading} onClick={() => void save()}>שמירת מטאדאטה</V6Button>
         <V6Button variant="ghost" onClick={() => setActiveSheet(null)}>ביטול</V6Button>
@@ -1543,12 +1579,12 @@ function MediaScreen({ user, show, back }: { user: V6User; show: (message: strin
       </HeroSurface>
       <V6SheetController activeSheet={activeSheet} title="העלאת מדיה" onClose={() => setActiveSheet(null)}>{mediaEditor}</V6SheetController>
       <LovableActionRow icon={ImagePlus} title="העלאת מדיה" subtitle="תמונה, וידאו או מטאדאטה" tone="modern" onClick={() => setActiveSheet({ type: "upload-media", mode: "add" })} />
-      <OpenCluster tone="modern" className="grid gap-3 p-3 sm:grid-cols-4">
-        <label className="block text-start"><span className={v6Control.label}>קבוצה</span><select value={groupFilter} onChange={(event) => setGroupFilter(event.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כל הקבוצות</option>{db.groups.map((group) => <option key={group.id} value={group.id} className="bg-zinc-950">{group.name}</option>)}</select></label>
-        <label className="block text-start"><span className={v6Control.label}>אירוע</span><select value={eventFilter} onChange={(event) => setEventFilter(event.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כל האירועים</option>{db.events.map((event) => <option key={event.id} value={event.id} className="bg-zinc-950">{event.title}</option>)}</select></label>
-        <label className="block text-start"><span className={v6Control.label}>מעלה</span><select value={uploaderFilter} onChange={(event) => setUploaderFilter(event.target.value)} className={v6Cx("mt-2", v6Control.field)}><option value="all" className="bg-zinc-950">כולם</option>{uploaderOptions.map((item) => <option key={item.id} value={item.id} className="bg-zinc-950">{item.name}</option>)}</select></label>
+      <div className={v6Cx(v6LovableForm.groupGrid, "sm:grid-cols-4")}>
+        <SelectField label="קבוצה" value={groupFilter} onChange={setGroupFilter}><option value="all" className="bg-zinc-950">כל הקבוצות</option>{db.groups.map((group) => <option key={group.id} value={group.id} className="bg-zinc-950">{group.name}</option>)}</SelectField>
+        <SelectField label="אירוע" value={eventFilter} onChange={setEventFilter}><option value="all" className="bg-zinc-950">כל האירועים</option>{db.events.map((event) => <option key={event.id} value={event.id} className="bg-zinc-950">{event.title}</option>)}</SelectField>
+        <SelectField label="מעלה" value={uploaderFilter} onChange={setUploaderFilter}><option value="all" className="bg-zinc-950">כולם</option>{uploaderOptions.map((item) => <option key={item.id} value={item.id} className="bg-zinc-950">{item.name}</option>)}</SelectField>
         <FormField label="תאריך שיעור" value={dateFilter} onChange={setDateFilter} type="date" />
-      </OpenCluster>
+      </div>
       <OpenCluster tone="modern" className="grid gap-3 p-3 sm:grid-cols-2">
         {selectV6GalleryCollectionsForActor(db, user).map((collection) => {
           const groupNames = db.groups.filter((group) => collection.groupIds.includes(group.id)).map((group) => group.name).join(", ");
