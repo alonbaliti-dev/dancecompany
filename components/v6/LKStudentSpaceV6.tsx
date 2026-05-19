@@ -36,12 +36,10 @@ import {
   BottomSheet,
   Button as V6Button,
   DirectionalChevron,
-  EditorialSection,
   FeedRow as V6FeedRow,
   FormField,
   HeroSurface,
   InlineMetric,
-  OpenCluster,
   RtlText,
   SafeMeta,
   SafeTitle,
@@ -52,7 +50,6 @@ import {
   StatusBadge as V6StatusBadge,
   Surface,
   Toast as V6Toast,
-  Widget,
   LovableActionRow,
   LovableEditorialPanel,
   MobileScreen,
@@ -567,12 +564,12 @@ function MiniSummary({ icon: Icon, tone, label, title, meta }: { icon: React.Ele
   const t = v6Tone[tone];
   const numericTitle = /^(?:V)?[₪\d%+.,-]+$/.test(title);
   return (
-    <div dir="rtl" className="lk-safe-row flex items-center gap-3 rounded-[28px] px-3 py-3 text-start">
-      <span className={v6Cx("grid h-9 w-9 shrink-0 place-items-center rounded-full", t.soft, t.text)}><Icon size={14} strokeWidth={1.9} /></span>
+    <div dir="rtl" className={v6Cx(v6Lovable.card, "flex items-center gap-3 rounded-2xl px-4 py-3 text-start")}>
+      <span className={v6Cx("grid h-10 w-10 shrink-0 place-items-center rounded-2xl", t.soft, t.text)}><Icon size={15} strokeWidth={1.8} /></span>
       <span className="min-w-0 flex-1 text-start">
-        <SafeMeta as="span" className="block text-[11px] font-medium text-white/42">{label}</SafeMeta>
-        <span className="mt-1 block break-words text-[17px] font-semibold leading-tight tracking-[-0.035em] text-white/88">{numericTitle ? <BidiNumber>{title}</BidiNumber> : <RtlText>{title}</RtlText>}</span>
-        <SafeMeta as="span" className="mt-1 block text-[11px] font-medium text-white/38">{meta}</SafeMeta>
+        <SafeMeta as="span" className={v6Lovable.eyebrow}>{label}</SafeMeta>
+        <span className="mt-1 block break-words text-base font-semibold leading-tight tracking-tight text-white/92">{numericTitle ? <BidiNumber>{title}</BidiNumber> : <RtlText>{title}</RtlText>}</span>
+        <SafeMeta as="span" className="mt-0.5 block text-[11px] font-medium text-white/42">{meta}</SafeMeta>
       </span>
     </div>
   );
@@ -1585,17 +1582,17 @@ function MediaScreen({ user, show, back }: { user: V6User; show: (message: strin
         <SelectField label="מעלה" value={uploaderFilter} onChange={setUploaderFilter}><option value="all" className="bg-zinc-950">כולם</option>{uploaderOptions.map((item) => <option key={item.id} value={item.id} className="bg-zinc-950">{item.name}</option>)}</SelectField>
         <FormField label="תאריך שיעור" value={dateFilter} onChange={setDateFilter} type="date" />
       </div>
-      <OpenCluster tone="modern" className="grid gap-3 p-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         {selectV6GalleryCollectionsForActor(db, user).map((collection) => {
           const groupNames = db.groups.filter((group) => collection.groupIds.includes(group.id)).map((group) => group.name).join(", ");
           const event = collection.eventId ? db.events.find((item) => item.id === collection.eventId) : undefined;
           return (
             <Surface key={collection.id} tone={collection.kind === "annual_show" ? "repertoire" : collection.kind === "competition" ? "urgent" : "modern"} className="p-4">
               <div className="flex items-start gap-3 text-start">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[21px] bg-cyan-100/10 text-cyan-50"><Images size={17} /></span>
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-cyan-100/10 text-cyan-50"><Images size={17} strokeWidth={1.8} /></span>
                 <div className="min-w-0 flex-1">
                   <SafeTitle as="h2" className="text-base font-semibold tracking-tight text-white/92">{collection.title}</SafeTitle>
-                  <SafeMeta as="p" className="mt-1 text-xs text-white/46">{event ? `${eventTypeLabel[event.type]} · ${event.date}` : groupNames || collection.schoolYear}</SafeMeta>
+                  <SafeMeta as="p" className="mt-1 text-xs text-white/48">{event ? `${eventTypeLabel[event.type]} · ${event.date}` : groupNames || collection.schoolYear}</SafeMeta>
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     <V6StatusBadge tone="modern"><BidiNumber>{collection.itemIds.length}</BidiNumber> פריטים</V6StatusBadge>
                     <V6StatusBadge tone={collection.visibility === "management" ? "admin" : "studio"}>{collection.visibility === "parents" ? "הורים" : collection.visibility === "students" ? "תלמידים" : collection.visibility === "staff" ? "צוות" : "ניהול"}</V6StatusBadge>
@@ -1605,7 +1602,7 @@ function MediaScreen({ user, show, back }: { user: V6User; show: (message: strin
             </Surface>
           );
         })}
-      </OpenCluster>
+      </div>
       {media.map((item) => (
         <Surface key={item.id} tone="modern" className="overflow-hidden p-0">
           {item.localPreviewUrl ? (
@@ -1695,7 +1692,7 @@ function LegacyScreen({ user, back }: { user: V6User; back: () => void }) {
           <InlineMetric tone="management" label="רשומות" value={<BidiNumber>{legacy.length}</BidiNumber>} meta="מורשת" />
         </div>
       </HeroSurface>
-      <EditorialSection title="הישגים ומורשת" kicker="ניהול ידני" tone="repertoire">
+      <LovableEditorialPanel kicker="ניהול ידני" title="הישגים ומורשת">
         <div className="space-y-3">
           {[...achievements, ...legacy].map((item) => {
             const groupNames = db.groups.filter((group) => item.groupIds.includes(group.id)).map((group) => group.name).join(", ");
@@ -1715,7 +1712,7 @@ function LegacyScreen({ user, back }: { user: V6User; back: () => void }) {
             );
           })}
         </div>
-      </EditorialSection>
+      </LovableEditorialPanel>
     </div>
   );
 }
@@ -1732,7 +1729,7 @@ function DatabaseScreen({ show, back }: { show: (message: string) => void; back:
         <SafeTitle as="h2" className="mt-4 max-w-[19rem] text-xl font-semibold leading-[1.15] tracking-tight">מסד הנתונים</SafeTitle>
         <SafeMeta as="p" className="mt-4 max-w-[21rem] text-sm leading-relaxed text-white/62">ייצוא, ייבוא וגיבוי של הנתונים במקום אחד וברור.</SafeMeta>
       </HeroSurface>
-      <OpenCluster tone="admin" className="grid gap-1 sm:grid-cols-3"><MiniSummary icon={Users} tone="management" label="משתמשים" title={`${db.users.length}`} meta="במאגר" /><MiniSummary icon={Bell} tone="modern" label="התראות" title={`${db.notifications.length}`} meta="פעילות" /><MiniSummary icon={Database} tone="admin" label="יומן" title={`${db.auditLog.length}`} meta="פעולות" /></OpenCluster>
+      <div className="grid gap-2 sm:grid-cols-3"><MiniSummary icon={Users} tone="management" label="משתמשים" title={`${db.users.length}`} meta="במאגר" /><MiniSummary icon={Bell} tone="modern" label="התראות" title={`${db.notifications.length}`} meta="פעילות" /><MiniSummary icon={Database} tone="admin" label="יומן" title={`${db.auditLog.length}`} meta="פעולות" /></div>
       <Surface tone="admin" className="space-y-3 p-4"><p className="text-right text-sm leading-relaxed text-white/58">אפשר לייצא גיבוי או לייבא קובץ נתונים מעודכן.</p><input ref={ref} type="file" accept="application/json" className="hidden" onChange={async (e) => { const file = e.target.files?.[0]; if (!file) return; const result = await importDatabase(file); show(result.ok === true ? "המסד יובא" : result.reason); }} /><div className="flex flex-wrap gap-2 [&>button]:flex-1"><V6Button onClick={exportDatabase}><Download size={16} /> ייצוא</V6Button><V6Button variant="ghost" onClick={() => ref.current?.click()}><Upload size={16} /> ייבוא</V6Button></div></Surface>
     </div>
   );
@@ -1742,12 +1739,60 @@ function TextsScreen({ actor, show, back }: { actor: V6User; show: (message: str
   const { db, dispatch } = useV6();
   const [title, setTitle] = useState(db.editableTexts.loginTitle ?? "");
   const [prompt] = useState(db.aiPrompts.super_admin ?? "");
-  return <div className="space-y-4"><BackHeader title="טקסטים והצעות" back={back} /><HeroSurface tone="admin" className="min-h-[205px] p-5"><V6StatusBadge tone="admin">שפה ברורה</V6StatusBadge><SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">הקול של הסטודיו נשמר כאן</SafeTitle><SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">כאן עורכים טקסטים חשובים שמופיעים באפליקציה.</SafeMeta></HeroSurface><EditorialSection title="טקסט כניסה" kicker="תוכן ניתן לעריכה" tone="repertoire"><div className="space-y-3"><FormField label="כותרת כניסה" value={title} onChange={setTitle} /><V6Button onClick={() => { dispatch({ type: "update_text", actor, key: "loginTitle", value: title }); show("הטקסט נשמר"); }}>שמירה</V6Button></div></EditorialSection><EditorialSection title="תבנית הצעה" kicker="אישור אנושי" tone="admin"><label className="block text-right"><span className="text-[11px] font-black text-white/50">תבנית למנהל האפליקציה</span><textarea value={prompt} readOnly className="mt-2 min-h-32 w-full rounded-[24px] border border-transparent bg-black/20 p-3 text-right text-[15px] leading-relaxed text-white/68 outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.055)]" /></label><SafeMeta as="p" className="mt-3 text-xs text-white/48">תבניות הצעה מוצגות לצפייה בלבד בשלב זה. פרסום תוכן דורש אישור אנושי.</SafeMeta><div className="mt-3"><V6Button variant="ghost" onClick={() => show("עריכת תבניות הצעה לא מופעלת ב־V6 הנוכחי")}>למה לא נשמר?</V6Button></div></EditorialSection></div>;
+  return (
+    <div className="space-y-4">
+      <BackHeader title="טקסטים והצעות" back={back} />
+      <HeroSurface tone="admin" className="min-h-[205px] p-5">
+        <V6StatusBadge tone="admin">שפה ברורה</V6StatusBadge>
+        <SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">הקול של הסטודיו נשמר כאן</SafeTitle>
+        <SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">כאן עורכים טקסטים חשובים שמופיעים באפליקציה.</SafeMeta>
+      </HeroSurface>
+      <LovableEditorialPanel kicker="תוכן ניתן לעריכה" title="טקסט כניסה">
+        <div className="flex flex-col gap-3">
+          <FormField label="כותרת כניסה" value={title} onChange={setTitle} />
+          <V6Button onClick={() => { dispatch({ type: "update_text", actor, key: "loginTitle", value: title }); show("הטקסט נשמר"); }}>שמירה</V6Button>
+        </div>
+      </LovableEditorialPanel>
+      <LovableEditorialPanel kicker="אישור אנושי" title="תבנית הצעה">
+        <label className="block text-right">
+          <span className={v6LovableForm.label}>תבנית למנהל האפליקציה</span>
+          <textarea value={prompt} readOnly className={v6Cx("mt-1.5 min-h-32 resize-none", v6LovableForm.field, "text-right text-[15px] leading-relaxed text-white/82")} />
+        </label>
+        <SafeMeta as="p" className={v6Cx("mt-3", v6LovableForm.helper)}>תבניות הצעה מוצגות לצפייה בלבד בשלב זה. פרסום תוכן דורש אישור אנושי.</SafeMeta>
+        <div className="mt-3"><V6Button variant="ghost" onClick={() => show("עריכת תבניות הצעה לא מופעלת ב־V6 הנוכחי")}>למה לא נשמר?</V6Button></div>
+      </LovableEditorialPanel>
+    </div>
+  );
 }
 
 function FlagsScreen({ actor, show, back }: { actor: V6User; show: (message: string) => void; back: () => void }) {
   const { db, dispatch } = useV6();
-  return <div className="space-y-4"><BackHeader title="אפשרויות" back={back} /><HeroSurface tone="admin" className="min-h-[205px] p-5"><V6StatusBadge tone="admin">הפעלה וכיבוי</V6StatusBadge><SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">אפשרויות שנפתחות בזהירות</SafeTitle><SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">כל שינוי נשמר, כדי שיהיה ברור מה הופעל ומתי.</SafeMeta></HeroSurface><EditorialSection title="אפשרויות פעילות" kicker="כל שינוי נרשם" tone="admin"><div className="space-y-2.5">{Object.entries(db.featureFlags).map(([key, value]) => <div key={key} className="lk-safe-row flex items-center justify-between gap-3 rounded-[26px] border border-[rgba(255,255,255,0.046)] bg-white/[0.035] p-3 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.045)]"><button onClick={() => { dispatch({ type: "update_flags", actor, flags: { [key]: !value } }); show("האפשרות עודכנה"); }} className={v6Cx("shrink-0 rounded-full px-3 py-1.5 text-xs font-black shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]", value ? "bg-emerald-200 text-zinc-950" : "bg-white/10 text-white/58")}>{value ? "פעיל" : "כבוי"}</button><span className="lk-safe-meta text-sm font-black tracking-[-0.02em]">{key}</span></div>)}</div></EditorialSection></div>;
+  return (
+    <div className="space-y-4">
+      <BackHeader title="אפשרויות" back={back} />
+      <HeroSurface tone="admin" className="min-h-[205px] p-5">
+        <V6StatusBadge tone="admin">הפעלה וכיבוי</V6StatusBadge>
+        <SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">אפשרויות שנפתחות בזהירות</SafeTitle>
+        <SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">כל שינוי נשמר, כדי שיהיה ברור מה הופעל ומתי.</SafeMeta>
+      </HeroSurface>
+      <LovableEditorialPanel kicker="כל שינוי נרשם" title="אפשרויות פעילות">
+        <div className="flex flex-col gap-2">
+          {Object.entries(db.featureFlags).map(([key, value]) => (
+            <div key={key} className={v6Cx(v6Lovable.card, "lk-safe-row flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-right")}>
+              <button
+                type="button"
+                onClick={() => { dispatch({ type: "update_flags", actor, flags: { [key]: !value } }); show("האפשרות עודכנה"); }}
+                className={value ? v6LovableForm.chipActive : v6LovableForm.chip}
+              >
+                {value ? "פעיל" : "כבוי"}
+              </button>
+              <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight text-white/90">{key}</span>
+            </div>
+          ))}
+        </div>
+      </LovableEditorialPanel>
+    </div>
+  );
 }
 
 function BrandingScreen({ show, back }: { show: (message: string) => void; back: () => void }) {
@@ -1757,14 +1802,14 @@ function BrandingScreen({ show, back }: { show: (message: string) => void; back:
 function AuditScreen({ back }: { back: () => void }) {
   const { db } = useV6();
   const summary = summarizeV6Audit(db.auditLog);
-  return <div className="space-y-4"><BackHeader title="יומן פעולות" back={back} /><HeroSurface tone="admin" className="min-h-[205px] p-5"><V6StatusBadge tone={summary.sensitive ? "urgent" : "admin"}>{summary.sensitive ? "פעולות חשובות" : "יומן רגוע"}</V6StatusBadge><SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">מה השתנה ומתי</SafeTitle><SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">רשימה קצרה וברורה של פעולות חשובות באפליקציה.</SafeMeta></HeroSurface><OpenCluster tone="admin" className="grid grid-cols-2 gap-1"><MiniSummary icon={ClipboardList} tone="management" label="פעולות" title={`${summary.total}`} meta="נרשמו" /><MiniSummary icon={Shield} tone="urgent" label="חשובות" title={`${summary.sensitive}`} meta="למעקב" /></OpenCluster><LovableEditorialPanel kicker="מעקב שינויים" title="יומן פעולות"><div className="flex flex-col gap-1.5">{db.auditLog.map((item) => <V6FeedRow key={item.id} icon={Shield} title={item.action} body={`${item.actorName} · ${item.target}`} meta={new Date(item.createdAt).toLocaleDateString("he-IL")} tone="management" />)}</div></LovableEditorialPanel></div>;
+  return <div className="space-y-4"><BackHeader title="יומן פעולות" back={back} /><HeroSurface tone="admin" className="min-h-[205px] p-5"><V6StatusBadge tone={summary.sensitive ? "urgent" : "admin"}>{summary.sensitive ? "פעולות חשובות" : "יומן רגוע"}</V6StatusBadge><SafeTitle as="h2" className="mt-4 max-w-[18rem] text-xl font-semibold leading-[1.15] tracking-tight">מה השתנה ומתי</SafeTitle><SafeMeta as="p" className="mt-3 max-w-[20rem] text-sm leading-relaxed text-white/60">רשימה קצרה וברורה של פעולות חשובות באפליקציה.</SafeMeta></HeroSurface><div className="grid grid-cols-2 gap-2"><MiniSummary icon={ClipboardList} tone="management" label="פעולות" title={`${summary.total}`} meta="נרשמו" /><MiniSummary icon={Shield} tone="urgent" label="חשובות" title={`${summary.sensitive}`} meta="למעקב" /></div><LovableEditorialPanel kicker="מעקב שינויים" title="יומן פעולות"><div className="flex flex-col gap-1.5">{db.auditLog.map((item) => <V6FeedRow key={item.id} icon={Shield} title={item.action} body={`${item.actorName} · ${item.target}`} meta={new Date(item.createdAt).toLocaleDateString("he-IL")} tone="management" />)}</div></LovableEditorialPanel></div>;
 }
 
 function SystemScreen({ back }: { back: () => void }) {
   const { db, sync } = useV6();
   const issues = selectV6SystemIssues(db);
   const health = computeV6ManagementHealth(db);
-  return <div className="space-y-4"><BackHeader title="פתיחה וסנכרון" back={back} /><HeroSurface tone={issues.length ? "urgent" : "studio"} className="p-5"><V6StatusBadge tone={issues.length ? "urgent" : "success"}>{issues.length ? "דורש בדיקה" : "תקין"}</V6StatusBadge><SafeTitle as="h2" className="mt-4 text-xl font-semibold leading-[1.15] tracking-tight">{health.summary}</SafeTitle><SafeMeta as="p" className="mt-4 text-sm leading-relaxed text-white/64">פתיחה, נתונים וסנכרון מוצגים כאן בצורה פשוטה.</SafeMeta></HeroSurface><OpenCluster tone={issues.length ? "urgent" : "studio"} className="grid gap-1 sm:grid-cols-3"><MiniSummary icon={Check} tone="studio" label="פתיחה" title="מיידית" meta={sync} /><MiniSummary icon={Database} tone="admin" label="גרסה" title={`V${db.version}`} meta="נתונים" /><MiniSummary icon={HeartPulse} tone={issues.length ? "urgent" : "modern"} label="בדיקות" title={issues.length ? `${issues.length} לבדיקה` : "תקין"} meta={issues.length ? "צריך לבדוק" : "ללא חסימות"} /></OpenCluster><LovableEditorialPanel kicker="מעקב יומי" title="בדיקות"><div className="flex flex-col gap-1.5">{issues.length ? issues.map((issue) => <V6FeedRow key={issue.id} icon={HeartPulse} title={issue.title} body={issue.body} meta={issue.severity === "critical" ? "חשוב" : "בדיקה"} tone={issue.severity === "critical" ? "urgent" : "management"} />) : <V6FeedRow icon={CheckCircle2} title="אין חסימות פעילות" body="האפליקציה מוכנה לפתיחה ושימוש יומי." meta="תקין" tone="studio" />}</div></LovableEditorialPanel></div>;
+  return <div className="space-y-4"><BackHeader title="פתיחה וסנכרון" back={back} /><HeroSurface tone={issues.length ? "urgent" : "studio"} className="p-5"><V6StatusBadge tone={issues.length ? "urgent" : "success"}>{issues.length ? "דורש בדיקה" : "תקין"}</V6StatusBadge><SafeTitle as="h2" className="mt-4 text-xl font-semibold leading-[1.15] tracking-tight">{health.summary}</SafeTitle><SafeMeta as="p" className="mt-4 text-sm leading-relaxed text-white/64">פתיחה, נתונים וסנכרון מוצגים כאן בצורה פשוטה.</SafeMeta></HeroSurface><div className="grid gap-2 sm:grid-cols-3"><MiniSummary icon={Check} tone="studio" label="פתיחה" title="מיידית" meta={sync} /><MiniSummary icon={Database} tone="admin" label="גרסה" title={`V${db.version}`} meta="נתונים" /><MiniSummary icon={HeartPulse} tone={issues.length ? "urgent" : "modern"} label="בדיקות" title={issues.length ? `${issues.length} לבדיקה` : "תקין"} meta={issues.length ? "צריך לבדוק" : "ללא חסימות"} /></div><LovableEditorialPanel kicker="מעקב יומי" title="בדיקות"><div className="flex flex-col gap-1.5">{issues.length ? issues.map((issue) => <V6FeedRow key={issue.id} icon={HeartPulse} title={issue.title} body={issue.body} meta={issue.severity === "critical" ? "חשוב" : "בדיקה"} tone={issue.severity === "critical" ? "urgent" : "management"} />) : <V6FeedRow icon={CheckCircle2} title="אין חסימות פעילות" body="האפליקציה מוכנה לפתיחה ושימוש יומי." meta="תקין" tone="studio" />}</div></LovableEditorialPanel></div>;
 }
 
 function integrationTone(status: IntegrationHealthItem["statusHe"]): V6Tone {

@@ -163,13 +163,13 @@ export function Widget({ title, kicker, icon: Icon, tone = "studio", children }:
 
 export function FeedRow({ icon: Icon, title, body, meta, tone = "studio" }: { icon: ElementType; title: string; body: string; meta: string; tone?: V6Tone }) {
   return (
-    <SafeRow className={v6Cx("rounded-[14px] border px-2 py-1.5", v6Surface.whisper, v6Motion.standard, "hover:bg-white/[0.020]")}>
-      <span className={v6Cx("mt-px grid h-[22px] w-[22px] shrink-0 place-items-center rounded-[9px]", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={10.5} strokeWidth={1.9} /></span>
+    <SafeRow className={v6Cx("glass rounded-2xl px-3 py-2.5", v6Motion.standard, "motion-safe:hover:bg-white/[0.050]")}>
+      <span className={v6Cx("grid h-9 w-9 shrink-0 place-items-center rounded-2xl", v6Tone[tone].soft, v6Tone[tone].text)}><Icon size={15} strokeWidth={1.8} /></span>
       <span className="min-w-0 flex-1 text-start">
-        <SafeTitle as="span" className="block truncate text-[11.5px] font-semibold tracking-[-0.008em] text-white/84">{title}</SafeTitle>
-        <RtlText as="span" className="mt-px block truncate text-[9.4px] leading-snug text-white/42">{body}</RtlText>
+        <SafeTitle as="span" className="block truncate text-sm font-semibold tracking-tight text-white/90">{title}</SafeTitle>
+        <RtlText as="span" className="mt-0.5 block truncate text-[12px] leading-snug text-white/48">{body}</RtlText>
       </span>
-      <SafeMeta as="span" className="rtl-row-trailing min-w-[2.6rem] max-w-full shrink text-[8.8px] font-semibold text-white/32 sm:max-w-[8rem]">{meta}</SafeMeta>
+      <SafeMeta as="span" className="rtl-row-trailing min-w-[2.6rem] max-w-full shrink text-[11px] font-medium text-white/42 sm:max-w-[8rem]">{meta}</SafeMeta>
     </SafeRow>
   );
 }
